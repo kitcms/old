@@ -8,10 +8,9 @@
  * @link      Kit.cms <http://www.kitcms.ru>
  */
 
-$location = $dir['vendor'] . DS .'fenom'. DS .'fenom'. DS .'src';
+$locations = array(
+    $dir['vendor'] . DS .'fenom'. DS .'fenom'. DS .'src',
+    $dir['vendor'] . DS .'fenom'. DS .'storage'. DS .'src'
+);
 
-$classLoader->addSymlinks(array(
-    'Fenom' => $location . DS .'Fenom.php'
-));
-
-Fenom::registerAutoload();
+$classLoader->addFallbacks($locations);
