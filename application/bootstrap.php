@@ -23,6 +23,9 @@ $dir['application'] = dirname(__FILE__);
 // Изменение текущего каталога PHP на системную директорию
 chdir($dir['application']);
 
+// Директория с файлами сторонних библиотек
+$dir['vendor'] = $dir['application'] . DS .'Vendors';
+
 // Нахождение ключевых функций, конфигурационных файлов и их подключение
 $files = glob($dir['application'] .'/*/*.{function,config}.php', GLOB_BRACE);
 foreach ($files as $file) {
