@@ -20,6 +20,8 @@ class Application
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
 
+        $request = TransferProtocol\HyperText\Request::fromGlobals();
+
         require 'Components/Dashboard/bootstrap.php';
     }
 }

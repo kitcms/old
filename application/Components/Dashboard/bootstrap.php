@@ -17,11 +17,23 @@ if (isset($views) && $views instanceof Fenom) {
     $provider = new Template\Provider(__DIR__ .'/Views');
     $views->addProvider('component', $provider);
 
-    $views->addAccessorSmart("root", "'/'");
-    $views->addAccessorSmart("component", "'/admin'");
+    $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
+    $views->addAccessorSmart("component", "component", Template\Engine::ACCESSOR_PROPERTY);
 
-    $template = 'test.html';
+    $views->component = '/admin';
+
+    // Сопоставление шаблона с маршрутом
+    $path = substr(trim($request->getPath(), '/'), strlen($views->component));
+    $template = $path .'/'. $request->getBaseName();
+
     if ($provider->templateExists($template)) {
-        $views->display(array('component:'. $template, 'component:index.html'));
+        if ($mimeType = $request->getMimeType()) {
+            header('Content-Type: '. $mimeType);
+        }
+        if (preg_match('/^assets\\//', $template)) {
+            echo $provider->getSource($template, $time);
+        } else {
+            $views->display(array('component:'. $template, 'component:index.html'));
+        }
     }
 }
