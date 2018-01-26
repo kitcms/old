@@ -17,7 +17,10 @@ if (isset($views) && $views instanceof Fenom) {
     $provider = new Template\Provider(__DIR__ .'/Views');
     $views->addProvider('component', $provider);
 
-    $template = 'index.html';
+    $views->addAccessorSmart("root", "'/'");
+    $views->addAccessorSmart("component", "'/admin'");
+
+    $template = 'test.html';
     if ($provider->templateExists($template)) {
         $views->display(array('component:'. $template, 'component:index.html'));
     }
