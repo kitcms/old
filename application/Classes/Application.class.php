@@ -19,5 +19,7 @@ class Application
     {
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
+
+        require 'Components/Dashboard/bootstrap.php';
     }
 }
