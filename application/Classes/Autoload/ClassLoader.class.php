@@ -1,12 +1,11 @@
 <?php
 /*
- * Класс для реализации автоматической загрузки сторонних классов и библиотек
+ * Реализации автоматической загрузки классов сторонних библиотек
  *
  * @package   This file is part of the Kit.cms
  * @author    Anton Popov <a.popov@kit.team>
  * @copyright Kit.team <http://www.kit.team>
  * @link      Kit.cms <http://www.kitcms.ru>
- * @version   0.1.0
  */
 
 namespace Classes\Autoload;
