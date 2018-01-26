@@ -12,6 +12,12 @@ namespace Classes;
 
 class Application
 {
+    const VERSION  = '0.1.0';
+    const CODENAME = 'Black whale';
+
     public function run()
-    {}
+    {
+        $views = new Template\Engine(new Template\Provider('Views'));
+        $views->setCompileDir('Storages/Compile');
+    }
 }
