@@ -21,6 +21,7 @@ class Application
         $views->setCompileDir('Storages/Compile');
 
         $request = TransferProtocol\HyperText\Request::fromGlobals();
+        $model = new Database\Model();
 
         require 'Components/Dashboard/bootstrap.php';
     }
