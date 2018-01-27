@@ -8,6 +8,23 @@
  * @version   0.1.0
  *}
 
+ {block 'component_set'}
+ {set $menu = [
+     'main' => [
+         'left' => [
+             'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html', 'class' => '' ]
+         ],
+         'right' => []
+     ],
+     'second' => [
+         'left' => [
+             [ 'title' => '&nbsp;' ]
+         ],
+         'right' => []
+     ]
+ ]}
+ {/block}
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -16,13 +33,47 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Панель управления</title>
         <link href="{$.component}/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{$.component}/assets/component/css/bootstrap-theme.css" rel="stylesheet">
         <!--[if lt IE 9]>
         <script src="{$.component}/assets/html5shiv/html5shiv.min.js"></script>
         <script src="{$.component}/assets/respond/respond.min.js"></script>
         <![endif]-->
     </head>
     <body>
-        {block 'content'}{/block}
+        <header role="header">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid">
+                    {foreach $menu.main as $position => $items}
+                    <ul class="nav navbar-nav pull-{$position}">
+                        {foreach $items as $item}
+                        <li class="{if $item.class ?}{$item.class}{/if}">
+                            <a href="{if $item.link ?}{$item.link}{/if}">{if $item.title ?}{$item.title}{/if}</a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {/foreach}
+                </div>
+            </nav>
+            <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                    {foreach $menu.second as $position => $items}
+                    <ul class="nav navbar-nav pull-{$position}">
+                        {foreach $items as $item}
+                        <li class="{if $item.class ?}{$item.class}{/if}">
+                            <a href="{if $item.link ?}{$item.link}{/if}">{if $item.title ?}{$item.title}{/if}</a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {/foreach}
+                </div>
+            </nav>
+        </header>
+        <div class="main">
+            {block 'component_content'}{/block}
+        </div>
+        <footer class="footer">
+            {block 'component_footer'}{/block}
+        </footer>
         <script src="{$.component}/assets/jquery/jquery.min.js"></script>
         <script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
     </body>

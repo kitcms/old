@@ -13,6 +13,9 @@ namespace Classes;
 use Fenom;
 
 if (isset($views) && $views instanceof Fenom) {
+    // Отключение кеширования компилированных шаблонов и другие настройки
+    $views->setOptions(array('disable_cache' => true, 'force_include' => true, 'auto_reload' => true, 'strip' => true));
+
     // Добавление внутреннего источника шаблонов
     $provider = new Template\Provider(__DIR__ .'/Views');
     $views->addProvider('component', $provider);
