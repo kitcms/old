@@ -15,4 +15,9 @@ use Classes\Database\Model;
 class Site extends Model
 {
     protected $_table = 'Site';
+
+    public function section()
+    {
+        return $this->hasMany(__NAMESPACE__ . NS .'Section', 'site');
+    }
 }
