@@ -16,6 +16,7 @@ if (function_exists('autoload')) {
 
     // Настройка автоматической загрузки сторонних библиотек
     $classLoader = new Autoload\ClassLoader();
+    $classLoader->addFallbacks($dir['vendor']);
     $classLoader->addExtensions(array('.php'));
     $classLoader->register();
 }

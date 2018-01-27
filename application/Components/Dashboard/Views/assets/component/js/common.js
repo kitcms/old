@@ -19,4 +19,6 @@
             $.cookie('resizable', [left, right]);
         }
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
 })(jQuery);

@@ -3,6 +3,26 @@ html, body {
   color: #2e2e2e;
 }
 
+.grey {
+  color: #707070;
+}
+.blue {
+  color: #418cd8;
+}
+.green {
+  color: #1aaa55;
+}
+
+a.grey {
+  color: #707070;
+}
+a.grey:hover,
+a.grey:active,
+a.grey:focus {
+  color: #000;
+  text-decoration: none;
+}
+
 .navbar {
   border: initial;
   border-radius: 0px;
@@ -115,8 +135,199 @@ html, body {
   padding: 15px;
   overflow: auto;
 }
+
+.badge-group {
+  color: #707070;
+  white-space: nowrap;
+}
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: normal;
+  color: #707070;
+  line-height: 1;
+  vertical-align: baseline;
+  white-space: nowrap;
+  text-align: center;
+  background-color: rgba(0,0,0,0.07);
+  border-radius: 10px;
+}
+.grey:hover .badge,
+.grey:active .badge,
+.grey:focus .badge {
+  color: #000;
+  text-decoration: none;
+}
+.table > thead > tr > th {
+  font-size: 13px;
+  vertical-align: bottom;
+  border-bottom: 1px solid #f0f0f0;
+}
+.table > tbody > tr:not(:first-child) > td,
+.table > tbody > tr:not(:first-child) > th,
+.table > tfoot > tr:not(:first-child) > td,
+.table > tfoot > tr:not(:first-child) > th,
+.table > thead > tr:not(:first-child) > td,
+.table > thead > tr:not(:first-child) > th {
+  border-top: 1px solid #f0f0f0;
+}
+
 .footer {
+  height: 50px;
   min-height: 50px;
+  height: initial;
   border-top: 1px solid #e5e5e5;
   background: #f5f5f5;
+  padding: 7px 15px 8px;
+}
+
+.btn-action {
+    display: inline-block;
+    border-radius: 100px;
+    background-color: #fff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #2e2e2e;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    padding: 0;
+    transition: all 0.2s linear;
+    position: relative;
+    vertical-align: middle;
+}
+.btn-action + .btn-action,
+.btn-action + .tooltip + .btn-action {
+    margin-left: 6px;
+}
+.btn-action svg {
+    height: 22px;
+    width: 22px;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    z-index: 2;
+    overflow: visible;
+}
+.btn-action svg {
+    fill: #2e2e2e;
+}
+.btn-action:hover,
+.btn-action:active,
+.btn-action:focus {
+    background-color: rgba(46,46,46,0.1);
+}
+.btn-action.grey {
+    border-color: #c4c4c4;
+    color: #c4c4c4;
+}
+.btn-action.grey svg {
+    fill: #c4c4c4;
+}
+.btn-action.grey:hover,
+.btn-action.grey:active,
+.btn-action.grey:focus {
+    background-color: rgba(196,196,196,0.1);
+    border-color: #c4c4c4;
+    color: #c4c4c4;
+}
+.btn-action.red {
+    border-color: #db3b21;
+    color: #db3b21;
+}
+.btn-action.red svg {
+    fill: #db3b21;
+}
+.btn-action.red:hover,
+.btn-action.red:active,
+.btn-action.red:focus {
+    background-color: #fbe7e4;
+    border-color: #c0341d;
+    color: #c0341d;
+}
+.btn-action.red:hover svg,
+.btn-action.red:active svg,
+.btn-action.red:focus svg {
+    fill: #c0341d;
+}
+.btn-action.green {
+    border-color: #1aaa55;
+    color: #1aaa55;
+}
+.btn-action.green svg {
+    fill: #1aaa55;
+}
+.btn-action.green:hover,
+.btn-action.green:active,
+.btn-action.green:focus {
+    background-color: #e4f5eb;
+    border-color: #168f48;
+    color: #168f48;
+}
+.btn-action.green:hover svg,
+.btn-action.green:active svg,
+.btn-action.green:focus svg {
+    fill: #168f48;
+}
+.btn-action.blue {
+    border-color: #418cd8;
+    color: #418cd8;
+}
+.btn-action.blue svg {
+    fill: #418cd8;
+}
+.btn-action.blue:hover,
+.btn-action.blue:active,
+.btn-action.blue:focus {
+    background-color: #e4eff9;
+    border-color: #1b69b6;
+    color: #1b69b6;
+}
+.btn-action.blue:hover svg,
+.btn-action.blue:active svg,
+.btn-action.blue:focus svg {
+    fill: #1b69b6;
+}
+
+.btn-action.yellow {
+    border-color: #fc9403;
+    color: #fc9403;
+}
+.btn-action.yellow svg {
+    fill: #fc9403;
+}
+.btn-action.yellow:hover,
+.btn-action.yellow:active,
+.btn-action.byellow:focus {
+    background-color: #fff2e1;
+    border-color: #de7e00;
+    color: #de7e00;
+}
+.btn-action.yellow:hover svg,
+.btn-action.yellow:active svg,
+.btn-action.yellow:focus svg {
+    fill: #de7e00;
+}
+
+.btn-group .btn-action:not(:first-child)::after {
+    content: '';
+    width: 6px;
+    position: absolute;
+    left: -7px;
+    top: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+.btn-group,
+.btn-group > .tooltip {
+    white-space: nowrap;
+}
+
+.tooltip.top .tooltip-arrow {
+    border-top-color: #dfe2e6;
+}
+.tooltip-inner {
+    background-color: #dfe2e6;
+    color: #2e2e2e;
 }

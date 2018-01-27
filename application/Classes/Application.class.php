@@ -20,8 +20,10 @@ class Application
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
 
+        $views->addAccessorSmart("model", "model", Template\Engine::ACCESSOR_CHAIN);
+        $views->model = new Database\Model();
+
         $request = TransferProtocol\HyperText\Request::fromGlobals();
-        $model = new Database\Model();
 
         require 'Components/Dashboard/bootstrap.php';
     }

@@ -63,6 +63,31 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         )
     );
 
+    public static function factory($table_name, $connection_name = null)
+    {
+        // FIXME
+        $class_name = 'Classes'. NS .'Model'. NS . $table_name;
+        if (false !== strrpos($table_name, NS)) {
+            $class_name = $table_name;
+        }
+        if (class_exists($class_name)) {
+            $table_name = self::_get_table_name($class_name);
+        } else {
+            $class_name = __CLASS__;
+        }
+        if ($connection_name == null) {
+            $connection_name = self::_get_static_property(
+                $class_name,
+                '_connection_name',
+                ORMWrapper::DEFAULT_CONNECTION
+            );
+        }
+        $wrapper = ORMWrapper::for_table($table_name, $connection_name);
+        $wrapper->set_class_name($class_name);
+        $wrapper->use_id_column(self::_get_id_column_name($class_name));
+        return $wrapper;
+    }
+
     public function __toString()
     {
         return (string) $this->id();

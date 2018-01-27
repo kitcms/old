@@ -15,4 +15,6 @@ use Fenom;
 class Engine extends Fenom
 {
     use Fenom\StorageTrait;
+
+    const ACCESSOR_CHAIN = 'Classes\Template\Accessor::parserChain';
 }
