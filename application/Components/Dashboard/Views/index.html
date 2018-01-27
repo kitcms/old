@@ -69,12 +69,19 @@
             </nav>
         </header>
         <div class="main">
-            {block 'component_content'}{/block}
+            <aside class="aside" role="aside">
+                <div>{block 'component_aside'}{/block}</div>
+            </aside>
+            <section class="content" role="content">
+                <div>{block 'component_content'}{/block}</div>
+            </div>
         </div>
         <footer class="footer">
             {block 'component_footer'}{/block}
         </footer>
         <script src="{$.component}/assets/jquery/jquery.min.js"></script>
+        <script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
         <script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="{$.component}/assets/component/js/common.js"></script>
     </body>
 </html>

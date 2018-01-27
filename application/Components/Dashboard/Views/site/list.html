@@ -1,3 +1,24 @@
-{block 'content'}
+{*
+ * Шаблон для отображения списка сайтов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ * @version   0.1.0
+ *}
+
+{extends 'component:index.html'}
+
+{block 'component_set'}{parent}
+{* Формирование меню *}
+{set $menu.main.left.site.class = 'active'}
+{set $menu.second.left = [
+    'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html', 'class' => 'active']
+]}
+{/block}
+
+{block 'component_content'}
 <h1>Site list!</h1>
 {/block}
+}
