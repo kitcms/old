@@ -69,10 +69,11 @@
             </nav>
         </header>
         <div class="main">
-            <aside class="aside" role="aside">
+            {set $resizable = $.cookie.resizable|split}
+            <aside class="aside" role="aside" style="{if $resizable.0 ?}width:{$resizable.0}%{/if}">
                 <div>{block 'component_aside'}{/block}</div>
             </aside>
-            <section class="content" role="content">
+            <section class="content" role="content" style="{if $resizable.1 ?}width:{$resizable.1}%{/if}">
                 <div>{block 'component_content'}{/block}</div>
             </div>
         </div>
@@ -81,6 +82,7 @@
         </footer>
         <script src="{$.component}/assets/jquery/jquery.min.js"></script>
         <script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
+        <script src="{$.component}/assets/js-cookie/jquery.cookie.js"></script>
         <script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
         <script src="{$.component}/assets/component/js/common.js"></script>
     </body>
