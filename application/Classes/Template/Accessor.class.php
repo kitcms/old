@@ -14,6 +14,18 @@ namespace Classes\Template;
 use Fenom;
 
 class Accessor {
+    public static $vars = array(
+        'get'     => '$_GET',
+        'post'    => '$_POST',
+        'session' => '$_SESSION',
+        'cookie'  => '$_COOKIE',
+        'request' => '$_REQUEST',
+        'files'   => '$_FILES',
+        'globals' => '$GLOBALS',
+        'server'  => '$_SERVER',
+        'env'     => '$_ENV'
+    );
+    
     /**
      * @param string $chain template's method name
      * @param Tokenizer $tokens
