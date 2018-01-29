@@ -17,13 +17,17 @@ class Application
 
     public function run()
     {
+        $request = TransferProtocol\HyperText\Request::fromGlobals();
+
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
 
         $views->addBlockFunction('var', '', 'Classes\Template\Compiler::setOpen', 'Classes\Template\Compiler::setClose');
-        $views->addAccessorSmart("model", "(new Classes\Database\Model())");
+        $views->addCompiler('exit', function() { return 'return;'; });
 
-        $request = TransferProtocol\HyperText\Request::fromGlobals();
+        $views->addAccessorSmart("model", "(new Classes\Database\Model())");
+        $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
+        $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
 
         require 'Components/Dashboard/bootstrap.php';
     }

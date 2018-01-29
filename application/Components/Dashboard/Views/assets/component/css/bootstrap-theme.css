@@ -88,6 +88,40 @@ a.grey:focus {
 .navbar-fixed-bottom {
   border-radius: 0;
 }
+
+/*navbar*/
+.nav-tabs {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.nav-tabs > li {
+  margin-bottom: 0px;
+}
+.nav-tabs > li > a {
+  color: #707070;
+  border: initial;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:active,
+.nav-tabs > li > a:focus {
+  text-decoration: none;
+  border: initial;
+  border-bottom: 2px solid #c4c4c4;
+  background-color: initial;
+  color: #000;
+}
+.nav-tabs > li.active >a,
+.nav-tabs > li.active >a:focus,
+.nav-tabs > li.active >a:hover {
+  background-color: initial !important;
+  border: initial;
+  border-bottom: 2px solid #1f78d1;
+  color: #000 !important;
+  font-weight: 600;
+}
+
 .main {
   height: inherit;
   height: calc(100% - 150px);
