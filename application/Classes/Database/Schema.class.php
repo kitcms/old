@@ -17,6 +17,16 @@ class Schema extends ORM
 {
     protected $_instance_id_column = 'name';
 
+    protected $aspects = array(
+        'integer' => 'int(11)',
+        'string' => 'varchar(255)',
+        'text' => 'longtext',
+        'group' => 'varchar(255)',
+        'boolean' => 'tinyint(1)',
+        'file' => 'longblob',
+        'join' => 'varchar(255)'
+    );
+
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
         $this->_table_name = $table_name;
         $this->_data = $data;
@@ -27,12 +37,15 @@ class Schema extends ORM
 
     public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION) {
         self::_setup_db($connection_name);
-        return new self($table_name, array(), $connection_name);
+        $instance = new self($table_name, array(), $connection_name);
+        $instance->where('name', $table_name);
+        return $instance;
     }
 
     public function field()
     {
         $instance = self::for_table($this->name ?: $this->_table_name);
+        $instance->_where_conditions = array();
         $instance->useIdColumn('field');
         return $instance;
     }
@@ -87,5 +100,18 @@ class Schema extends ORM
         $instance->use_id_column($this->_instance_id_column);
         $instance->hydrate($row);
         return $instance;
+    }
+
+    public function findArray()
+    {
+        $array = parent::findArray();
+        if ('field' === $this->_getIdColumnName()) {
+            foreach ($array as $key => $data) {
+                if (false === ($array[$key]['aspect'] = array_search($data['type'], $this->aspects))) {
+                    $array[$key]['aspect'] = $data['type'];
+                }
+            }
+        }
+        return $array;
     }
 }

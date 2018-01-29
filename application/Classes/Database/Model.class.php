@@ -12,7 +12,6 @@ namespace Classes\Database;
 
 use Model as ActiveRecord;
 
-use ORMWrapper;
 use ArrayAccess;
 use IteratorAggregate;
 use Countable;
@@ -88,6 +87,14 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         return $wrapper;
     }
 
+    public function schema()
+    {
+        if (null === ($table = $this->_get_static_property(get_called_class(), '_table')) && null !== $this->orm) {
+            $table = $this->orm->_get_table_name();
+        }
+        return Schema::for_table($table);
+    }
+
     public static function fields()
     {
         $class = get_called_class();
@@ -96,6 +103,60 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
             $fields = array_merge(self::_get_static_property(__CLASS__, 'fields'), $fields);
         }
         return $fields;
+    }
+
+    public function save()
+    {
+        $schema = $this->schema()->findOne();
+        $fields = $schema->field()->findArray();
+
+        // Исключение не используемых данных
+        foreach ($this->asArray() as $field => $value) {
+            if (false === ($key = array_search($field, array_column($fields, 'field')))) {
+                unset($this->$field);
+            } else {
+                // Модификация значений
+                switch ($fields[$key]['aspect']) {
+                    case 'double':
+                        $value = str_replace(array(',',' '), array('.',''), $this->get($field));
+                        $this->set($field, $value);
+                        break;
+                    case 'datetime':
+                        $value = $this->get($field);
+                        $this->set($field, date('Y-m-d H:i:s', strtotime($value)));
+                }
+            }
+        }
+        // FIXME
+        if (null === $id = $this->id()) {
+            $id = $schema->auto_increment;
+            $this->set('user', isset($_SESSION['user']) ? $_SESSION['user'] : false);
+        }
+        $this->set('created', $this->get('created') ?: date("Y-m-d H:i:s"));
+        $this->set('updated', date("Y-m-d H:i:s"));
+
+        // Проверка на заполнение всех необходимых полей
+        foreach ($fields as $field) {
+            // Если поле не имеет первичного ключа
+            if (false === stristr($field['key'], 'pri')) {
+                // и не может быть пустым
+                if (false === filter_var($field['null'], FILTER_VALIDATE_BOOLEAN)) {
+                    // так же не имеет значения по умолчанию
+                    if ((null == $this->get($field['field'])) && (null === $field['default'])) {
+                        return false;
+                    }
+                }
+            }
+
+            // FIXME ???
+            // Установка значения null
+            if (true === filter_var($field['null'], FILTER_VALIDATE_BOOLEAN) && null === $field['default']) {
+                if ('' === $this->get($field['field'])) {
+                    $this->set($field['field'], null);
+                }
+            }
+        }
+        return parent::save();
     }
 
     public function __toString()
