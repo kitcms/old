@@ -20,5 +20,29 @@
         }
     });
 
+    $('textarea[data-resizable=true]').resizable({
+        handles: "s",
+        minHeight: 94,
+        create: function(event, ui) {
+            var target = event.target,
+                textarea = $(target).find('textarea'),
+                name = $('textarea').attr('name');
+            if (height = $.cookie(name)) {
+                height = height.split(',')
+                $(target).height(height[0]);
+                $(textarea).height(height[1]);
+            } else {
+                $(target).height(94);
+                $(textarea).height(66);
+            }
+        },
+        stop: function(event, ui) {
+            var target = event.target,
+                textarea = $(target).find('textarea'),
+                name = $('textarea').attr('name');
+            $.cookie(name, [$(target).height(), $(textarea).height()]);
+        }
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 })(jQuery);
