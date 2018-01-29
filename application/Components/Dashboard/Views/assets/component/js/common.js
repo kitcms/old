@@ -45,4 +45,18 @@
     });
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    /* Select2 */
+    $.fn.select2.defaults.set("width", "100%");
+    $.fn.select2.tags = {
+        tags: true,
+        tokenSeparators: [',', ' '],
+        language: {
+            noResults: function (params, el) {
+                return null;
+            }
+        }
+    }
+
+    $('[role="tags"]').select2($.fn.select2.tags);
 })(jQuery);
