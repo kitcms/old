@@ -20,8 +20,8 @@ class Application
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
 
-        $views->addAccessorSmart("model", "model", Template\Engine::ACCESSOR_CHAIN);
-        $views->model = new Database\Model();
+        $views->addBlockFunction('var', '', 'Classes\Template\Compiler::setOpen', 'Classes\Template\Compiler::setClose');
+        $views->addAccessorSmart("model", "(new Classes\Database\Model())");
 
         $request = TransferProtocol\HyperText\Request::fromGlobals();
 

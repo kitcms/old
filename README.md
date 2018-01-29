@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kitteam/cms/develop/docs/img/logo-small.png" width="auto" height="auto" alt="logo">
+  <img src="https://raw.githubusercontent.com/kitteam/cms/develop/docs/img/logo-small.png" width="181" height="auto" alt="logo">
 </p>
 
 <h1 align="center">Kit.cms</h1>

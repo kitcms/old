@@ -3,10 +3,10 @@
  * ...
  *
  * @package   This file is part of the Kit.cms
+ * @link      http://kitcms.ru
  * @author    Anton Popov <a.popov@kit.team>
- * @copyright Kit.team <http://www.kit.team>
- * @link      Kit.cms <http://www.kitcms.ru>
- * @version   0.1.0
+ * @copyright Copyright (c) Kit.team
+ * @copyright (c) 2013 Ivan Shalganov
  */
 
 namespace Classes\Template;
