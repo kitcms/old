@@ -16,6 +16,30 @@
 
 {var $.server = $.server|array_change_key_case}
 
+{* Добавление объекта *}
+{if $.request.apply !}
+    {set $site = $.model->factory('Site')->create($.request)}
+    {if $site->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:site/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            При добавлении нового объекта возникла ошибка.
+        </div>
+        {/set}
+    {/if}
+{/if}
+
 {* Выборка необходимых данных *}
 {set $schema = $.schema->findOne('Site')}
 {set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}

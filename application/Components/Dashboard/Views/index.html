@@ -74,7 +74,7 @@
                 <div>{block 'component_aside'}{/block}</div>
             </aside>
             <section class="content" role="content" style="{if $resizable.1 ?}width:{$resizable.1}%{/if}">
-                <div>{block 'component_content'}{/block}</div>
+                <div>{block 'component_content'}{$message ?: null}{/block}</div>
             </div>
         </div>
         <footer class="footer">
