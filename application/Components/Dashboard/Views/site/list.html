@@ -5,7 +5,6 @@
  * @author    Anton Popov <a.popov@kit.team>
  * @copyright Kit.team <http://www.kit.team>
  * @link      Kit.cms <http://www.kitcms.ru>
- * @version   0.1.0
  *}
 
 {extends 'component:index.html'}
@@ -48,7 +47,7 @@
             {/if}
             </td>
             <td>
-                <a href="{$.component}/site/section/list.html?site={$site.id}" class="badge-group grey">Разделы <span class="badge">{$count}</span></a>
+                <span class="grey"><a href="{$.component}/site/section/list.html?site={$site.id}" class="badge-group">Разделы <span class="badge">{$count}</span></a></span>
             </td>
             <td>
                 <div class="btn-group">

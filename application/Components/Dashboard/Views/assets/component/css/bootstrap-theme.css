@@ -3,26 +3,6 @@ html, body {
   color: #2e2e2e;
 }
 
-.grey {
-  color: #707070;
-}
-.blue {
-  color: #418cd8;
-}
-.green {
-  color: #1aaa55;
-}
-
-a.grey {
-  color: #707070;
-}
-a.grey:hover,
-a.grey:active,
-a.grey:focus {
-  color: #000;
-  text-decoration: none;
-}
-
 .navbar {
   border: initial;
   border-radius: 0px;
@@ -70,7 +50,7 @@ a.grey:focus {
 }
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
-  color: #000000 !important;
+  color: #000000;
   background: transparent;
 }
 .navbar-inverse .navbar-nav > .open > a,
@@ -79,7 +59,7 @@ a.grey:focus {
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .active > a:hover,
 .navbar-inverse .navbar-nav > .active > a:focus {
-  color: #1f78d1 !important;
+  color: #1f78d1;
   font-weight: 600;
   background: transparent;
 }
@@ -391,4 +371,44 @@ textarea.ui-resizable + div.ui-resizable-handle,
 .tooltip-inner {
     background-color: #dfe2e6;
     color: #2e2e2e;
+}
+
+.grey,
+.grey a {
+  color: #707070;
+}
+.grey a:hover,
+.grey a:active,
+.grey a:focus {
+  color: #000;
+  text-decoration: none;
+}
+.blue,
+.blue a,
+.blue a:hover,
+.blue a:active,
+.blue a:focus {
+  color: #418cd8 !important;
+  color: #1f78d1 !important;
+}
+.green,
+.green a,
+.green a:hover,
+.green a:active,
+.green a:focus {
+  color: #1aaa55 !important;
+}
+.yellow,
+.yellow a,
+.yellow a:hover,
+.yellow a:active,
+.yellow a:focus {
+  color: #fc9403 !important;
+}
+.red,
+.red a,
+.red a:hover,
+.red a:active,
+.red a:focus {
+  color: #db3b21 !important;
 }
