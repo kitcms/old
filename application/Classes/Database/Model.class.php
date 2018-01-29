@@ -88,6 +88,16 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         return $wrapper;
     }
 
+    public static function fields()
+    {
+        $class = get_called_class();
+        $fields = self::_get_static_property($class, 'fields');
+        if (__CLASS__ !== $class) {
+            $fields = array_merge(self::_get_static_property(__CLASS__, 'fields'), $fields);
+        }
+        return $fields;
+    }
+
     public function __toString()
     {
         return (string) $this->id();
