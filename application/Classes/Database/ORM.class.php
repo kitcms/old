@@ -12,6 +12,14 @@ namespace Classes\Database;
 
 class ORM extends \ORM
 {
+    public function set($key, $value = null) {
+        return $this->_set_orm_property($key, $value);
+    }
+
+    public function set_expr($key, $value = null) {
+        return $this->_set_orm_property($key, $value, true);
+    }
+
     protected function _set_orm_property($key, $value = null, $expr = false)
     {
         if (!is_array($key)) {

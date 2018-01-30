@@ -17,6 +17,13 @@ class ORMWrapper extends \ORMWrapper
         return new self($table_name, array(), $connection_name);
     }
 
+    protected function _create_instance_from_row($row) {
+        $instance = self::for_table($this->_table_name, $this->_connection_name);
+        $instance->use_id_column($this->_instance_id_column);
+        $instance->hydrate($row);
+        return $instance;
+    }
+
     public function hydrate($data=array())
     {
         foreach ($data as $field => $values) {
