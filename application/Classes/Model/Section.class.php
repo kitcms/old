@@ -180,4 +180,23 @@ class Section extends Model
         }
         return false;
     }
+
+    protected function _create_model_instance($orm) {
+        $data = $this->asArray();
+        if (false === $this->isDirty('keyword')) {
+            $parts = explode('/', $this->get('path'));
+            $keyword = array_pop($parts);
+            $extension = false;
+            if (false !== $pos = strrpos($keyword, '.')) {
+                $extension = substr($keyword, $pos + 1);
+                //$keyword = substr($keyword, 0, $pos);
+            }
+            $data = array_merge($data, array('keyword' => $keyword, 'extension' => $extension));
+        }
+        // Если главная страница удаляем информацию о материализованном пути
+        if ($this->get('type')) {
+            unset($data['path']);
+        }
+        $this->orm->hydrate($data);
+    }
 }

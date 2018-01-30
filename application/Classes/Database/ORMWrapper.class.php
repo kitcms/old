@@ -17,6 +17,19 @@ class ORMWrapper extends \ORMWrapper
         return new self($table_name, array(), $connection_name);
     }
 
+    protected function _create_model_instance($orm)
+    {
+        if ($orm === false) {
+            return false;
+        }
+        $model = new $this->_class_name();
+        $model->setOrm($orm);
+        if (method_exists($model, __FUNCTION__)) {
+            call_user_func(array($model, __FUNCTION__), $orm);
+        }
+        return $model;
+    }
+
     protected function _create_instance_from_row($row) {
         $instance = self::for_table($this->_table_name, $this->_connection_name);
         $instance->use_id_column($this->_instance_id_column);
