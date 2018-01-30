@@ -145,6 +145,39 @@ class Section extends Model
                 return false;
             }
         }
-        return parent::save();
+        // Массивы зависимых объектов
+        $dependences = array();
+        if ($this->isDirty('site') || $this->isDirty('parent') || $this->isDirty('path')) {
+            // Для раздела, имеющего подразделы, нельзя задавать расширение
+            if (($childrens = $this->children()->findMany()) && strrpos($this->keyword, '.')) {
+                return false;
+            }
+            array_push($dependences, $childrens);
+        }
+        if (parent::save()) {
+            foreach ((array) $dependences as $dependence) {
+                foreach ((array) $dependence as $depend) {
+                    $depend->set('path', null)->save();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function delete()
+    {
+        // Массивы зависимых объектов
+        $dependences = array();
+        array_push($dependences, $this->children()->findMany());
+        if (parent::delete()) {
+            // Удаление зависимых объектов
+            foreach ((array) $dependences as $dependence) {
+                foreach ((array) $dependence as $depend) {
+                    $depend->delete();
+                }
+            }
+        }
+        return false;
     }
 }
