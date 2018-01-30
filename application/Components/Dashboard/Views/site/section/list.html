@@ -73,7 +73,6 @@
             </td>
             <td>
                 <div class="btn-group">
-                {var_dump($section->active)}
                 {if $section->active ?}
                     <a href="{$.component}/site/section/active.html?section={$section.id}&disable" title="Сделать неактивным" data-toggle="tooltip" class="btn-action green">
                 {else}

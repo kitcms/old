@@ -44,6 +44,12 @@
         }
     });
 
+    $(".nav-tabs a").click(function (e) {
+        e.preventDefault();
+        $.cookie('tabs', $(this).attr('href').substr(1));
+        $(this).tab('show');
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 
     /* Select2 */
