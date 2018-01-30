@@ -1,0 +1,104 @@
+{*
+ * Шаблон для добавления нового раздела
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:site/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.site ? && ($site = $.model->factory('Site')->findOne($.request.site))}
+{elseif $.request.section ? && ($section = $.model->factory('Section')->findOne($.request.section))}
+    {set $site = $section->site()->findOne()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+{else}
+    {exit}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    [
+        'title' => 'Добавление нового раздела',
+        'link' => $.component ~ '/site/section/add.html?' ~ ($section ? 'section=' ~ $section.id : 'site=' ~ $site.id),
+        'class' => 'active green'
+    ]
+]}
+
+{if $.request.apply !}
+    {set $instance = $site->section()->create($.request)}
+    {set $instance->site = $site->id}
+    {if $section ?}{set $instance->parent = $section->id}{/if}
+    {if $instance->save()}
+        {if $instance->parent ?}
+            {var $.request.section = $instance->parent}
+        {else}
+            {var $.request.site = $instance->site}
+        {/if}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:site/section/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            {$.env.message ?: 'При добавлении нового объекта возникла ошибка.'}
+        </div>
+        {/set}
+    {/if}
+    {var $.request = array_merge($.request, $instance->asArray())}
+{/if}
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="add" action="{$.component}/site/section/add.html?{if $section ?}section={$section.id}{else}site={$site.id}{/if}&apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
+        <li class="{if 'meta' == $.cookie.tabs}active{/if}"><a href="#meta" data-toggle="tab">Метаинформация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro main}
+        <div class="tab-pane {if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="title">Название раздела</label>
+                    <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
+                    <span class="help-block">Название раздела используется при автоматической генерации
+                    заголовков title для всех страниц сайта.</span>
+                </div>
+            </div>
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.keyword}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="keyword">Адрес</label>
+                    <input class="form-control" type="text" value="{$.request.keyword|e}" name="keyword" id="keyword">
+                    <span class="help-block">Адрес может содержать только буквы, цифры, дефис, символ нижнего подчеркивания и точку.</span>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="description">Описание</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.main}
+        {macro.meta}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Добавить раздел" form="add">
+{/block}
