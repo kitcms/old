@@ -76,6 +76,10 @@
 ]}
 {/block}
 
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
+{/block}
+
 {block 'component_content'}
 {parent}
 <form id="set" action="{$.component}/site/set.html?site={$site.id}&apply" method="post">

@@ -46,6 +46,10 @@
 {set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()}
 {/block}
 
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
+{/block}
+
 {block 'component_content'}
 {parent}
 <form id="add" action="{$.component}/site/add.html?apply" method="post">
