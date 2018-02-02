@@ -37,6 +37,22 @@
         ['title' => 'Изменение настроек', 'link' => $.component ~ '/site/set.html?site=' ~ $.request.site]
     ]}
 {/if}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{if $section ?}
+    {set $tree.open_nodes[] = 'section_' ~ $section->id}
+    {set $tree.selected_node[] = 'section_' ~ $section->id}
+{else}
+    {set $tree.selected_node[] = 'site_' ~ $site->id}
+{/if}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
 {/block}
 
 {block 'component_content'}

@@ -18,6 +18,14 @@
 
 {* Выборка объектов *}
 {set $sites = $.model->factory('Site')->orderByAsc('priority')->findMany()}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
 {/block}
 
 {block 'component_content'}

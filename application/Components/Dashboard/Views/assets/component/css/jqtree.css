@@ -1,0 +1,151 @@
+ul.jqtree-tree {
+    padding: 0;
+}
+ul.jqtree_common {
+    margin: 2px 0 0;
+    padding: 0;
+}
+ul li.jqtree_common {
+    padding: 0 0 0 22px;
+    margin: 0 0 0 -3px;
+    min-height: 22px;
+    overflow: hidden;
+    list-style-type: none;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    position: relative;
+}
+ul.jqtree_common .jqtree-toggler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-repeat: no-repeat;
+    background-position: 50% 0;
+    text-indent: 100px;
+    overflow: hidden;
+    cursor: pointer;
+}
+ul.jqtree-tree>li:last-child,
+ul.jqtree_common li ul.jqtree_common li:last-child,
+ul.jqtree_common>li:last-child {
+    background-position: 0 -1766px;
+}
+ul.jqtree_common .jqtree-toggler.jqtree-closed {
+    background-position: 50% 100%;
+}.jqtree-element.jqtree_common {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.jqtree-element.jqtree_common .right {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 20px;
+    padding: 0 0 0 20px;
+    background: -moz-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 10px);
+    background: -webkit-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 10px);
+    background: linear-gradient(to right,rgba(255,255,255,0) 0,rgba(255,255,255,1) 10px);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff', GradientType=1 );
+}
+.jqtree-element.jqtree_common:hover .right {
+    display: inline-block;
+}
+.jqtree-element.jqtree_common .glyphicon {
+    margin-right: 8px;
+}
+.jqtree-element.jqtree_common .right .glyphicon {
+    margin-right: 4px;
+}
+span.jqtree-dragging {
+    color: #fff;
+    background: #337ab7;
+    opacity: .6;
+    cursor: pointer;
+    padding: 2px 8px;
+}
+ul.jqtree-tree span.jqtree-border {
+    position: absolute;
+    display: block;
+    left: 21px;
+    top: 0;
+    border: 1px solid #337ab7;
+    padding: 1px 1px 1px 2px;
+    margin: 0;
+    box-sizing: content-box;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    z-index: 10;
+}
+ul.jqtree-tree li.jqtree-ghost {
+    position: relative;
+    z-index: 10;
+    margin-right: 10px;
+}
+ul.jqtree-tree li.jqtree-ghost span {
+    display: block;
+}
+ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
+    background-color: #337ab7;
+    height: 1px;
+    padding: 0;
+    position: absolute;
+    top: 9px;
+    margin: 0 20px;
+    left: 2px;
+    width: 100%;
+}
+ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
+    outline: #337ab7 dotted 1px;
+}
+.jqtree-closed ul {
+    display: none;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element {
+    background-color: #cbd0d5;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 0 6px;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:after {
+    content: '';
+    width: 6px;
+    background-color: #cbd0d5;
+    position: absolute;
+    right: 0;
+    height: 20px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover,
+ul.jqtree-tree li > .jqtree-element:hover {
+    background-color: #dfe2e6;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 0 6px;
+    cursor: pointer;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover:after,
+ul.jqtree-tree li > .jqtree-element:hover:after {
+    content: '';
+    width: 6px;
+    background-color: #dfe2e6;
+    position: absolute;
+    right: 0;
+    height: 20px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+ul li.jqtree_common {
+    background-image: url('../img/jqtree-common.png');
+}
+ul.jqtree_common .jqtree-toggler {
+    background-image: url('../img/jqtree-toggler.png');
+}

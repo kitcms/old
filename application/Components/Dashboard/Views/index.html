@@ -34,6 +34,7 @@
         <title>Панель управления</title>
         <link href="{$.component}/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="{$.component}/assets/select2/css/select2.min.css" rel="stylesheet">
+        <link href="{$.component}/assets/component/css/jqtree.css" rel="stylesheet">
         <link href="{$.component}/assets/component/css/bootstrap-select2.css" rel="stylesheet">
         <link href="{$.component}/assets/component/css/bootstrap-theme.css" rel="stylesheet">
         <!--[if lt IE 9]>
@@ -86,7 +87,13 @@
         <script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
         <script src="{$.component}/assets/js-cookie/jquery.cookie.js"></script>
         <script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="{$.component}/assets/jqtree/tree.jquery.js"></script>
         <script src="{$.component}/assets/select2/js/select2.full.min.js"></script>
+        <script>
+            location.root = '{$.root}';
+            location.component = '{$.component}';
+            {if $tree ?}localStorage.tree = '{$tree|json_encode}';{/if}
+        </script>
         <script src="{$.component}/assets/component/js/common.js"></script>
     </body>
 </html>

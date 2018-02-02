@@ -52,6 +52,73 @@
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    /* JqTree */
+    window.tree = $('#tree');
+    window.tree.tree({
+        dataUrl: function(node) {
+            if (node) {
+                id = node.id.split('_');
+                if ('section' == id[0]) {
+                    return location.component + '/site/' + id[0] + '/tree.html?' + id[0] +'=' + id[1];
+                }
+                if ('group' == id[0]) {
+                    return location.component + '/user/tree.html?' + id[0] +'=' + id[1];
+                }
+                return location.component + '/' + id[0] + '/tree.html?' + id[0] +'=' + id[1];
+            } else {
+                return $('#tree').data('url');
+            }
+        },
+        autoOpen: false,
+        closedIcon: ' ',
+        openedIcon: ' ',
+        dragAndDrop: true,
+        saveState: true,
+        slide: false,
+        onCreateLi: function(node, $li) {
+            id = node.id.split('_');
+            if ('site' == id[0] || 'section' == id[0] || 'template' == id[0] || 'user' == id[0]) {
+                $li.find('.jqtree-title')
+                    .before('<small class="glyphicon ' + node.icon + ' ' + node.color + '"></small><small class="grey">'+ id[1] +'. </small>')
+                    .after(' <small class="grey">' + node.keyword + '</small>');
+            }
+            if ('model' == id[0] || 'field' == id[0]) {
+                $li.find('.jqtree-title')
+                    .before('<small class="glyphicon ' + node.icon + ' ' + node.color + '"></small>');
+            }
+        },
+        onCanMoveTo: function(moved, target, position) {
+            move = moved.id.split('_');
+            targe = target.id.split('_');
+            // Разделы сайта
+            if ('site' == move[0] && 'section' == targe[0]) return false;
+            else if ('site' == move[0] && 'site' == targe[0] && 'inside' == position) return false;
+            else if ('section' == move[0] && 'site' == targe[0] && ('before' == position || 'after' == position)) return false;
+            else return true;
+        },
+        onCanSelectNode: function(node) {
+            if (node.link) {
+                $(location).attr('href', node.link);
+            }
+        }
+    }).bind('tree.move', function(event) {
+        event.preventDefault();
+        moved = event.move_info.moved_node.id;
+        target = event.move_info.target_node.id;
+        position = event.move_info.position;
+        path = moved.split('_')[0];
+        if ('section' === path) path = 'site/' + path;
+        url = location.component + '/' + path + '/move.html?moved=' + moved + '&target=' + target + '&position=' + position;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json'
+        }).then(function (result) {
+            data = $.parseJSON(result);
+            if (false != data) event.move_info.do_move();
+        });
+    });
+    
     /* Select2 */
     $.fn.select2.defaults.set("width", "100%");
     $.fn.select2.tags = {
