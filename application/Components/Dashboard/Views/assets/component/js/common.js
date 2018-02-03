@@ -167,4 +167,19 @@
             return $('<small class="grey">' + state.id + '.</small> ' + state.text + ' <span class="badge">' + keyword + '</span>');
         }
     });
+
+    if (typeof ace != "undefined") {
+        $('pre').each(function() {
+            var editor = ace.edit(this), name = $(this).attr('data-name');
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/smarty");
+            editor.session.setUseWorker(true);
+            editor.setShowInvisibles(true);
+            editor.setAutoScrollEditorIntoView(true);
+            editor.on("change", function(e) {
+                $('input[name="' + name + '"]').val(editor.getValue());
+            });
+        });
+    }
+    
 })(jQuery);

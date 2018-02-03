@@ -24,14 +24,17 @@ class Application
         $views->setCompileDir('Storages/Compile');
 
         $views->addBlockFunction('var', '', 'Classes\Template\Compiler::setOpen', 'Classes\Template\Compiler::setClose');
+
         $views->addCompiler('exit', function() { return 'return;'; });
+        $views->addBlockCompiler('php', 'Classes\Template\Compiler::nope', function ($tokens, $tag) {
+            return $tag->cutContent();
+        });
 
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
 
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
-
         $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
 
         require 'Components/Dashboard/bootstrap.php';

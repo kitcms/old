@@ -85,7 +85,7 @@ class User extends Model
         return parent::save();
     }
 
-    public function _create_model_instance($orm) {
+    protected function _create_model_instance($orm) {
         $data = $this->asArray();
         if (isset($data['password'])) {
             $this->password = $data['password'];

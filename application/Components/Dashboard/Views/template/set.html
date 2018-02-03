@@ -1,0 +1,83 @@
+{*
+ * Шаблон для изменения настроек заданного макета
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:template/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.template ? && ($template = $.model->factory('Template')->findOne($.request.template))}
+    {set $parents = $template->parents()->orderByAsc('path')->findMany()}
+    {if $.request.apply !}
+        {if $template->set($.request)->save()}
+            {set $message}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-ok"></span>
+                Данные объекта успешно обновлены.
+            </div>
+            {/set}
+            {var $.request = array_merge($.request, $template->asArray())}
+        {else}
+            {set $message}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-remove"></span>
+                Не удалось сохранить изменения.
+            </div>
+            {/set}
+        {/if}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{var $.request = array_merge($template->asArray(), $.request)}
+
+{* Построение основного меню *}
+{set $menu.main.left.template.class = "active"}
+{set $menu.second = [
+    'left' => [
+        [ 'title' => 'Макеты дизайна', 'link' => $.component ~ '/template/list.html?template=' ~ $template.id ]
+    ],
+    'right' => [
+        [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/template/set.html?template=' ~ $template.id, 'class' => 'active' ],
+        [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/template/edit.html?template=' ~ $template.id ]
+    ]
+]}
+
+{* Построение древовидного меню *}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'template_' ~ $parent->id}
+{/foreach}
+{set $tree.open_nodes[] = 'template_' ~ $template->id}
+{set $tree.selected_node[] = 'template_' ~ $template->id}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/template/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="set" action="{$.component}/template/set.html?template={$template.id}&apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro.main}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Сохранить изменения" form="set">
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/template/set.html?template={$template.id}" role="button">Отменить изменения</a>
+</div>
+{/block}

@@ -85,6 +85,11 @@ class Section extends Model
         return $this->hasOne(__NAMESPACE__ . NS .'Site', 'id', 'site');
     }
 
+    public function template()
+    {
+        return $this->hasOne(__NAMESPACE__ . NS .'Template', 'id', 'template');
+    }
+
     public function parent()
     {
         return $this->hasOne(__CLASS__, 'id', 'parent');

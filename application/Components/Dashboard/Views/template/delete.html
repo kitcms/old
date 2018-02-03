@@ -1,0 +1,102 @@
+{*
+ * Шаблон для удаления выбранных макетов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $ids = $.request.template ? ($.request.template|split) : [null]}
+{if $templates = $.model->factory('Template')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+    {set $parents = current($templates)->parents()->orderByAsc('path')->findMany()}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $templates as $template}
+            {do $template->delete()}
+        {/foreach}
+        {var $.request.template = null}
+        {if $template->parent ?}
+            {var $.request.template = $template->parent}
+        {/if}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Выбранные объекты успешно удалены.
+        </div>
+        {/set}
+        {include 'component:template/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{* Построение основного меню *}
+{set $menu.main.left.template.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных макетов', 'link' => $.component ~ '/template/delete.html?template=' ~ $.request.template, 'class' => 'active red']
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'template_' ~ $parent->id}
+{/foreach}
+{if $template ?}
+    {set $tree.open_nodes[] = 'template_' ~ $template->id}
+    {set $tree.selected_node[] = 'template_' ~ $template->id}
+{/if}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/template/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $templates}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-10"></th>
+            <th class="col-xs-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $templates as $template}
+        {set $count = $template->children()->count()}
+        <tr>
+            <td>
+                <small class="grey">{$template->id}.</small> {$template->title} <span class="badge" title="template:{$template->keyword}" data-toggle="tooltip">{$template->keyword}</span>
+            </td>
+            <td>
+                <span class="grey"><a href="{$.component}/template/list.html?template={$template.id}" class="pull-right badge-group grey">Макеты <span class="badge">{$count}</span></a></span>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/template/delete.html?template={$.request.template}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/template/list.html?{if $template->parent ?}template={$template->parent}{/if}" role="button">Отменить удаление</a>
+</div>
+{/block}

@@ -177,6 +177,18 @@ textarea.ui-resizable + div.ui-resizable-handle,
 .cke_resizer_vertical {
   background-image: url('../img/resize-s.png') !important;
 }
+.editor,
+.editor > div,
+.editor > div > pre {
+    height: 100%;
+}
+.editor > div > pre {;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    border: 1px solid #e5e5e5;
+}
+
 .badge-group {
   color: #707070;
   white-space: nowrap;

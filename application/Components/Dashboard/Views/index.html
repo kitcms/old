@@ -16,7 +16,8 @@
 {set $menu = [
     'main' => [
         'left' => [
-            'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ]
+            'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ],
+            'template' => [ 'title' => 'Макеты дизайна',  'link' => $.component ~ '/template/list.html'],
             'user' => [ 'title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ],
         ],
         'right' => [
@@ -102,7 +103,9 @@
             location.component = '{$.component}';
             {if $tree ?}localStorage.tree = '{$tree|json_encode}';{/if}
         </script>
+        {block 'component_script'}
         <script src="{$.component}/assets/component/js/common.js"></script>
+        {/block}
      {/block}
     </body>
 </html>
