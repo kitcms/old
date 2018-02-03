@@ -1,0 +1,41 @@
+{*
+ * Шаблон для построения древовидного меню
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $json = []}
+{if $.request.group ?}
+    {set $users = $.model->factory('User')->where('group', $.request.group)->orderByAsc('priority')->findMany()}
+    {foreach $users as $user}
+        {set $json[] = [
+            'id' => 'user_' ~ $user.id,
+            'label' => $user.name,
+            'link' => $.component ~ '/user/set.html?user=' ~ $user.id,
+            'keyword' => $user.login,
+            'load_on_demand' => false,
+            'icon' => 'glyphicon-user',
+            'color' => $user->active ? 'blue' : 'grey'
+        ]}
+    {/foreach}
+{else}
+    {set $groups = $.model->factory('Group')->orderByAsc('priority')->findMany()}
+    {foreach $groups as $group}
+        {set $json[] = [
+            'id' => 'group_' ~ $group.id,
+            'label' => $group.title,
+            'link' => $.component ~ '/user/list.html?group=' ~ $group.id,
+            'keyword' => '',
+            'load_on_demand' => $group->user()->count(),
+            'icon' => '',
+            'color' => $group->active ? 'blue' : 'grey'
+        ]}
+    {/foreach}
+{/if}
+{$json|json_encode}
+{exit}
+{/block}

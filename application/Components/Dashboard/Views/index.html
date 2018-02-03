@@ -8,22 +8,23 @@
  * @version   0.1.0
  *}
 
- {block 'component_set'}
- {set $menu = [
-     'main' => [
-         'left' => [
-             'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html', 'class' => '' ]
-         ],
-         'right' => []
-     ],
-     'second' => [
-         'left' => [
-             [ 'title' => '&nbsp;' ]
-         ],
-         'right' => []
-     ]
- ]}
- {/block}
+{block 'component_set'}
+{set $menu = [
+    'main' => [
+        'left' => [
+            'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ]
+            'user' => [ 'title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ],
+        ],
+        'right' => []
+    ],
+    'second' => [
+        'left' => [
+            [ 'title' => '&nbsp;' ]
+        ],
+        'right' => []
+    ]
+]}
+{/block}
 
 <!DOCTYPE html>
 <html lang="ru">
