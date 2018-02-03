@@ -1,0 +1,80 @@
+{*
+ * Шаблон для изменения данных заданной группы
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:group/add.html'}
+
+{block 'component_set'}{parent}
+{var $.server = $.server|array_change_key_case}
+{if $.request.group ? && ($group = $.model->factory('Group')->findOne($.request.group))}
+    {if $.request.apply !}
+        {if $group->set($.request)->save()}
+            {set $message}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-ok"></span>
+                Данные объекта успешно обновлены.
+            </div>
+            {/set}
+            {var $.request = array_merge($.request, $group->asArray())}
+        {else}
+            {set $message}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-remove"></span>
+                Не удалось сохранить изменения.
+            </div>
+            {/set}
+        {/if}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{var $.request = array_merge($group->asArray(), $.request)}
+
+{* Построение меню *}
+{set $menu.main.left.user.class="active"}
+{set $menu.second = [
+    'left' => [
+        ['title' => 'Группы', 'link' => $.component ~ '/group/list.html' ],
+        ['title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ]
+    ],
+    'right' => [
+        ['title' => 'Изменение настроек', 'link' => $.component ~ '/group/set.html?group=' ~ $group.id, 'class' => 'active']
+    ]
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node[] = 'group_' ~ $group->id}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/group/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="set" action="{$.component}/group/set.html?group={$group.id}&apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro.main}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Сохранить изменения" form="set">
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/group/set.html?group={$group.id}" role="button">Отменить изменения</a>
+</div>
+{/block}

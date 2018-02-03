@@ -1,5 +1,5 @@
 {*
- * Шаблон для удаления выбранных пользователей
+ * Шаблон для удаления выбранных групп пользователей
  *
  * @package   This file is part of the Kit.cms
  * @author    Anton Popov <a.popov@kit.team>
@@ -11,11 +11,11 @@
 {* Формирование меню *}
 {set $menu.main.left.user.class="active"}
 {set $menu.second.left = [
-    ['title' => 'Удаление выбранных пользователей', 'link' => $.component ~ '/user/delete.html?user=' ~ $.request.user, 'class' => 'active red']
+    ['title' => 'Удаление выбранных групп', 'link' => $.component ~ '/group/delete.html?group=' ~ $.request.group, 'class' => 'active red']
 ]}
 
-{set $ids = $.request.user ? ($.request.user|split) : [null]}
-{if $users = $.model->factory('User')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+{set $ids = $.request.group ? ($.request.group|split) : [null]}
+{if $groups = $.model->factory('Group')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
     {set $message}
     <div class="alert alert-warning alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -24,8 +24,8 @@
     </div>
     {/set}
     {if $.request.apply !}
-        {foreach $users as $user}
-            {if $user->delete()}
+        {foreach $groups as $group}
+            {if $group->delete()}
                 {set $message}
                 <div class="alert alert-success alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -35,25 +35,21 @@
                 {/set}
             {/if}
         {/foreach}
-        {include 'component:user/list.html'}
+        {include 'component:group/list.html'}
         {exit}
     {/if}
 {else}
     {exit}
 {/if}
-
-{* Построение древовидного меню *}
-{set $tree.open_nodes = []}
-{set $tree.selected_node = []}
 {/block}
 
 {block 'component_aside'}
-<div id="tree" data-url="{$.component}/user/tree.html"></div>
+<div id="tree" data-url="{$.component}/group/tree.html"></div>
 {/block}
 
 {block 'component_content'}
 {parent}
-{if ! $users}
+{if ! $groups}
 <div class="alert alert-info">
     <span class="glyphicon glyphicon-exclamation-sign"></span>
     Нет доступных объектов для отображения.
@@ -66,10 +62,10 @@
         </tr>
     </thead>
     <tbody>
-    {foreach $users as $user}
+    {foreach $groups as $group}
         <tr>
             <td>
-                <small>{$user->id}.</small> {$user->name} <span class="badge">{$user->login}</span>
+                <small>{$group->id}.</small> {$group->title}
             </td>
         </tr>
     {/foreach}
@@ -79,8 +75,8 @@
 {/block}
 
 {block 'component_footer'}
-<a class="btn btn-danger" href="{$.component}/user/delete.html?user={$.request.user}&apply" role="button">Подтвердить удаление</a>
+<a class="btn btn-danger" href="{$.component}/group/delete.html?group={$.request.group}&apply" role="button">Подтвердить удаление</a>
 <div class="pull-right">
-    <a class="btn btn-default" href="{$.component}/user/list.html" role="button">Отменить удаление</a>
+    <a class="btn btn-default" href="{$.component}/group/list.html" role="button">Отменить удаление</a>
 </div>
 {/block}
