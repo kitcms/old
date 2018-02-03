@@ -18,6 +18,7 @@ class Application
     public function run()
     {
         $request = TransferProtocol\HyperText\Request::fromGlobals();
+        $model = new Database\Model();
 
         $views = new Template\Engine(new Template\Provider('Views'));
         $views->setCompileDir('Storages/Compile');
@@ -28,6 +29,10 @@ class Application
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
+
+        $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
+
+        $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
 
         require 'Components/Dashboard/bootstrap.php';
     }

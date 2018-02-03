@@ -1,0 +1,48 @@
+{*
+ * ...
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ * @version   0.1.0
+ *}
+
+{block 'component_set'}
+{set $server = $.server|array_change_key_case}
+{if $.request.login ? && $.request.password}
+    {if $user = $.model->factory('User')->whereAnyIs([
+        ['login' => $.request.login],
+        ['email' => $.request.login]
+    ])->findOne()}
+        {if password_verify($.request.password, $user->password)}
+            {var $.session.user = $user->id}
+            {do header('Location: ' ~ $.component ~ '/')}
+            {exit}
+        {/if}
+    {/if}
+{/if}
+{/block}
+
+{block 'component_body'}
+<div class="container">
+    <form action="" method="post">
+        <div class="control-group {if $.request.apply ! && ! $.request.login}has-error{/if}">
+            <div class="form-group">
+                <label class="required" for="login">Логин или email</label>
+                <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
+                <span class="help-block"></span>
+            </div>
+        </div>
+        <div class="control-group {if $.request.apply ! && ! $.request.password}has-error{/if}">
+            <div class="form-group">
+                <label class="required" for="password">Пароль</label>
+                <input class="form-control" type="password" value="" name="password" id="password">
+                <span class="help-block"></span>
+            </div>
+        </div>
+        <hr>
+        <button class="btn btn-primary" type="submit" name="apply">Авторизоваться</button>
+    </form>
+</div>
+{/block}

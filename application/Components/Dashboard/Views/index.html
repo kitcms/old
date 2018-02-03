@@ -9,13 +9,19 @@
  *}
 
 {block 'component_set'}
+{if (! $.user) || (1 !== $.user->group)}
+    {do header('Location: ' ~ $.component ~ '/login.html')}
+    {exit}
+{/if}
 {set $menu = [
     'main' => [
         'left' => [
             'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ]
             'user' => [ 'title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ],
         ],
-        'right' => []
+        'right' => [
+            'logout' => [ 'title' => 'Выход', 'link' => $.component ~ '/logout.html' ]
+        ]
     ],
     'second' => [
         'left' => [
@@ -44,6 +50,7 @@
         <![endif]-->
     </head>
     <body>
+    {block 'component_body'}
         <header role="header">
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
@@ -96,5 +103,6 @@
             {if $tree ?}localStorage.tree = '{$tree|json_encode}';{/if}
         </script>
         <script src="{$.component}/assets/component/js/common.js"></script>
+     {/block}
     </body>
 </html>
