@@ -59,6 +59,7 @@
     {*set $schema = $.schema->findOne('Site')}
     {set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}
     {set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()*}
+    {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
     {var $.request = array_merge($.request,  $site->asArray())}
 {else}
     {exit}
@@ -94,6 +95,7 @@
         <li class="{if 'additional' == $.cookie.tabs}active{/if}"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     {/if}
         <li class="{if 'service' == $.cookie.tabs}active{/if}"><a href="#service" data-toggle="tab">Служебные настройки</a></li>
+        <li class="{if 'template' == $.cookie.tabs}active{/if}"><a href="#template" data-toggle="tab">Макет дизайна</a></li>
     </ul>
     <div class="tab-content">
         {macro.main}
@@ -127,6 +129,7 @@
                 <span class="help-block">Изменение параметра означает изменение URL-адреса панели администрирования. Не меняйте этот параметр, если не уверены в результате!</span>
             </div>
         </div>
+        {macro.template templates=$templates}
     </div>
 </form>
 {/block}

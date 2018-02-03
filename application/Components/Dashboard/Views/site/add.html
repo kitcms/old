@@ -44,6 +44,7 @@
 {set $schema = $.schema->findOne('Site')}
 {set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}
 {set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()}
+{set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/block}
 
 {block 'component_aside'}
@@ -59,6 +60,7 @@
     {if $additionals ?}
         <li class="{if 'additional' == $.cookie.tabs}active{/if}"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     {/if}
+        <li class="{if 'template' == $.cookie.tabs}active{/if}"><a href="#template" data-toggle="tab">Макет дизайна</a></li>
     </ul>
     <div class="tab-content">
         {macro main}
@@ -123,6 +125,23 @@
             </div>
         </div>
         {/macro}{macro.meta}
+        {macro template($templates, $inherit = false)}
+        <div class="tab-pane {if 'template' == $.cookie.tabs}active{/if}" id="template">
+            <div class="form-group">
+                <label class="label-light required" for="keyword">Макет дизайна</label>
+                <select class="form-control" name="template" role="template">
+                    <option value="">Не задан</option>
+                {if $inherit ?}
+                    <option value="0" {if $.request.template === '0'}selected{/if}>Наследование</option>
+                {/if}
+                {foreach $templates as $template}
+                    <option value="{$template->id}" data-keyword="{$template->keyword}" data-level="{$template->path|split:'/'|count}" {if $.request.template == $template->id}selected{/if}>{$template->title}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.template templates=$templates}
     </div>
 </form>
 {/block}
