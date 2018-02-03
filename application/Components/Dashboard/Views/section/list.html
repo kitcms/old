@@ -26,10 +26,10 @@
 {set $menu.second = []}
 {if $.request.section ?}
     {if ! $section->extension}
-        {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/site/section/list.html?section=' ~ $.request.section, 'class' => 'active' ]}
+        {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section, 'class' => 'active' ]}
     {/if}
     {set $menu.second.right = [
-        ['title' => 'Изменение настроек', 'link' => $.component ~ '/site/section/set.html?section=' ~ $.request.section]
+        ['title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section]
     ]}
 {else}
     {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/site/list.html?site=' ~ $.request.site, 'class' => 'active' ]}
@@ -72,7 +72,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody class="sortable selectable draggable" data-target="site/section" data-item="section">
+    <tbody class="sortable selectable draggable" data-target="section" data-item="section">
     {foreach $sections as $section}
         <tr id="{$section.id}">
             <td>
@@ -84,22 +84,22 @@
             <td>
             {if ! $section->extension}
                 {set $count = $section->children()->count()}
-                <span class="grey"><a href="{$.component}/site/section/list.html?section={$section.id}" class="badge-group">Разделы <span class="badge">{$count}</span></a></span>
+                <span class="grey"><a href="{$.component}/section/list.html?section={$section.id}" class="badge-group">Разделы <span class="badge">{$count}</span></a></span>
             {/if}
             </td>
             <td>
                 <div class="btn-group">
                 {if $section->active ?}
-                    <a href="{$.component}/site/section/active.html?section={$section.id}&disable" title="Сделать неактивным" data-toggle="tooltip" class="btn-action green">
+                    <a href="{$.component}/section/active.html?section={$section.id}&disable" title="Сделать неактивным" data-toggle="tooltip" class="btn-action green">
                 {else}
-                    <a href="{$.component}/site/section/active.html?section={$section.id}&enable" title="Сделать активным" data-toggle="tooltip" class="btn-action">
+                    <a href="{$.component}/section/active.html?section={$section.id}&enable" title="Сделать активным" data-toggle="tooltip" class="btn-action">
                 {/if}
                         <svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg"><circle id="Oval" cx="11" cy="11" r="5.10714286"></circle></svg>
                     </a>
-                    <a href="{$.component}/site/section/set.html?section={$section.id}" title="Изменить настройки" data-toggle="tooltip" class="btn-action blue">
+                    <a href="{$.component}/section/set.html?section={$section.id}" title="Изменить настройки" data-toggle="tooltip" class="btn-action blue">
                         <svg width="22px" height="22px" viewBox="-6 -5 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14 8.77v-1.6l-1.94-.64-.45-1.09.88-1.84-1.13-1.13-1.81.91-1.09-.45-.69-1.92h-1.6l-.63 1.94-1.11.45-1.84-.88-1.13 1.13.91 1.81-.45 1.09L0 7.23v1.59l1.94.64.45 1.09-.88 1.84 1.13 1.13 1.81-.91 1.09.45.69 1.92h1.59l.63-1.94 1.11-.45 1.84.88 1.13-1.13-.92-1.81.47-1.09L14 8.75v.02zM7 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path></svg>
                     </a>
-                    <a href="{$.component}/site/section/delete.html?section={$section.id}" title="Удалить объект" data-toggle="tooltip" class="btn-action red">
+                    <a href="{$.component}/section/delete.html?section={$section.id}" title="Удалить объект" data-toggle="tooltip" class="btn-action red">
                         <svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M12.1458333,9.85416667 L12.1458333,6.74047388 C12.1458333,6.4826434 11.9382041,6.28571429 11.6820804,6.28571429 L10.3179196,6.28571429 C10.0656535,6.28571429 9.85416667,6.48931709 9.85416667,6.74047388 L9.85416667,9.85416667 L6.74047388,9.85416667 C6.4826434,9.85416667 6.28571429,10.0617959 6.28571429,10.3179196 L6.28571429,11.6820804 C6.28571429,11.9343465 6.48931709,12.1458333 6.74047388,12.1458333 L9.85416667,12.1458333 L9.85416667,15.2595261 C9.85416667,15.5173566 10.0617959,15.7142857 10.3179196,15.7142857 L11.6820804,15.7142857 C11.9343465,15.7142857 12.1458333,15.5106829 12.1458333,15.2595261 L12.1458333,12.1458333 L15.2595261,12.1458333 C15.5173566,12.1458333 15.7142857,11.9382041 15.7142857,11.6820804 L15.7142857,10.3179196 C15.7142857,10.0656535 15.5106829,9.85416667 15.2595261,9.85416667 L12.1458333,9.85416667 Z" id="Combined-Shape" transform="translate(11.000000, 11.000000) rotate(-45.000000) translate(-11.000000, -11.000000) "></path></svg>
                     </a>
                 </div>
@@ -113,16 +113,16 @@
 
 {block 'component_footer'}
 {if ! $.request.section ? || ! $section->extension}
-    <a class="btn btn-default" href="{$.component}/site/section/add.html?{if $.request.section ?}section={$.request.section}{else}site={$.request.site}{/if}" role="button">Добавить раздел</a>
+    <a class="btn btn-default" href="{$.component}/section/add.html?{if $.request.section ?}section={$.request.section}{else}site={$.request.site}{/if}" role="button">Добавить раздел</a>
 {/if}
 <div class="btn-group dropup pull-right">
     <a class="btn btn-default group-apply select-all" role="button">Выбрать все</a>
     <a class="btn btn-default group-action dropdown-toggle disabled" data-toggle="dropdown" role="button"><span class="caret"></span></a>
     <ul class="dropdown-menu group-select" role="menu">
-        <li><a href="{$.component}/site/section/active.html?enable&" class="primary"><span class="glyphicon glyphicon-eye-open"></span> Включить</a></li>
-        <li><a href="{$.component}/site/section/active.html?disable&" class="default"><span class="glyphicon glyphicon-eye-close"></span> Выключить</a></li>
+        <li><a href="{$.component}/section/active.html?enable&" class="primary"><span class="glyphicon glyphicon-eye-open"></span> Включить</a></li>
+        <li><a href="{$.component}/section/active.html?disable&" class="default"><span class="glyphicon glyphicon-eye-close"></span> Выключить</a></li>
         <li class="divider"></li>
-        <li><a href="{$.component}/site/section/delete.html?" class="danger"><span class="glyphicon glyphicon-trash"></span> Удалить</a></li>
+        <li><a href="{$.component}/section/delete.html?" class="danger"><span class="glyphicon glyphicon-trash"></span> Удалить</a></li>
     </ul>
 </div>
 {/block}

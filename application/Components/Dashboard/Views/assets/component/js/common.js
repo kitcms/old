@@ -58,12 +58,6 @@
         dataUrl: function(node) {
             if (node) {
                 id = node.id.split('_');
-                if ('section' == id[0]) {
-                    return location.component + '/site/' + id[0] + '/tree.html?' + id[0] +'=' + id[1];
-                }
-                if ('group' == id[0]) {
-                    return location.component + '/user/tree.html?' + id[0] +'=' + id[1];
-                }
                 return location.component + '/' + id[0] + '/tree.html?' + id[0] +'=' + id[1];
             } else {
                 return $('#tree').data('url');
@@ -107,7 +101,6 @@
         target = event.move_info.target_node.id;
         position = event.move_info.position;
         path = moved.split('_')[0];
-        if ('section' === path) path = 'site/' + path;
         url = location.component + '/' + path + '/move.html?moved=' + moved + '&target=' + target + '&position=' + position;
         $.ajax({
             url: url,
@@ -118,7 +111,7 @@
             if (false != data) event.move_info.do_move();
         });
     });
-    
+
     /* Select2 */
     $.fn.select2.defaults.set("width", "100%");
     $.fn.select2.tags = {

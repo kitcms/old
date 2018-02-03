@@ -68,12 +68,16 @@
 {set $menu.main.left.site.class="active"}
 {set $menu.second = [
     'left' => [
-        ['title' => 'Разделы', 'link' => $.component ~ '/site/section/list.html?site=' ~ $site.id, 'class' => '']
+        ['title' => 'Разделы', 'link' => $.component ~ '/section/list.html?site=' ~ $site.id, 'class' => '']
     ],
     'right' => [
         ['title' => 'Изменение настроек', 'link' => $.component ~ '/site/set.html?site=' ~ $site.id, 'class' => 'active']
     ]
 ]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{set $tree.selected_node[] = 'site_' ~ $site->id}
 {/block}
 
 {block 'component_aside'}

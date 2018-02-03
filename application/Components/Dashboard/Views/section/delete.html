@@ -36,7 +36,7 @@
             Выбранные объекты успешно удалены.
         </div>
         {/set}
-        {include 'component:site/section/list.html'}
+        {include 'component:section/list.html'}
         {exit}
     {/if}
 {else}
@@ -46,7 +46,7 @@
 {* Формирование меню *}
 {set $menu.main.left.site.class="active"}
 {set $menu.second.left = [
-    ['title' => 'Удаление выбранных разделов', 'link' => $.component ~ '/site/section/delete.html?section=' ~ $.request.section, 'class' => 'active red']
+    ['title' => 'Удаление выбранных разделов', 'link' => $.component ~ 'section/delete.html?section=' ~ $.request.section, 'class' => 'active red']
 ]}
 {/block}
 
@@ -73,7 +73,7 @@
                 <small class="grey">{$section->id}.</small> {$section->title} <span class="badge" title="{$section->path}" data-toggle="tooltip">{$section->keyword}</span>
             </td>
             <td>
-                <span class="grey"><a href="{$.component}/site/section/list.html?section={$section.id}" class="pull-right badge-group">Разделы <span class="badge">{$count}</span></a></span>
+                <span class="grey"><a href="{$.component}/section/list.html?section={$section.id}" class="pull-right badge-group">Разделы <span class="badge">{$count}</span></a></span>
             </td>
         </tr>
     {/foreach}
@@ -83,8 +83,8 @@
 {/block}
 
 {block 'component_footer'}
-<a class="btn btn-danger" href="{$.component}/site/section/delete.html?section={$.request.section}&apply" role="button">Подтвердить удаление</a>
+<a class="btn btn-danger" href="{$.component}/section/delete.html?section={$.request.section}&apply" role="button">Подтвердить удаление</a>
 <div class="pull-right">
-    <a class="btn btn-default" href="{$.component}/site/section/list.html?{if $section->parent ?}section={$section->parent}{else}site={$section->site}{/if}" role="button">Отменить удаление</a>
+    <a class="btn btn-default" href="{$.component}/section/list.html?{if $section->parent ?}section={$section->parent}{else}site={$section->site}{/if}" role="button">Отменить удаление</a>
 </div>
 {/block}
