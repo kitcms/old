@@ -29,12 +29,13 @@
         {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section, 'class' => 'active' ]}
     {/if}
     {set $menu.second.right = [
-        ['title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section]
+        [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section ],
+        [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $.request.section ],
     ]}
 {else}
     {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/site/list.html?site=' ~ $.request.site, 'class' => 'active' ]}
     {set $menu.second.right = [
-        ['title' => 'Изменение настроек', 'link' => $.component ~ '/site/set.html?site=' ~ $.request.site]
+        [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/site/set.html?site=' ~ $.request.site ]
     ]}
 {/if}
 

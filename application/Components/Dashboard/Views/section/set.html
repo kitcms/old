@@ -50,7 +50,8 @@
     {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section]}
 {/if}
 {set $menu.second.right = [
-    ['title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section, 'class' => 'active' ]
+    [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section, 'class' => 'active' ],
+    [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $section.id ]
 ]}
 
 {* Построение древовидного меню *}

@@ -118,13 +118,17 @@ class Section extends Model
 
     public function save()
     {
+        // Если новая запись, определяем следующий идентификатор
+        if (!$this->id) {
+            $schema = $this->schema()->findOne();
+            $this->id = $schema->auto_increment;
+        }
         if ($this->isDirty('keyword')) {
             // Проверка на корректность
             if (!preg_match("/^[[:alnum:]-.]+$/iu", $this->keyword)) {
                 return false;
             }
         }
-
         $this->set('path', $this->keyword);
         if ($parent = $this->parent()->findOne()) {
             // Если раздел имеет расширение, то нельзя добавлять подразделы
@@ -147,6 +151,14 @@ class Section extends Model
                 $instance->whereNotIn('id', (array) $this->id);
             }
             if ($instance->findOne()) {
+                return false;
+            }
+        }
+        // Сохранение данных в файл
+        if ($this->isNew() || $this->isDirty('source')) {
+            // TODO Добавить проверку существования файла и прав на запись
+        	$path = realpath('Views/Section/'). '/'. $this->id .'.tpl';
+            if (false === @file_put_contents($path, $this->get('source'))) {
                 return false;
             }
         }
@@ -182,6 +194,11 @@ class Section extends Model
                     $depend->delete();
                 }
             }
+            // Удаление файлов и директорий
+            if ($path = realpath('Views/Section/'. $this->id .'.tpl')) {
+                unlink($path);
+            }
+            return true;
         }
         return false;
     }
@@ -201,6 +218,11 @@ class Section extends Model
         // Если главная страница удаляем информацию о материализованном пути
         if ($this->get('type')) {
             unset($data['path']);
+        }
+        if (false === $this->isDirty('source')) {
+            if ($path = realpath("Views/Section/{$this->id}.tpl")) {
+                $data['source'] = file_get_contents($path);
+            }
         }
         $this->orm->hydrate($data);
     }
