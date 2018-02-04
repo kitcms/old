@@ -93,4 +93,15 @@ class ORMWrapper extends \ORMWrapper
         }
         return $this;
     }
+
+    /*
+     * Возможность вызова методов в обход filter()
+     */
+    public function __call($method, $arguments) {
+        if (method_exists($this->_class_name, $method)) {
+            return call_user_func_array(array($this->_class_name, $method), $arguments);
+        } else {
+            return parent::__call($method, $arguments);
+        }
+    }
 }
