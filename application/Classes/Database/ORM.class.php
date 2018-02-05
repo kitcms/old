@@ -20,6 +20,10 @@ class ORM extends \ORM
         return $this->_set_orm_property($key, $value, true);
     }
 
+    public function set_class_name($class_name) {
+        $this->_class_name = $class_name;
+    }
+
     protected function _set_orm_property($key, $value = null, $expr = false)
     {
         if (!is_array($key)) {
