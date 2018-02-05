@@ -1,0 +1,28 @@
+{*
+ * Шаблон для построения дерева
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $json = []}
+{if $.request.section ?}
+    {set $sections = $.model->factory('Section')->where('parent', $.request.section)->orderByAsc('priority')->findMany()}
+    {foreach $sections as $section}
+        {set $json[] = [
+            'id' => 'section_' ~ $section->id,
+            'label' => $section->title,
+            'link' => $.component ~ ($section->model ? '/model/row/list.html?section=' : '/section/list.html?section=') ~ $section->id,
+            'keyword' => $section->keyword,
+            'load_on_demand' => $section->children()->count(),
+            'icon' => $section->model ? 'glyphicon-inbox' : ($section->extension ? 'glyphicon-file' : 'glyphicon-folder-open'),
+            'color' => $section->active ? 'blue' : 'grey'
+        ]}
+    {/foreach}
+{/if}
+{$json|json_encode}
+{exit}
+{/block}

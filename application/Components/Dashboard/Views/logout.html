@@ -1,0 +1,16 @@
+{*
+ * ...
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ * @version   0.1.0
+ *}
+
+{block 'component_set'}
+{var $.session.user = false}
+{set $server = $.server|array_change_key_case}
+{do header('Location: ' ~ $.component ~ '/login.html')}
+{exit}
+{/block}

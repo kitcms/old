@@ -1,0 +1,28 @@
+# Файл дополнительной конфигурации веб-сервера
+#
+# @package   This file is part of the Kit.cms
+# @author    Anton Popov <a.popov@kit.team>
+# @copyright Kit.team <http://www.kit.team>
+# @link      Kit.cms <http://www.kitcms.ru>
+
+# Кодировка по умолчанию
+AddDefaultCharset UTF-8
+
+# Файлы, к которым запрщено обращаться напрямую
+<Files ~ "(\.(htaccess|php))$">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Файлы, к которым разрешено обращаться напрямую
+<Files "index.php">
+    Allow from all
+</Files>
+
+# Правила изменения ссылок
+<ifModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.+)$ index.php [L,QSA]
+</ifModule>

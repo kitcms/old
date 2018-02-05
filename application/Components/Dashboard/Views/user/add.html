@@ -1,0 +1,124 @@
+{*
+ * Шаблон для добавления новых пользователей
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:site/add.html'}
+
+{block 'component_set'}{parent}
+{* Построение основного меню *}
+{set $menu.main.left.user.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Добавление нового пользователя', 'link' => $.component ~ '/user/add.html', 'class' => 'active green']
+]}
+
+{var $.server = $.server|array_change_key_case}
+{if $.request.apply !}
+    {if $.model->factory('User')->create($.request)->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:user/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            При добавлении нового объекта возникла ошибка.
+        </div>
+        {/set}
+    {/if}
+{/if}
+
+{set $groups = $.model->factory('Group')->findMany()}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/user/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="add" action="{$.component}/user/add.html?apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    {if $additionals ?}
+        <li><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
+    {/if}
+        <li><a href="#permission" data-toggle="tab">Права доступа</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro main}
+        <div class="tab-pane active" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.name}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="name">Имя</label>
+                    <input class="form-control" type="text" value="{$.request.name|e}" name="name" id="name">
+                    <span class="help-block">Свободное информационное текстовое поле.</span>
+                </div>
+            </div>
+            <hr>
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.login}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="login">Логин</label>
+                    <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
+                    <span class="help-block">Имя пользователя для авторизации на сайте и входа в систему администрирования.</span>
+                </div>
+            </div>
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.email}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="email">Email</label>
+                    <input class="form-control" type="email" value="{$.request.email|e}" name="email" id="email">
+                    <span class="help-block">Почтовый адрес пользователя в формате mail@example.com.</span>
+                </div>
+            </div>
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.password}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="password">Пароль</label>
+                    <input class="form-control" type="password" name="password" id="password">
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="description">Описание</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.main}
+        {macro permission($groups)}
+        <div class="tab-pane" id="permission">
+            <div class="form-group">
+                <label class="required" for="group">Группа пользователей</label>
+                <select class="form-control" name="group" id="group" role="tags">
+                    <option value="">Не задана</option>
+                {foreach $groups as $group}
+                    <option value="{$group.id}" {if $group.id == $.request.group}selected{/if}>{$group.title}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.permission groups=$groups}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Добавить пользователя" form="add">
+{/block}

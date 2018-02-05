@@ -1,0 +1,87 @@
+{*
+ * Шаблон для удаления выбранных сайтов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных сайтов', 'link' => $.component ~ '/site/delete.html?site=' ~ $.request.site, 'class' => 'active red']
+]}
+
+{* Выборка объектов *}
+{set $ids = $.request.site ? ($.request.site|split) : [null]}
+{if $sites = $.model->factory('Site')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $sites as $site}
+            {if $site->delete()}
+                {set $message}
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Выбранные объекты успешно удалены.
+                </div>
+                {/set}
+            {/if}
+        {/foreach}
+        {include 'component:site/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $sites}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-10"></th>
+            <th class="col-xs-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $sites as $site}
+        {set $count = $site->section()->count()}
+        <tr>
+            <td>
+                <small>{$site->id}.</small> {$site->title} <span class="badge">{$site->host}</span>
+            {if $site->alias ?}
+                {foreach $site->alias as $alias} <span class="badge">{$alias}</span>{/foreach}
+            {/if}
+            </td>
+            <td>
+                <span class="grey"><a href="{$.component}/section/list.html?site={$site.id}" class="pull-right badge-group">Разделы <span class="badge">{$count}</span></a></span>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/site/delete.html?site={$.request.site}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/site/list.html" role="button">Отменить удаление</a>
+</div>
+{/block}

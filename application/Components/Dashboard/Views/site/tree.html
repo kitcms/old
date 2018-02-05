@@ -1,0 +1,41 @@
+{*
+ * Шаблон для построения дерева
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $json = []}
+{if $.request.site ?}
+    {set $sections = $.model->factory('Section')->where('site', $.request.site )->where('parent', 0)->orderByAsc('priority')->findMany()}
+    {foreach $sections as $section}
+        {set $json[] = [
+            'id' => 'section_' ~ $section->id,
+            'label' => $section->title,
+            'link' => $.component ~ ($section->model ? '/model/row/list.html?section=' : '/section/list.html?section=') ~ $section->id,
+            'keyword' => $section->keyword,
+            'load_on_demand' => $section->children()->count(),
+            'icon' => $section->model ? 'glyphicon-inbox' : ($section->extension ? 'glyphicon-file' : 'glyphicon-folder-open'),
+            'color' => $section->active ? 'blue' : 'grey'
+        ]}
+    {/foreach}
+{else}
+    {set $sites = $.model->factory('Site')->orderByAsc('priority')->findMany()}
+    {foreach $sites as $site}
+        {set $json[] = [
+            'id' => 'site_' ~ $site->id,
+            'label' => $site->title,
+            'link' => $.component ~ '/section/list.html?site=' ~ $site->id,
+            'keyword' => $site->host,
+            'load_on_demand' => $site->section()->count(),
+            'icon' => 'glyphicon-globe',
+            'color' => $site->active ? 'blue' : 'grey'
+        ]}
+    {/foreach}
+{/if}
+{$json|json_encode}
+{exit}
+{/block}

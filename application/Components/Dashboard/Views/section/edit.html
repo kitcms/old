@@ -1,0 +1,85 @@
+{*
+ * Шаблон для редактирования шаблона заданного раздела
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{if $.request.section ? && ($section = $.model->factory('Section')->findOne($.request.section))}
+    {if $.request.apply !}
+        {php}
+        try { $tpl->getStorage()->compileCode($_REQUEST['source']); }
+        catch (\Exception $e) { $var['error'] = $e->getMessage(); }
+        {/php}
+        {if ($error is not set) && $section->set($.request)->save()}
+            {set $message}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-ok"></span>
+                Данные объекта успешно обновлены.
+            </div>
+            {/set}
+        {else}
+            {set $message}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-remove"></span>
+                {($error is set) ? $error : 'Не удалось сохранить изменения.'}
+            </div>
+            {/set}
+        {/if}
+    {/if}
+    {set $site = $section->site()->findOne()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+    {var $.request = array_merge($section->asArray(), $.request)}
+{else}
+    {exit}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second = []}
+{if ! $section->extension}
+    {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section]}
+{/if}
+{set $menu.second.right = [
+    [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $section.id ],
+    [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $section.id, 'class' => 'active' ]
+]}
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{set $tree.open_nodes[] = 'section_' ~ $section->id}
+{set $tree.selected_node[] = 'section_' ~ $section->id}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="edit" class="editor" action="{$.component}/section/edit.html?section={$section.id}&apply" method="post">
+    <div>
+        <pre data-name="source">{$.request.source|e}</pre>
+        <input name="source" type="hidden" value="{$.request.source|e}">
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Сохранить изменения" form="edit">
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/site/section/edit.html?section={$section.id}" role="button">Отменить изменения</a>
+</div>
+{/block}
+
+{block 'component_script'}
+<script src="{$.component}/assets/ace/ace.js"></script>
+{parent}
+{/block}

@@ -1,0 +1,25 @@
+{*
+ * Шаблон для изменения статуса выбранных разделов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $ids = $.request.section ? ($.request.section|split) : [null]}
+{if $sections = $.model->factory('Section')->whereIn('id', $ids)->findMany()}
+    {if $.request.disable !}{set $active = 0}{else}{set $active = 1}{/if}
+    {foreach $sections as $section}
+        {do $section->set('active', $active)->save()}
+    {/foreach}
+    {if $section->parent ?}
+        {var $.request.section = $section->parent}
+    {else}
+        {var $.request.site = $section->site}
+    {/if}
+    {include 'component:section/list.html'}
+{/if}
+{exit}
+{/block}

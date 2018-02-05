@@ -1,0 +1,151 @@
+{*
+ * Шаблон для добавления новых сайтов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Добавление нового сайта', 'link' => $.component ~ '/site/add.html', 'class' => 'active green']
+]}
+
+{var $.server = $.server|array_change_key_case}
+
+{* Добавление объекта *}
+{if $.request.apply !}
+    {set $site = $.model->factory('Site')->create($.request)}
+    {if $site->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:site/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            При добавлении нового объекта возникла ошибка.
+        </div>
+        {/set}
+    {/if}
+{/if}
+
+{* Выборка необходимых данных *}
+{set $schema = $.schema->findOne('Site')}
+{set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}
+{set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()}
+{set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="add" action="{$.component}/site/add.html?apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
+        <li class="{if 'meta' == $.cookie.tabs}active{/if}"><a href="#meta" data-toggle="tab">Метаинформация</a></li>
+    {if $additionals ?}
+        <li class="{if 'additional' == $.cookie.tabs}active{/if}"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
+    {/if}
+        <li class="{if 'template' == $.cookie.tabs}active{/if}"><a href="#template" data-toggle="tab">Макет дизайна</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro main}
+        <div class="tab-pane {if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="title">Название сайта</label>
+                    <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <hr>
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.host}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="host">Основной домен </label>
+                    <input class="form-control" type="text" value="{!$.request.host ? $.server.http_host : $.request.host|e}" name="host" id="host">
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="hidden" name="alias">
+                <label class="required" for="alias">Зеркала</label>
+                <select class="form-control" name="alias[]" id="alias" role="tags" multiple>
+                {foreach $.request.alias as $alias}
+                    <option value="{$alias|e}" selected>{$alias|e}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="description">Описание</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.main}
+        {macro meta}
+        <div class="tab-pane {if 'meta' == $.cookie.tabs}active{/if}" id="meta">
+            <div class="form-group">
+                <label class="label-light required" for="meta_title">Заголовок (тег title)</label>
+                <input class="form-control" type="text" value="{$.request.meta.title|e}" name="meta[title]" id="meta_title">
+                <span class="help-block">Хороший заголовок должен включать ключевые слова
+                и их лучше использовать вначале заголовка.</span>
+            </div>
+            <div class="form-group">
+                <label class="required" for="meta_description">Короткое описание (мета тег description)</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="meta[description]" id="meta_description">{$.request.meta.description|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label class="required" for="meta_keywords">Ключевые слова (мета тег keywords)</label>
+                <select class="form-control" name="meta[keywords][]" id="meta_keywords" role="tags" multiple>
+                {foreach $.request.meta.keywords as $keyword}
+                    <option value="{$keyword|e}" selected>{$keyword|e}</option>
+                {/foreach}
+                </select>
+                <span class="help-block">В данном теге можно разместить несколько ключевых слов о содержании
+                страницы, но он не улучшит ранжирования в результатах запроса. Данный тег раньше был очень полезен,
+                но в наши дни потерял свое значение. Ни один из основных поисковых сервисов
+                не использует его для оценки содержания страницы</span>
+            </div>
+        </div>
+        {/macro}{macro.meta}
+        {macro template($templates, $inherit = false)}
+        <div class="tab-pane {if 'template' == $.cookie.tabs}active{/if}" id="template">
+            <div class="form-group">
+                <label class="label-light required" for="keyword">Макет дизайна</label>
+                <select class="form-control" name="template" role="template">
+                    <option value="">Не задан</option>
+                {if $inherit ?}
+                    <option value="0" {if $.request.template === '0'}selected{/if}>Наследование</option>
+                {/if}
+                {foreach $templates as $template}
+                    <option value="{$template->id}" data-keyword="{$template->keyword}" data-level="{$template->path|split:'/'|count}" {if $.request.template == $template->id}selected{/if}>{$template->title}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.template templates=$templates}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Добавить сайт" form="add">
+{/block}

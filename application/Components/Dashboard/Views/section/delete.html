@@ -1,0 +1,90 @@
+{*
+ * Шаблон для удаления выбранных разделов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{* Выборка объектов *}
+{set $ids = $.request.section ? ($.request.section|split) : [null]}
+{if $sections = $.model->factory('Section')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+    {set $site = current($sections)->site()->findOne()}
+    {set $parents = current($sections)->parents()->orderByAsc('path')->findMany()}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $sections as $section}
+            {do $section->delete()}
+        {/foreach}
+        {if $section->parent ?}
+            {var $.request.section = $section->parent}
+        {else}
+            {var $.request.site = $section->site}
+        {/if}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Выбранные объекты успешно удалены.
+        </div>
+        {/set}
+        {include 'component:section/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных разделов', 'link' => $.component ~ 'section/delete.html?section=' ~ $.request.section, 'class' => 'active red']
+]}
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $sections}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-10"></th>
+            <th class="col-xs-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $sections as $section}
+        {set $count = $section->children()->count()}
+        <tr>
+            <td>
+                <small class="grey">{$section->id}.</small> {$section->title} <span class="badge" title="{$section->path}" data-toggle="tooltip">{$section->keyword}</span>
+            </td>
+            <td>
+                <span class="grey"><a href="{$.component}/section/list.html?section={$section.id}" class="pull-right badge-group">Разделы <span class="badge">{$count}</span></a></span>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/section/delete.html?section={$.request.section}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/section/list.html?{if $section->parent ?}section={$section->parent}{else}site={$section->site}{/if}" role="button">Отменить удаление</a>
+</div>
+{/block}

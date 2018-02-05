@@ -1,0 +1,86 @@
+{*
+ * Шаблон для удаления выбранных пользователей
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{* Формирование меню *}
+{set $menu.main.left.user.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных пользователей', 'link' => $.component ~ '/user/delete.html?user=' ~ $.request.user, 'class' => 'active red']
+]}
+
+{set $ids = $.request.user ? ($.request.user|split) : [null]}
+{if $users = $.model->factory('User')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $users as $user}
+            {if $user->delete()}
+                {set $message}
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Выбранные объекты успешно удалены.
+                </div>
+                {/set}
+            {/if}
+        {/foreach}
+        {include 'component:user/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/user/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $users}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-12"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $users as $user}
+        <tr>
+            <td>
+                <small>{$user->id}.</small> {$user->name} <span class="badge">{$user->login}</span>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/user/delete.html?user={$.request.user}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/user/list.html" role="button">Отменить удаление</a>
+</div>
+{/block}

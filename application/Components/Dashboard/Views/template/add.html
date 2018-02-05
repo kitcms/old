@@ -1,0 +1,99 @@
+{*
+ * Шаблон для добавления нового макета
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:site/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.template ? && ($template = $.model->factory('Template')->findOne($.request.template))}
+    {set $parents = $template->parents()->orderByAsc('path')->findMany()}
+{/if}
+{if $.get.apply !}
+    {set $instance = $.model->factory('Template')->create($.request)}
+    {if $template ?}{set $instance->parent = $template->id}{/if}
+    {if $instance->save()}
+        {if $instance->parent ?}
+            {var $.request.template = $instance->parent}
+        {/if}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:template/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            {$.env.message ?: 'При добавлении нового объекта возникла ошибка.'}
+        </div>
+        {/set}
+    {/if}
+    {var $.request = array_merge($.request, $instance->asArray())}
+{/if}
+
+{* Построение основного меню *}
+{set $menu.main.left.template.class = "active"}
+{set $menu.second.left = [
+    [ 'title' => 'Добавление нового макета',
+      'link' => $.component ~ '/template/add.html?' ~ ($template ? 'template=' ~ $template.id : ''),
+      'class' => 'active green' ]
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'template_' ~ $parent->id}
+{/foreach}
+{if $template ?}
+    {set $tree.open_nodes[] = 'template_' ~ $template->id}
+    {set $tree.selected_node[] = 'template_' ~ $template->id}
+{/if}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/template/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="add" action="{$.component}/template/add.html?{if $template ?}template={$template.id}{/if}&apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro main}
+        <div class="tab-pane active" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="title">Название макета</label>
+                    <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="description">Описание</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.main}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Добавить макет" form="add">
+{/block}
