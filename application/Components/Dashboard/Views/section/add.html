@@ -58,13 +58,14 @@
         {/set}
     {/if}
     {var $.request = array_merge($.request, $instance->asArray())}
-    {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/if}
+
+{set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/block}
 
 {block 'component_content'}
 {parent}
-<form id="add" action="{$.component}section/add.html?{if $section ?}section={$section.id}{else}site={$site.id}{/if}&apply" method="post">
+<form id="add" action="{$.component}/section/add.html?{if $section ?}section={$section.id}{else}site={$site.id}{/if}&apply" method="post">
     <ul class="nav nav-tabs">
         <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
         <li class="{if 'meta' == $.cookie.tabs}active{/if}"><a href="#meta" data-toggle="tab">Метаинформация</a></li>
