@@ -91,12 +91,13 @@ class Schema extends ORM
             ($this->get('first') ? 'first' : null)
         );
         if ($key = strtoupper($this->get('key'))) {
+            $name = $this->_quoteIdentifier($this->get('field'));
             if (in_array($key, array('PRI', 'PRIMARY'))) {
-                $key = 'PRIMARY KEY ('. $this->_quoteIdentifier($this->get('field')) .')';
+                $key = 'PRIMARY KEY ('. $name .')';
             } elseif (in_array($key, array('UNI', 'UNIQUE'))) {
-                $key = 'UNIQUE KEY ('. $this->_quoteIdentifier($this->get('field')) .')';
+                $key = 'UNIQUE KEY '. strtoupper($name) .' ('. $name .')';
             } else {
-                $key = 'KEY ('. $this->_quoteIdentifier($this->get('field')) .')';
+                $key = 'KEY '. strtoupper($name) .' ('. $name .')';
             }
         }
         return $this->_joinIfNotEmpty(', ', array($this->_joinIfNotEmpty(' ', $fragments), $key));
