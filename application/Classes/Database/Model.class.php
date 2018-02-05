@@ -212,12 +212,15 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
 
     public function __call($method, $arguments)
     {
-        if (function_exists('get_called_class')) {
-            $model = self::factory(get_called_class());
-            if (method_exists($model, $method)) {
-                return call_user_func_array(array($model, $method), $arguments);
+        try {
+            return parent::__call($method, $arguments);
+        } catch (\ParisMethodMissingException $e) {
+            if (function_exists('get_called_class')) {
+                $model = self::factory(get_called_class());
+                if (method_exists($model, $method)) {
+                    return call_user_func_array(array($model, $method), $arguments);
+                }
             }
         }
-        return parent::__call($method, $arguments);
     }
 }
