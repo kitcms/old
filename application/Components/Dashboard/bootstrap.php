@@ -19,10 +19,12 @@ if (isset($views) && $views instanceof Fenom) {
     // Добавление внутреннего источника шаблонов
     $provider = new Template\Provider(__DIR__ .'/Views');
     $views->addProvider('component', $provider);
-    
-    $views->addAccessorSmart("component", "component", Template\Engine::ACCESSOR_PROPERTY);
 
+    $views->addAccessorSmart("component", "component", Template\Engine::ACCESSOR_PROPERTY);
     $views->component = '/admin';
+    if ($views->site) {
+        $views->component = '/' . $views->site->dashboard;
+    }
 
     // Сопоставление шаблона с маршрутом
     $path = substr(trim($request->getPath(), '/'), strlen($views->component));

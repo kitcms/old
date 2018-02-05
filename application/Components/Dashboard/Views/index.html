@@ -83,7 +83,11 @@
         <div class="main">
             {set $resizable = $.cookie.resizable|split}
             <aside class="aside" role="aside" style="{if $resizable.0 ?}width:{$resizable.0}%{/if}">
-                <div>{block 'component_aside'}{/block}</div>
+                <div>
+                {block 'component_aside'}
+                    <div id="tree" data-url="{$.component}/site/tree.html"></div>
+                {/block}
+                </div>
             </aside>
             <section class="content" role="content" style="{if $resizable.1 ?}width:{$resizable.1}%{/if}">
                 <div>{block 'component_content'}{$message ?: null}{/block}</div>
