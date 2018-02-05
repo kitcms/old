@@ -89,10 +89,13 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
 
     public function schema()
     {
-        if (null === ($table = $this->_get_static_property(get_called_class(), '_table')) && null !== $this->orm) {
+        $class = get_called_class();
+        if (null === ($table = $this->_get_static_property($class, '_table')) && null !== $this->orm) {
             $table = $this->orm->_get_table_name();
         }
-        return Schema::for_table($table);
+        $instance = Schema::for_table($table);
+        $instance->set_class_name($class);
+        return $instance;
     }
 
     public static function fields()
@@ -147,12 +150,13 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
                     }
                 }
             }
-
-            // FIXME ???
-            // Установка значения null
-            if (true === filter_var($field['null'], FILTER_VALIDATE_BOOLEAN) && null === $field['default']) {
-                if ('' === $this->get($field['field'])) {
+            if ('' === $this->get($field['field'])) {
+                if (true === filter_var($field['null'], FILTER_VALIDATE_BOOLEAN) && null === $field['default']) {
+                    // Установка значения null
                     $this->set($field['field'], null);
+                } else {
+                    // Установка значения по умолчанию
+                    $this->set($field['field'], $field['default']);
                 }
             }
         }
@@ -204,5 +208,16 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
     public function getIterator()
     {
         return new ArrayIterator($this->asArray());
+    }
+
+    public function __call($method, $arguments)
+    {
+        if (function_exists('get_called_class')) {
+            $model = self::factory(get_called_class());
+            if (method_exists($model, $method)) {
+                return call_user_func_array(array($model, $method), $arguments);
+            }
+        }
+        return parent::__call($method, $arguments);
     }
 }
