@@ -23,6 +23,7 @@ class Application
         $model = new Database\Model();
 
         $views = new Template\Engine(new Template\Provider('Views'));
+        $views->setOptions(array('auto_reload' => true, 'force_include' => false));
 
         $views->addProvider("template", new Template\Provider('Views/Template'));
         $views->addProvider("section", new Template\Provider('Views/Section'));
@@ -39,20 +40,21 @@ class Application
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
+        $views->addAccessorSmart("site", "site", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessorSmart("section", "section", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessorSmart("parents", "parents", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
 
         // Определение текущего пользователя
-        $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
         $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
 
         // Определение текущего сайта
-        $views->addAccessorSmart("site", "site", Template\Engine::ACCESSOR_CHAIN);
         $instance = $model->factory('Site')->whereHostIn(array($request->getHost()));
         if (false === ($views->site = $instance->findOne()) || preg_match('/^'. $views->site->dashboard .'\\//', $path .'/')) {
             // Запрос к компоненту администрирования
             require 'Components/Dashboard/bootstrap.php';
         } else {
             // Определение текущего раздела
-            $views->addAccessorSmart("section", "section", Template\Engine::ACCESSOR_CHAIN);
             $instance = $model->factory('Section')->where('site', (string) $views->site)
                 ->whereAnyIs(array(
                     array('path' => trim($path .'/'. $request->getBaseName(), '/')),
@@ -61,8 +63,11 @@ class Application
                 ))->orderByAsc('type');
             if ($views->section = $instance->findOne()) {
                 $container = new Storage\Container();
+                // Определение родительских разделов
+                $views->parents = $views->section->parents()->orderByAsc('path')->findMany();
 
-                if (false !== $views->section && (null !== $template = $views->section->template)) {
+                // Определение идентификатора макета дизайна
+                if (false !== $views->section && (null !== ($template = $views->section->template))) {
                     if (false === filter_var((bool) $template, FILTER_VALIDATE_BOOLEAN)) {
                         $parents = array_reverse($views->parents);
                         array_push($parents, $views->site);
@@ -74,16 +79,19 @@ class Application
                     }
                 }
 
-                if (false !== $template = $model->factory('Template')->findOne($template)) {
+                // Формирование цепочки зависимых макетов
+                if (false !== $template = $model->factory('Template')->where('id', $template)->findOne()) {
                     $container->set('templates', "template:{$template}.tpl");
                     $parents = $template->parents()->orderByDesc('path')->findMany();
                     foreach ($parents as $parent) {
                         $container->append('templates', "template:{$parent}.tpl");
                     }
+                    $container->prepend('templates', "section:{$views->section->id}.tpl");
+                } else {
+                    $container->set('templates', "section:{$views->section->id}.tpl");
                 }
 
-                $container->prepend('templates', "section:{$views->section->id}.tpl");
-
+                // Отображение макетов
                 $views->display($container->get('templates'));
             }
         }
