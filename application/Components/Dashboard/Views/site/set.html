@@ -25,6 +25,9 @@
 
     {if $.request.apply !}
         {var $.request.dashboard = $.request.dashboard|trim:'/'}
+        {if ($.request.site === $.site->id) && ($.request.dashboard !== $site.dashboard)}
+            {set $location = $.request.dashboard ~ '/site/set.html?site=' ~ $site.id}
+        {/if}
         {if $site->set($.request)->save()}
             {set $sections = $site->section()->whereNotNull('type')->findMany()}
             {foreach $sections as $section}
@@ -37,6 +40,10 @@
                     {do $type = array_search($section->id, $types)}
                     {do $section->set('type', "{$type}")->save()}
                 {/foreach}
+            {/if}
+            {if $location ?}
+                {do header('Location: /' ~ $location)}
+                {exit}
             {/if}
             {set $message}
             <div class="alert alert-success alert-dismissable">
