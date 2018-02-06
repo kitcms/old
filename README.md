@@ -7,11 +7,11 @@
 
 <div align="center">
   <!-- Code name -->
-  <a href="https://github.com/kitteam/cms/tree/develop/docs"><img src="https://img.shields.io/badge/code%20name-black%20whale-202020.svg?style=flat-square" alt="Code name"/></a>
+  <a href="https://github.com/kitcms/docs"><img src="https://img.shields.io/badge/code%20name-black%20whale-202020.svg?style=flat-square" alt="Code name"/></a>
   <!-- Version -->
-  <a href="https://github.com/kitteam/cms/tree/develop"><img src="https://img.shields.io/badge/version-develop-yellow.svg?style=flat-square" alt="Version"/></a>
+  <a href="https://github.com/kitcms/cms/releases"><img src="https://img.shields.io/badge/version-0.1.0-green.svg?style=flat-square" alt="Version"/></a>
   <!-- License -->
-  <a href="https://raw.githubusercontent.com/kitteam/cms/develop/LICENSE"><img src="https://img.shields.io/badge/license-under%20question-red.svg?style=flat-square" alt="License" /></a>
+  <a href="https://raw.githubusercontent.com/kitcms/cms/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
 </div>
 
 <br><br><br><br>
