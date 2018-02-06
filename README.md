@@ -8,7 +8,6 @@
 <div align="center">
   <!-- Code name -->
   <a href="https://github.com/kitteam/cms/tree/develop/docs"><img src="https://img.shields.io/badge/code%20name-black%20whale-202020.svg?style=flat-square" alt="Code name"/></a>
-
   <!-- Version -->
   <a href="https://github.com/kitteam/cms/tree/develop"><img src="https://img.shields.io/badge/version-develop-yellow.svg?style=flat-square" alt="Version"/></a>
   <!-- License -->
