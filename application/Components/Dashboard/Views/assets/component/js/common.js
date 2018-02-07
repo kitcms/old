@@ -81,6 +81,11 @@
                     .before('<small class="glyphicon ' + node.icon + ' ' + node.color + '"></small>');
             }
         },
+        onCanMove: function(node) {
+            id = node.id.split('_');
+            if ('group' == id[0] || 'user'== id[0]) return false;
+            else return true;
+        },
         onCanMoveTo: function(moved, target, position) {
             move = moved.id.split('_');
             targe = target.id.split('_');
