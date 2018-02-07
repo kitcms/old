@@ -181,5 +181,73 @@
             });
         });
     }
-    
+
+    /* Sortable */
+    $('tbody.sortable').sortable({
+        axis: "y",
+        cursor: "move",
+        opacity: 0.7,
+        delay: 150,
+        helper: function(e, tr) {
+            if ($(tr).attr('id')) {
+                var $originals = tr.children();
+                var $helper = tr.clone();
+                $helper.children().each(function(index) {
+                    $(this).width($originals.eq(index).outerWidth()).css('background-color', ' #f5f5f5');
+                });
+                return $helper;
+            }
+        },
+        update: function(event, ui) {
+            target = $(this).data('target');
+            item = $(this).data('item');
+            button = $('.group-apply');
+            classes = 'btn group-apply btn-primary';
+            window.priority = new Array();
+            $(this).find('tr').each(function() {
+                window.priority.push($(this).attr('id'));
+            });
+            href = location.component + '/' + target + '/priority.html?' + item + '=' + window.priority.join(',');
+            $(button).html('Сохранить изменения').removeClass().addClass(classes).attr('href', href);
+        }
+    });
+
+    /* Selectable */
+    $(document).on('click', '.selectable > *', function() {
+        button = $('.pull-right .group-apply')
+            .removeClass()
+            .addClass('btn btn-default group-apply select-all')
+            .html('Выбрать все')
+            .attr('href', null);
+        if ($(this).attr('id')) {
+            window.item = $(this).parent().data('item');
+            $(this).toggleClass('active');
+        }
+        selected = $('.selectable').find('.active');
+        if (selected.length) {
+            $('.group-action').removeClass('disabled');
+            window.select = new Array();
+            $(selected).each(function() {
+                window.select.push($(this).attr('id'));
+            });
+        } else {
+            $('.group-action').addClass('disabled');
+        }
+    });
+    $(document).on('click', '.pull-right .select-all', function() {
+        $('.selectable > *').each(function() {
+            if ($(this).attr('id')) {
+                $(this).click();
+            }
+        });
+    });
+    $(document).on('click', '.pull-right .group-select > li > a', function() {
+        button = $('.pull-right .group-apply');
+        html = $(this).html();
+        classes = 'btn group-apply btn-' + $(this).attr('class');
+        href = $(this).attr('href') + window.item + '=' + window.select;
+        $(button).html(html).removeClass().addClass(classes).attr('href', href);
+        $('.dropup').removeClass('open');
+        return false;
+    });
 })(jQuery);

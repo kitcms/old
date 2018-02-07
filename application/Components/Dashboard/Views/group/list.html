@@ -48,10 +48,10 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="sortable selectable" data-target="group" data-item="group">
     {foreach $groups as $group}
         {set $count = $group->user()->count()}
-        <tr>
+        <tr id="{$group.id}">
             <td>
                 <small class="grey">{$group->id}.</small> {$group->title}
             </td>
@@ -77,4 +77,11 @@
 
 {block 'component_footer'}
 <a class="btn btn-default" href="{$.component}/group/add.html" role="button">Добавить группу</a>
+<div class="btn-group dropup pull-right">
+    <a class="btn btn-default group-apply select-all" role="button">Выбрать все</a>
+    <a class="btn btn-default group-action dropdown-toggle disabled" data-toggle="dropdown" role="button"><span class="caret"></span></a>
+    <ul class="dropdown-menu group-select" role="menu">
+        <li><a href="{$.component}/group/delete.html?" class="danger">Удалить</a></li>
+    </ul>
+</div>
 {/block}
