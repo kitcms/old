@@ -1,0 +1,42 @@
+{*
+ * Шаблон для перемещения макетов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $moved = $.request.moved|split:'_'}
+{set $target = $.request.target|split:'_'}
+{set $position = $.request.position}
+    {if ($moved = $.model->factory('Template')->findOne(next($moved)))}
+        {if 'inside' == $position}
+            {set $parent = next($target)}
+            {do $moved->set('parent', $parent)->set('priority', 0)}
+            {set $templates = $.model->factory('Template')->where('parent', $parent)->whereNotIn('id', [$moved->id])->orderByAsc('priority')->findMany()}
+            {set $priority = 1}
+            {foreach $templates as $template}
+                {do $template->set('priority', $priority)->save()}
+                {do $priority++}
+            {/foreach}
+        {else}
+            {if $target = $.model->factory('Template')->findOne(next($target))}
+                {set $templates = $.model->factory('Template')->where('parent', $target->parent)->whereNotIn('id', [$moved->id])->orderByAsc('priority')->findMany()}
+                {set $priority = current($templates)->priority}
+                {foreach $templates as $template}
+                    {do $template->set('priority', $priority)->save()}
+                    {do $priority++}
+                    {if $template->id === $target->id}
+                        {do $moved->set('priority', $priority)}
+                        {do $priority++}
+                    {/if}
+                 {/foreach}
+                 {do $moved->set('site', $target->site)->set('parent', $target->parent)}
+            {/if}
+        {/if}
+    {/if}
+    {$moved->save()|json_encode}
+{exit}
+{/block}
