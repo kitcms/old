@@ -1,0 +1,221 @@
+/* Файловый менеджер */
+.filemanager {
+  font-size: initial;
+  overflow: hidden;
+}
+.elfinder-toolbar {
+    padding: 3px 0 3px;
+}
+.ui-dialog {
+    border: 1px solid #cbd0d5;
+    background-color: #f5f5f5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.ui-widget-header {
+    background-color: #dfe2e6;
+    padding: 3px 10px;
+}
+.ui-dialog-titlebar-close {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    width: 10px !important;
+    padding: 2px;
+    height: 10px !important;
+    background-color: rgb(221,74,56);
+    border-radius: 50%;
+}
+.ui-dialog-content {
+    padding: 6px 6px 1px 6px !important;
+}
+.elfinder-file-edit,
+.elfinder-file-edit:focus {
+    border: 1px #dfe2e6 solid;
+    outline: none;
+}
+.ui-dialog-buttonpane {
+    background-color: #dfe2e6 !important;
+}
+.ui-dialog-buttonpane .ui-button {
+    background-color: #f5f5f5;
+    border: none;
+    padding: 3px !important;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.elfinder .elfinder-cwd table thead td.ui-state-active {
+    background: #dfe2e6;
+}
+.ui-helper-clearfix:before, .ui-helper-clearfix:after {
+  content: "";
+  display: table;
+}
+.ui-helper-clearfix:after {
+  clear: both;
+}
+.ui-helper-clearfix:before, .ui-helper-clearfix:after {
+  content: "";
+  display: table;
+}
+.elfinder-workzone {
+  background: #ffffff;
+}
+/* navbar */
+.elfinder .elfinder-navbar {
+  background: #f5f5f5;
+}
+.elfinder-navbar .ui-state-hover {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.elfinder-cwd > .ui-state-hover {
+  background: #f5f5f5 !important;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.elfinder-navbar .ui-state-active {
+  background: #c2c8d0;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.elfinder-button-menu {
+  position: absolute;
+  left: 0;
+  top: 31px;
+  padding: 3px 0;
+  background: #dfe2e6;
+  -webkit-border-bottom-right-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px
+}
+.elfinder-button-menu-item-separated, .elfinder-button-menu-item-separated .ui-state-hover, .elfinder-contextmenu-separator {
+  border-top: 1px solid #c2c8d0 !important;
+}
+.elfinder-button-menu-item-selected {
+  background-color: #cbd0d5;
+}
+/* disabled elfinder */
+.elfinder-disabled .elfinder-navbar .ui-state-active {
+  background: #dfe2e6;
+}
+/* current directory */
+/* selected file in "icons" view */
+.elfinder-cwd-view-icons .elfinder-cwd-file .ui-state-hover {
+  background: #dfe2e6;
+}
+/* buttons */
+.elfinder-buttonset {
+  margin: 5px 4px;
+}
+.elfinder-ltr .elfinder-button-search {
+  margin: 6px 0px 0px;
+  width: 160px;
+}
+.elfinder-button-search input {
+    width: 100%;
+    padding: 0 20px;
+    line-height: 22px;
+    border: 0px solid #aaa;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    outline: 0 solid;
+}
+.elfinder-button-search input[type=radio] {
+    width: initial;
+    height: initial;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  background: #f5f5f5;
+}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover,
+.ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+  background: #ffffff;
+}
+/* context menu */
+.elfinder-contextmenu, .elfinder-contextmenu-sub {
+  background: #dfe2e6;
+  border: none;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  font-size: initial;
+}
+.elfinder-contextmenu-item {
+  padding: 5px 30px;
+}
+/* file */
+.elfinder-cwd-view-icons .elfinder-cwd-filename, .elfinder-cwd-view-icons .elfinder-cwd-file-wrapper {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+/* resizable */
+.elfinder-ltr .ui-resizable-e {
+  cursor: e-resize;
+  margin-left: 10px;
+  position: absolute;
+  font-size: 0.1px;
+  display: block;
+  height: 100%;
+}
+.elfinder-quicklook .ui-resizable-se {
+  position: absolute;
+}
+/* selectable */
+.ui-selectable-helper {
+  position: absolute;
+  z-index: 100;
+  border: 1px dotted rgb(221,74,56);
+}
+/* list view*/
+.elfinder-cwd table thead td {
+  background: #f5f5f5;
+}
+.elfinder-cwd table thead td.ui-state-hover {
+  background: #dfe2e6;
+}
+.elfinder-cwd table tr:nth-child(odd) {
+  background-color: #fbfbfb;
+}
+/* preview */
+.elfinder-quicklook-fullscreen .elfinder-quicklook-navbar {
+  width: 200px;
+  margin-left: -100px;
+  height: 44px;
+}
+/* table */
+.ui-icon.ui-icon-triangle-1-n:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  border: 5px solid transparent;
+  border-top: 5px solid #428bca;
+}
+.ui-icon.ui-icon-triangle-1-s:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 1px;
+  border: 5px solid transparent;
+  border-bottom: 5px solid #428bca;
+}
+.elfinder-cwd table td.ui-state-hover {
+  background-color: #dfe2e6;
+}
+.ui-dialog.ui-resizable {
+    width: auto !important;
+}
+.elfinder-file-edit {
+    min-width: 450px;
+}

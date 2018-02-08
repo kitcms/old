@@ -1,0 +1,60 @@
+{*
+ * Шаблон для отображения файлового менеджера
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $menu.main.left.filemanager.class="active"}
+{/block}
+
+{block 'component_css'}
+<link rel="stylesheet" type="text/css" href="{$.component}/assets/elfinder/css/elfinder.min.css">
+<link rel="stylesheet" type="text/css" href="{$.component}/assets/component/css/elfinder.theme.css">
+{/block}
+
+{block 'header'}{/block}
+
+{block 'component_main'}
+<div class="filemanager"></div>
+{/block}
+
+{block 'component_script'}
+{parent}
+<script src="{$.component}/assets/elfinder/js/elfinder.min.js"></script>
+<script src="{$.component}/assets/elfinder/js/i18n/elfinder.ru.js"></script>
+<script>
+$(document).ready(function() {
+    $('.filemanager').elfinder({
+        url : '{$.component}/file/connector.html',
+        lang: 'ru',
+        resizable: false,
+        ui: ['toolbar', 'places', 'tree', 'path', 'stat'],
+        uiOptions: {
+            toolbar: [
+                ['home', 'up'],
+                ['back', 'forward'],
+                ['reload'],
+                ['mkdir', 'mkfile', 'upload'],
+                ['open', 'download', 'getfile'],
+                ['info'],
+                ['quicklook'],
+                ['copy', 'cut', 'paste'],
+                ['rm'],
+                ['duplicate', 'rename', 'edit', 'resize'],
+                ['extract', 'archive'],
+                ['search'],
+                ['view', 'sort']
+            ]
+        },
+        contextmenu : {
+            cwd: ['reload', 'back', '|', 'mkdir', 'mkfile', 'paste', '|', 'sort', '|','info']
+        },
+        height: $(window).height() - $('header').height()
+    });
+});
+</script>
+{/block}
