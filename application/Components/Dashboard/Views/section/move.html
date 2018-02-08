@@ -1,0 +1,53 @@
+{*
+ * Шаблон для перемещения разделов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $moved = $.request.moved|split:'_'}
+{set $target = $.request.target|split:'_'}
+{set $position = $.request.position}
+{if 'section' == current($moved)}
+    {if ($moved = $.model->factory('Section')->findOne(next($moved))) && 'section' == current($target)}
+        {if 'inside' == $position}
+            {set $parent = next($target)}
+            {do $moved->set('parent', $parent)->set('priority', 0)}
+            {set $sections = $.model->factory('Section')->where('parent', $parent)->whereNotIn('id', [$moved->id])->orderByAsc('priority')->findMany()}
+            {set $priority = 1}
+            {foreach $sections as $section}
+                {do $section->set('priority', $priority)->save()}
+                {do $priority++}
+            {/foreach}
+        {elseif 'after' == $position}
+            {if $target = $.model->factory('Section')->findOne(next($target))}
+                {set $sections = $.model->factory('Section')->where('parent', $target->parent)->whereNotIn('id', [$moved->id])->orderByAsc('priority')->findMany()}
+                {set $priority = current($sections)->priority}
+                {foreach $sections as $section}
+                    {do $section->set('priority', $priority)->save()}
+                    {do $priority++}
+                    {if $section->id === $target->id}
+                        {do $moved->set('priority', $priority)}
+                        {do $priority++}
+                    {/if}
+                 {/foreach}
+                 {do $moved->set('site', $target->site)->set('parent', $target->parent)}
+            {/if}
+        {/if}
+    {elseif 'site' == current($target)}
+        {set $site = next($target)}
+        {do $moved->set('site', $site)->set('parent', 0)->set('priority', 0)}
+        {set $sections = $.model->factory('Section')->where('site', $site)->where('parent', 0)->whereNotIn('id', [$moved->id])->orderByAsc('priority')->findMany()}
+        {set $priority = 1}
+        {foreach $sections as $section}
+            {do $section->set('priority', $priority)->save()}
+            {do $priority++}
+        {/foreach}
+    {/if}
+    {$moved->save()|json_encode}
+{/if}
+{exit}
+{/block}

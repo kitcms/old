@@ -1,0 +1,35 @@
+{*
+ * Шаблон для изменения приоритета
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $ids = $.request.site ? ($.request.site|split) : [null]}
+{set $sites = $.model->factory('Site')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+{if count($sites) > 1}
+    {foreach $sites as $item}
+        {set $array[$item->id] = $item}
+    {/foreach}
+    {set $priority = current($array)->priority}
+    {foreach $ids as $id}
+        {if $array[$id] !}
+            {set $array[$id]->priority = $priority}
+            {do $array[$id]->save()}
+            {do $priority++}
+        {/if}
+    {/foreach}
+    {set $message}
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-ok"></span>
+        Приоритет объектов успешно изменен.
+    </div>
+    {/set}
+{/if}
+{include 'component:site/list.html'}
+{exit}
+{/block}

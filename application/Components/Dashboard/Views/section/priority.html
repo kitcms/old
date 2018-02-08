@@ -1,0 +1,42 @@
+{*
+ * Шаблон для изменения приоритета
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $ids = $.request.section ? ($.request.section|split) : [null]}
+{set $sections = $.model->factory('Section')->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+{if count($sections) > 1}
+    {foreach $sections as $item}
+        {set $array[$item->id] = $item}
+    {/foreach}
+    {set $priority = current($array)->priority}
+    {foreach $ids as $id}
+        {if $array[$id] !}
+            {set $array[$id]->priority = $priority}
+            {do $array[$id]->save()}
+            {do $priority++}
+        {/if}
+    {/foreach}
+    {set $message}
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-ok"></span>
+        Приоритет объектов успешно изменен.
+    </div>
+    {/set}
+    {if $item->parent ?}
+        {var $.request.site = false}
+        {var $.request.section = $item.parent}
+    {else}
+        {var $.request.site = $item.site}
+        {var $.request.section = false}
+    {/if}
+{/if}
+{include 'component:section/list.html'}
+{exit}
+{/block}

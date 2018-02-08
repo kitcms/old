@@ -11,6 +11,8 @@
 namespace Classes;
 
 use Fenom;
+use elFinder;
+use elFinderConnector;
 
 if (isset($views) && $views instanceof Fenom) {
     // Отключение кеширования компилированных шаблонов и другие настройки
@@ -25,6 +27,15 @@ if (isset($views) && $views instanceof Fenom) {
     if ($views->site) {
         $views->component = '/' . $views->site->dashboard;
     }
+
+    // Настройка файлового менеджера
+    function access($attr, $path, $data, $volume) {
+        return (strpos(basename($path), '.') === 0 || pathinfo($path, PATHINFO_EXTENSION) === 'php') ? !($attr == 'read' || $attr == 'write') : null;
+    }
+    $views->addFunction('elfinder', function ($options) {
+        $elFinder = new elFinderConnector(new elFinder($options));
+        return $elFinder->run();
+    });
 
     // Сопоставление шаблона с маршрутом
     $path = substr(trim($request->getPath(), '/'), strlen($views->component));

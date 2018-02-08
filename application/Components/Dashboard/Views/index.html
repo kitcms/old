@@ -5,7 +5,6 @@
  * @author    Anton Popov <a.popov@kit.team>
  * @copyright Kit.team <http://www.kit.team>
  * @link      Kit.cms <http://www.kitcms.ru>
- * @version   0.1.0
  *}
 
 {block 'component_set'}
@@ -19,6 +18,7 @@
             'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ],
             'template' => [ 'title' => 'Макеты дизайна',  'link' => $.component ~ '/template/list.html'],
             'user' => [ 'title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ],
+            'filemanager' => [ 'title' => 'Файловый менеджер', 'link' => $.component ~ '/file/manager.html', 'class' => '' ]
         ],
         'right' => [
             'logout' => [ 'title' => 'Выход', 'link' => $.component ~ '/logout.html' ]
@@ -45,6 +45,7 @@
         <link href="{$.component}/assets/component/css/jqtree.css" rel="stylesheet">
         <link href="{$.component}/assets/component/css/bootstrap-select2.css" rel="stylesheet">
         <link href="{$.component}/assets/component/css/bootstrap-theme.css" rel="stylesheet">
+        {block 'component_css'}{/block}
         <!--[if lt IE 9]>
         <script src="{$.component}/assets/html5shiv/html5shiv.min.js"></script>
         <script src="{$.component}/assets/respond/respond.min.js"></script>
@@ -66,6 +67,7 @@
                     {/foreach}
                 </div>
             </nav>
+            {block 'header'}
             <nav class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
                     {foreach $menu.second as $position => $items}
@@ -79,8 +81,10 @@
                     {/foreach}
                 </div>
             </nav>
+            {/block}
         </header>
         <div class="main">
+        {block 'component_main'}
             {set $resizable = $.cookie.resizable|split}
             <aside class="aside" role="aside" style="{if $resizable.0 ?}width:{$resizable.0}%{/if}">
                 <div>
@@ -96,6 +100,7 @@
         <footer class="footer">
             {block 'component_footer'}{/block}
         </footer>
+        {/block}
         <script src="{$.component}/assets/jquery/jquery.min.js"></script>
         <script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
         <script src="{$.component}/assets/js-cookie/jquery.cookie.js"></script>

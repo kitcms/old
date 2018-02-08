@@ -1,0 +1,65 @@
+{*
+ * Шаблон для отображения файлового менеджера
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $sections = $.model->factory('Section')->select('id')->findArray()}
+{set $templates = $.model->factory('Template')->select('id')->findArray()}}
+{php}
+function access($attr, $path, $data, $volume) {
+    return (strpos(basename($path), '.') === 0 || pathinfo($path, PATHINFO_EXTENSION) === 'php') ? !($attr == 'read' || $attr == 'write') : null;
+}
+{/php}
+{set $options = [
+    [
+        'alias' => 'Публичная директория',
+        'driver' => 'LocalFileSystem',
+        'path' => $.globals.dir.public,
+        'URL' => $.root ?: '/',
+        'accessControl' => 'access',
+        'attributes' => [
+            [
+                'pattern' => '/^\/files/i',
+                'read'    => true,
+                'write'   => false,
+                'locked'  => true
+            ]
+        ]
+    ],
+    [
+        'alias' => 'Макеты дизайна',
+        'driver' => 'LocalFileSystem',
+        'path' => $.globals.dir.application ~ $.const.DS ~ 'Views',
+        'tmbPath' => false,
+        'quarantine' => false,
+        'accessControl' => 'access',
+        'attributes' => [
+            [
+                'pattern' => '/^\/$/i',
+                'read'    => true,
+                'write'   => false,
+                'locked'  => true
+            ],
+            [
+                'pattern' => '/^\/Section$/i',
+                'read'    => true,
+                'write'   => true,
+                'locked'  => true
+            ],
+            [
+                'pattern' => '/^\/Template$/i',
+                'read'    => true,
+                'write'   => true,
+                'locked'  => true
+            ]
+        ]
+    ]
+]}
+{elfinder roots=$options}
+{exit}
+{/block}
