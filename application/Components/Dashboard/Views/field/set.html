@@ -1,0 +1,76 @@
+{*
+ * Шаблон для изменения настроек полей модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{import 'component:field/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.model ? && $.get.field ? &&
+    ($model = $.schema->findOne($.request.model)) &&
+    ($field = $model->field()->findOne($.get.field))}
+    {set $protect = ($.model->factory($model->name)->filter('fields'))|array_column:'field'}
+    {if $.get.apply !}
+        {var $.request.null = 'NO'}
+        {if 'NULL' === $.request.default}
+            {var $.request.null = 'YES'}
+            {var $.request.default = ''}
+        {/if}
+        {if $field->set($.request)->save()}
+            {set $message}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-ok"></span>
+                Данные объекта успешно обновлены.
+            </div>
+            {/set}
+        {else}
+            {set $message}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-remove"></span>
+                Не удалось сохранить изменения.
+            </div>
+            {/set}
+        {/if}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{var $.request = array_merge($field->asArray(), $.request)}
+
+{* Построение основного меню *}
+{set $menu.main.left.model.class="active"}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = ['model_' ~ $model.name]}
+{set $tree.selected_node = ['field_' ~ $field.field]}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/model/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="set" action="{$.component}/field/set.html?model={$model.name}&field={$field.field}&apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro.main}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Сохранить изменения" form="set">
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/field/set.html?model={$model.name}&field={$field.field}" role="button">Отменить изменения</a>
+</div>
+{/block}

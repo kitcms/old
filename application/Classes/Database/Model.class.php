@@ -94,6 +94,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
             $table = $this->orm->_get_table_name();
         }
         $instance = Schema::for_table($table);
+        $instance->where('name', $table);
         $instance->set_class_name($class);
         return $instance;
     }

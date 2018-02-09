@@ -1,0 +1,36 @@
+{*
+ * Шаблон для изменения приоритета у полей модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{if $.request.model ? && ($model = $.schema->findOne($.request.model))}
+    {set $ids = $.request.field ? ($.request.field|split) : [null]}
+    {foreach $model->field()->findMany() as $field}
+        {set $key = $field->field|array_search:$ids}
+        {set $fields[$key]= $field}
+    {/foreach}
+    {do $fields|ksort}
+    {foreach $fields as $field first=$first}
+        {if $first ?}
+            {do $field->set('first', true)}
+        {else}
+            {do $field->set('after', $after->field)->save()}
+        {/if}
+        {set $after = $field}
+    {/foreach}
+    {set $alert}
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-ok"></span>
+        Приоритет объектов успешно изменен.
+    </div>
+    {/set}
+    {include 'component:field/list.html'}
+    {exit}
+{/if}
+{/block}

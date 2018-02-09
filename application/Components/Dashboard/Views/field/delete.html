@@ -1,0 +1,84 @@
+{*
+ * Шаблон для удаления выбранных полей модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $ids = $.request.field ? ($.request.field|split) : [null]}
+{if ($model = $.schema->findOne($.request.model)) && ($fields = $model->field()->whereIn('field', $ids)->findMany())}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $fields as $field}
+            {if $field->delete()}
+                {set $message}
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Выбранные объекты успешно удалены.
+                </div>
+                {/set}
+            {/if}
+        {/foreach}
+        {include 'component:field/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{* Формирование основного меню *}
+{set $menu.main.left.model.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных полей', 'link' => $.component ~ '/field/delete.html?model=' ~ $.request.model ~ '&field=' ~ $.request.field, 'class' => 'active red']
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = ['model_' ~ $model.name]}
+{set $tree.selected_node = ['model_' ~ $model.name]}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/model/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $fields}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-12"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $fields as $field}
+        <tr>
+            <td>{$field.field} <span class="badge">{$field.aspect}</span></td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/field/delete.html?model={$.request.model}&field={$.request.field}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/field/list.html?model={$.request.model}" role="button">Отменить удаление</a>
+</div>
+{/block}

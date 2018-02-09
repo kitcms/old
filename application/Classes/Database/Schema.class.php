@@ -17,15 +17,13 @@ class Schema extends ORM
 {
     protected $_instance_id_column = 'name';
     protected $_class_name = __NAMESPACE__ .'\Model';
+    protected $_field_name;
 
     protected $aspects = array(
         'integer' => 'int(11)',
         'string' => 'varchar(255)',
         'text' => 'longtext',
-        'group' => 'varchar(255)',
-        'boolean' => 'tinyint(1)',
-        'file' => 'longblob',
-        'join' => 'varchar(255)'
+        'boolean' => 'tinyint(1)'
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
@@ -38,9 +36,7 @@ class Schema extends ORM
 
     public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION) {
         self::_setup_db($connection_name);
-        $instance = new self($table_name, array(), $connection_name);
-        $instance->where('name', $table_name);
-        return $instance;
+        return new self($table_name, array(), $connection_name);
     }
 
     public function field()
@@ -57,10 +53,30 @@ class Schema extends ORM
         return count($rows);
     }
 
+    public function findArray()
+    {
+        $array = parent::findArray();
+        if ('field' === $this->_getIdColumnName()) {
+            foreach ($array as $key => $data) {
+                if (false === ($array[$key]['aspect'] = array_search($data['type'], $this->aspects))) {
+                    $array[$key]['aspect'] = $data['type'];
+                }
+            }
+        }
+        return $array;
+    }
+
     public function save()
     {
         if ('field' === $this->_getIdColumnName()) {
+            if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->field) || preg_match("/^[\d-_.]+$/", $this->field)) {
+                return false;
+            }
 
+            // Проверка на дублирование полей
+            if ($this->findOne($this->get('field'))) {
+                return false;
+            }
         } else {
             if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->name) || preg_match("/^[\d-_.]+$/", $this->name)) {
                 return false;
@@ -72,7 +88,7 @@ class Schema extends ORM
     public function delete()
     {
         if ('field' === $this->_getIdColumnName()) {
-
+            $query = array('ALTER TABLE', $this->_quoteIdentifier($this->_table_name), 'DROP', $this->_quoteIdentifier($this->field));
         } else {
             $query = array('DROP TABLE', $this->_quoteIdentifier($this->name));
         }
@@ -81,6 +97,27 @@ class Schema extends ORM
             return true;
         }
         return false;
+    }
+
+    public function hydrate($data=array())
+    {
+        if ('field' === $this->_getIdColumnName()) {
+            $this->_field_name = $data['field'];
+            if (!isset($data['aspect'])) {
+                $data['aspect'] = $data['type'];
+                 if ($aspect = array_search($data['type'], $this->aspects)) {
+                     $data['aspect'] = $aspect;
+                 }
+            }
+            if (!isset($data['type'])) {
+                $data['type'] = $data['aspect'];
+                if (key_exists($data['aspect'], $this->aspects)) {
+                    $data['type'] = $this->aspects[$data['aspect']];
+                }
+            }
+        }
+        $this->_data = $data;
+        return $this;
     }
 
     protected function _build_insert()
@@ -247,18 +284,5 @@ class Schema extends ORM
         $instance->use_id_column($this->_instance_id_column);
         $instance->hydrate($row);
         return $instance;
-    }
-
-    public function findArray()
-    {
-        $array = parent::findArray();
-        if ('field' === $this->_getIdColumnName()) {
-            foreach ($array as $key => $data) {
-                if (false === ($array[$key]['aspect'] = array_search($data['type'], $this->aspects))) {
-                    $array[$key]['aspect'] = $data['type'];
-                }
-            }
-        }
-        return $array;
     }
 }
