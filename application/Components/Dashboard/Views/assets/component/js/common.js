@@ -83,7 +83,7 @@
         },
         onCanMove: function(node) {
             id = node.id.split('_');
-            if ('group' == id[0] || 'user'== id[0]) return false;
+            if ('group' == id[0] || 'user' == id[0] || 'model' == id[0] || 'field' == id[0]) return false;
             else return true;
         },
         onCanMoveTo: function(moved, target, position) {

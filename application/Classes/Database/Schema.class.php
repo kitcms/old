@@ -51,6 +51,38 @@ class Schema extends ORM
         return $instance;
     }
 
+    public function count($column = '*')
+    {
+        $rows = $this->findMany();
+        return count($rows);
+    }
+
+    public function save()
+    {
+        if ('field' === $this->_getIdColumnName()) {
+
+        } else {
+            if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->name) || preg_match("/^[\d-_.]+$/", $this->name)) {
+                return false;
+            }
+        }
+        return parent::save();
+    }
+
+    public function delete()
+    {
+        if ('field' === $this->_getIdColumnName()) {
+
+        } else {
+            $query = array('DROP TABLE', $this->_quoteIdentifier($this->name));
+        }
+        $data = is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true));
+        if (self::_execute(join(" ", $query), $data, $this->_connection_name)) {
+            return true;
+        }
+        return false;
+    }
+
     protected function _build_insert()
     {
         if ('name' === $this->_getIdColumnName()) {
@@ -76,6 +108,43 @@ class Schema extends ORM
             $this->_build_update_field()
         );
         return $this->_joinIfNotEmpty(" ", $fragments);
+    }
+
+    protected function _build_update()
+    {
+        $fragments = array(
+            'ALTER TABLE '. $this->_quoteIdentifier($this->_table_name)
+        );
+        $afters = array();
+        if ('name' === $this->_getIdColumnName()) {
+            foreach ($this->_dirty_fields as $key => $value) {
+                switch (strtoupper($key)) {
+                    case 'NAME':
+                        $afters = array(
+                            '; RENAME TABLE '. $this->_quoteIdentifier($this->_table_name),
+                            'TO '. $this->_quoteIdentifier($this->name) .';'
+                        );
+                        break;
+                    case 'COLLATION':
+                        array_push($fragments, 'DEFAULT CHARACTER SET'. $this->_quoteIdentifier(current(explode('_', $value))));
+                        array_push($fragments, 'COLLATE'. $this->_quoteIdentifier($value));
+                        break;
+                    case 'COMMENT':
+                        array_push($fragments, 'COMMENT \''. $value .'\'');
+                        break;
+                    case 'ENGINE':
+                        array_push($fragments, $key .'=', $value);
+                    default:
+                        // FIXME
+                }
+            }
+        }
+        if ('field' === $this->_getIdColumnName()) {
+            array_push($fragments, 'CHANGE');
+            array_push($fragments, $this->_quoteIdentifier($this->_field_name));
+            array_push($fragments, $this->_buildUpdateField());
+        }
+        return $this->_joinIfNotEmpty(" ", $fragments) . $this->_joinIfNotEmpty(" ", $afters);
     }
 
     protected function _build_field()

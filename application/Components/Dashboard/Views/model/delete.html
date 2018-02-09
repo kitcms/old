@@ -1,0 +1,89 @@
+{*
+ * Шаблон для удаления выбранных моделей
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $menu.main.left.model.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных моделей', 'link' => $.component ~ '/model/delete.html?model=' ~ $.request.model, 'class' => 'active red']
+]}
+
+{set $ids = $.request.model ? ($.request.model|split) : [null]}
+{if $models = $.schema->whereIn('name', $ids)->findMany()}
+    {set $message}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        Выбранные объекты и все с ними связанное будет удалено.
+    </div>
+    {/set}
+    {if $.request.apply !}
+        {foreach $models as $model}
+            {if $model->delete()}
+                {set $message}
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Выбранные объекты успешно удалены.
+                </div>
+                {/set}
+            {/if}
+        {/foreach}
+        {include 'component:model/list.html'}
+        {exit}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/model/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $models}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-10"></th>
+            <th class="col-xs-2"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $models as $model}
+        {set $count = $model->field()->count()}
+        <tr>
+            <td>{$model.name} <span class="badge">{$model.engine}</span></td>
+            <td>
+                <span class="grey"><a href="{$.component}/model/field/list.html?model={$model.name}" class="pull-right badge-group grey">Поля <span class="badge">{$count}</span></a></span>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/model/delete.html?model={$.request.model}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/model/list.html" role="button">Отменить удаление</a>
+</div>
+{/block}
