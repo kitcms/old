@@ -149,6 +149,28 @@ html, body {
   padding: 15px;
   overflow: auto;
 }
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background-color: #f2f2f2;
+}
+.login .form {
+  position: relative;
+  width: 420px;
+  border-radius: 4px;
+  box-shadow: 7px 7px 33px #dce2e3;
+  box-sizing: border-box;
+  padding-top: 31px;
+  padding-right: 40px;
+  padding-bottom: 33px;
+  padding-left: 40px;
+  border: 1px solid #e8e8e8;
+  background-color: #ffffff;
+}
 textarea.form-control {
   resize: vertical;
 }
