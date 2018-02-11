@@ -1,0 +1,87 @@
+{*
+ * Шаблон для добавления нового объекта модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:site/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.section ? &&
+    ($section = $.model->factory('Section')->findOne($.request.section)) &&
+    ($model = $section->infobox['model'])}
+    {set $site = $section->site()->findOne()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+    {set $infobox = $section->infobox()}
+
+    {set $schema = $.schema->findOne($model)}
+    {set $protect = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
+    {set $fields = $schema->field()->whereNotIn('field', $protect)->findMany()}
+{else}
+    {exit}
+{/if}
+
+{if $.request.apply !}
+    {if $infobox = $infobox->create($.request)->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:row/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            При добавлении нового объекта возникла ошибка.
+        </div>
+        {/set}
+    {/if}
+    {var $.request = array_merge($.request, $infobox->asArray())}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    [
+        'title' => 'Добавление нового объекта',
+        'link' => $.component ~ '/row/add.html?' ~ ($section ? 'section=' ~ $section.id : 'model=' ~ $model.name),
+        'class' => 'active green'
+    ]
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{set $tree.open_nodes[] = 'section_' ~ $section->id}
+{set $tree.selected_node[] = 'section_' ~ $section->id}
+{/block}
+
+{block 'component_content'}{parent}
+{if ! $fields}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных полей для заполнения.
+</div>
+{else}
+<form id="add" action="{$.component}/row/add.html?section={$section.id}&apply" method="post">
+    {macro.additional fields=$fields}
+</form>
+{/if}
+{/block}
+
+{block 'component_footer'}
+{if $fields ?}
+<input class="btn btn-default" type="submit" role="button" value="Добавить объект" form="add">
+{/if}
+{/block}

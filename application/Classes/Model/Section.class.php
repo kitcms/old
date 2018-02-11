@@ -11,6 +11,7 @@
 namespace Classes\Model;
 
 use Classes\Database\Model;
+use Classes\Database\Schema;
 
 class Section extends Model
 {
@@ -110,6 +111,14 @@ class Section extends Model
         return $this->hasMany(__CLASS__, 'site', 'site')->whereNotIn('id', (array) $this->id)->whereLike('path', $this->path .'%');
     }
 
+    public function infobox()
+    {
+        if ($infobox = $this->get('infobox')) {
+            return $this->factory($infobox['model'])->where('section', $this->id);
+        }
+        return false;
+    }
+
     public function save()
     {
         // Если новая запись, определяем следующий идентификатор
@@ -165,7 +174,22 @@ class Section extends Model
             }
             array_push($dependences, $childrens);
         }
+
         if (parent::save()) {
+            if (($infobox = $this->get('infobox')) && ($model = $infobox['model'])) {
+                $schema = new Schema($model);
+                // Добалвение поля для привязки объектов к заданному разделу
+                if (false === $schema->field()->findOne('section')) {
+                    $schema->field()->create(array(
+                        'field' => 'section',
+                        'after' => 'priority',
+                        'type' => 'int(10) unsigned',
+                        'key' => 'mul',
+                        'default' => '0',
+                        'comment' => 'Идентификатор раздела'
+                    ))->save();
+                }
+            }
             foreach ((array) $dependences as $dependence) {
                 foreach ((array) $dependence as $depend) {
                     $depend->set('path', null)->save();

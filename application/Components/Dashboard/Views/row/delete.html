@@ -1,0 +1,99 @@
+{*
+ * Шаблон для удаления выбранных объектов модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $ids = $.request.row ? ($.request.row|split) : [null]}
+{if $.request.section ? &&
+    ($section = $.model->factory('Section')->findOne($.request.section)) &&
+    ($model = $section->infobox['model']) &&
+    ($rows = $section->infobox()->whereIn('id', $ids)->findMany())}
+
+    {set $site = $section->site()->findOne()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+
+    {set $schema = $.schema->findOne($model)}
+    {if ! ($field = $schema->field()->whereLike('type', 'varchar%')->findOne())}
+        {set $field = $schema->field()->whereLike('type', '%text%')->findOne()}
+    {/if}
+{else}
+    {exit}
+{/if}
+
+{set $message}
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Выбранные объекты и все с ними связанное будет удалено.
+</div>
+{/set}
+{if $.request.apply !}
+    {foreach $rows as $row}
+        {if $row->delete()}
+            {set $message}
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <span class="glyphicon glyphicon-ok"></span>
+                Выбранные объекты успешно удалены.
+            </div>
+            {/set}
+        {/if}
+    {/foreach}
+    {include 'component:row/list.html'}
+    {exit}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Удаление выбранных объектов', 'link' => $.component ~ '/row/delete.html?section=' ~ $.request.section ~ '&row=' ~ $.request.row, 'class' => 'active red']
+]}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{set $tree.open_nodes[] = 'section_' ~ $section->id}
+{set $tree.selected_node[] = 'section_' ~ $section->id}
+{/block}
+
+{block 'component_content'}
+{parent}
+{if ! $rows}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных объектов для отображения.
+</div>
+{else}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-12"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {foreach $rows as $row}
+        <tr>
+            <td>
+                <small class="grey">{$row.id}.</small>
+                {if $field ?}{$row[$field.field]}{/if}
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<a class="btn btn-danger" href="{$.component}/row/delete.html?section={$.request.section}&row={$.request.row}&apply" role="button">Подтвердить удаление</a>
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/row/list.html?section={$.request.section}" role="button">Отменить удаление</a>
+</div>
+{/block}

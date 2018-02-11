@@ -42,7 +42,7 @@
 
 {* Выборка необходимых данных *}
 {set $schema = $.schema->findOne('Site')}
-{set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}
+{set $fields = array_column($.model->factory('Site')->fields(), 'field')}
 {set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()}
 {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/block}
