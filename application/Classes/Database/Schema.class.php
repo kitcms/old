@@ -66,15 +66,29 @@ class Schema extends ORM
         return $array;
     }
 
+    public function create($data=null) {
+        parent::create($data);
+
+        if ('field' === $this->_getIdColumnName()) {
+            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
+            $data = array_diff_key($this->_data, $fill);
+            foreach (array_keys($data) as $key) {
+                unset($this->_dirty_fields[$key]);
+            }
+            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+        }
+
+        return $this;
+    }
+
     public function save()
     {
         if ('field' === $this->_getIdColumnName()) {
             if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->field) || preg_match("/^[\d-_.]+$/", $this->field)) {
                 return false;
             }
-
             // Проверка на дублирование полей
-            if ($this->findOne($this->get('field'))) {
+            if (($this->isNew() || ($this->_field_name !== $this->field)) && $this->findOne($this->field)) {
                 return false;
             }
         } else {
@@ -117,6 +131,42 @@ class Schema extends ORM
             }
         }
         $this->_data = $data;
+        return $this;
+    }
+
+    public function getDirty($key) {
+        if (is_array($key)) {
+            $result = array();
+            foreach($key as $column) {
+                $result[$column] = isset($this->_dirty_fields[$column]) ? $this->_dirty_fields[$column] : null;
+            }
+            return $result;
+        } else {
+            return isset($this->_dirty_fields[$key]) ? $this->_dirty_fields[$key] : null;
+        }
+    }
+
+    protected function _set_orm_property($key, $value = null, $expr = false) {
+        if (!is_array($key)) {
+            $key = array($key => $value);
+        }
+        foreach ($key as $field => $value) {
+            $this->_data[$field] = $value;
+            $this->_dirty_fields[$field] = $value;
+            if (false === $expr and isset($this->_expr_fields[$field])) {
+                unset($this->_expr_fields[$field]);
+            } else if (true === $expr) {
+                $this->_expr_fields[$field] = true;
+            }
+        }
+        if ('field' === $this->_getIdColumnName()) {
+            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
+            $data = array_diff_key($this->_data, $fill);
+            foreach (array_keys($data) as $key) {
+                unset($this->_dirty_fields[$key]);
+            }
+            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+        }
         return $this;
     }
 
@@ -192,7 +242,7 @@ class Schema extends ORM
             (filter_var($this->get('null'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? null : 'NOT NULL'),
             (strlen($this->get('default')) ? 'default '. self::getDb()->quote($this->get('default')) : null),
             strtoupper($this->get('extra')),
-            'COMMENT '. self::getDb()->quote($this->get('comment')), // FIXME
+            'COMMENT '. self::getDb()->quote($this->getDirty('comment')), // FIXME
             ($this->get('after') ? 'after '. $this->_quoteIdentifier($this->get('after')) : null),
             ($this->get('first') ? 'first' : null)
         );
@@ -217,7 +267,7 @@ class Schema extends ORM
             (filter_var($this->get('null'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? null : 'NOT NULL'),
             (strlen($this->get('default')) ? 'default '. self::getDb()->quote($this->get('default')) : null),
             strtoupper($this->get('extra')),
-            'COMMENT '. self::getDb()->quote($this->get('comment')), // FIXME
+            'COMMENT '. self::getDb()->quote($this->getDirty('comment')), // FIXME
             ($this->get('after') ? 'after '. $this->_quoteIdentifier($this->get('after')) : null),
             ($this->get('first') ? 'first' : null)
         );
