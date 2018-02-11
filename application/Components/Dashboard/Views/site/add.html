@@ -125,6 +125,29 @@
             </div>
         </div>
         {/macro}{macro.meta}
+        {macro additional($fields, $infobox=false)}
+        <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if}" id="additional">
+        {foreach $fields as $field}
+        {if 'NO' === $field.null}<div class="control-group has-warning {if $.request.apply ! && ! $.request[$field.field]}has-error{else}has-warning{/if}">{/if}
+            <div class="form-group">
+                <label class="required" for="{$field.field}">{$field.title} <span class="badge">{$field.field}</span></label>
+    {switch $field.aspect ?: $field.type}
+        {case 'text'}
+            {if $field.editor ?}
+                {set $editor[$field.editor] = true}
+                <textarea class="form-control {$field.editor}" rows="4" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
+            {else}
+                <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
+            {/if}
+        {case default}
+                <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
+    {/switch}
+                <span class="help-block">{$field.comment}</span>
+            </div>
+        {if 'NO' === $field.null}</div>{/if}
+        {/foreach}
+        </div>
+        {/macro}{macro.additional fields=$additionals}
         {macro template($templates, $inherit = false)}
         <div class="tab-pane {if 'template' == $.cookie.tabs}active{/if}" id="template">
             <div class="form-group">

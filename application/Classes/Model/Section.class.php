@@ -50,16 +50,10 @@ class Section extends Model
             'comment' => 'Тип раздела'
         ),
         array(
-            'field' => 'model',
+            'field' => 'infobox',
             'type' => 'varchar(255)',
             'null' => 'yes',
-            'comment' => 'Модель данных',
-        ),
-        array(
-            'field' => 'pattern',
-            'type' => 'varchar(255)',
-            'null' => 'yes',
-            'comment' => 'Паттерн для разбора параметров'
+            'comment' => 'Инфобокс',
         ),
         array(
             'field' => 'title',

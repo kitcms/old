@@ -37,6 +37,8 @@ class Application
             return $tag->cutContent();
         });
 
+        $views->addAccessorSmart("codename", "'". self::CODENAME ."'");
+        $views->addAccessorSmart("version", "'". self::VERSION ."'");
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");

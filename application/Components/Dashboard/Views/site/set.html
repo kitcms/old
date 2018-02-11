@@ -107,6 +107,7 @@
     <div class="tab-content">
         {macro.main}
         {macro.meta}
+        {macro.additional fields=$additionals}
         <div class="tab-pane {if 'service' == $.cookie.tabs}active{/if}" id="service">
             <div class="form-group">
                 <label class="required" for="index">Главная страница</label>
