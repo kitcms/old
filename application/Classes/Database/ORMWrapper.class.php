@@ -17,6 +17,11 @@ class ORMWrapper extends \ORMWrapper
         return new self($table_name, array(), $connection_name);
     }
 
+    public function get_table_name()
+    {
+        return $this->_table_name;
+    }
+
     protected function _create_model_instance($orm)
     {
         if ($orm === false) {
