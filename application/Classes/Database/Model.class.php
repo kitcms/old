@@ -91,9 +91,10 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
     {
         $class = get_called_class();
         if (null === ($table = $this->_get_static_property($class, '_table')) && null !== $this->orm) {
-            $table = $this->orm->_get_table_name();
+            $table = $this->orm->get_table_name();
         }
         $instance = Schema::for_table($table);
+        $instance->where('name', $table);
         $instance->set_class_name($class);
         return $instance;
     }
@@ -112,7 +113,6 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
     {
         $schema = $this->schema()->findOne();
         $fields = $schema->field()->findArray();
-
         // Исключение не используемых данных
         foreach ($this->asArray() as $field => $value) {
             if (false === ($key = array_search($field, array_column($fields, 'field')))) {

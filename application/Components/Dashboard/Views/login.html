@@ -25,24 +25,27 @@
 {/block}
 
 {block 'component_body'}
-<div class="container">
-    <form action="" method="post">
-        <div class="control-group {if $.request.apply ! && ! $.request.login}has-error{/if}">
-            <div class="form-group">
-                <label class="required" for="login">Логин или email</label>
-                <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
-                <span class="help-block"></span>
+<div class="container login">
+    <div class="form">
+        <form action="" method="post">
+            <div class="control-group {if $.request.apply ! && ! $.request.login}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="login">Логин или email</label>
+                    <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
+                    <span class="help-block"></span>
+                </div>
             </div>
-        </div>
-        <div class="control-group {if $.request.apply ! && ! $.request.password}has-error{/if}">
-            <div class="form-group">
-                <label class="required" for="password">Пароль</label>
-                <input class="form-control" type="password" value="" name="password" id="password">
-                <span class="help-block"></span>
+            <div class="control-group {if $.request.apply ! && ! $.request.password}has-error{/if}">
+                <div class="form-group">
+                    <label class="required" for="password">Пароль</label>
+                    <input class="form-control" type="password" value="" name="password" id="password">
+                    <span class="help-block"></span>
+                </div>
             </div>
-        </div>
-        <hr>
-        <button class="btn btn-primary" type="submit" name="apply">Авторизоваться</button>
-    </form>
+            <hr>
+            <div class="pull-left"><button class="btn btn-primary" type="submit" name="apply">Авторизоваться</button></div>
+            <div class="pull-right">Kit.cms<br><small class="grey">{$.codename} {$.version}</small></div>
+        </form>
+    </div>
 </div>
 {/block}

@@ -42,7 +42,7 @@
 
 {* Выборка необходимых данных *}
 {set $schema = $.schema->findOne('Site')}
-{set $fields = array_column($.model->factory('Site')->filter('fields'), 'field')}
+{set $fields = array_column($.model->factory('Site')->fields(), 'field')}
 {set $additionals = $schema->field()->whereNotIn('field', $fields)->findMany()}
 {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/block}
@@ -125,6 +125,29 @@
             </div>
         </div>
         {/macro}{macro.meta}
+        {macro additional($fields, $infobox=false)}
+        <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if}" id="additional">
+        {foreach $fields as $field}
+        {if 'NO' === $field.null}<div class="control-group has-warning {if $.request.apply ! && ! $.request[$field.field]}has-error{else}has-warning{/if}">{/if}
+            <div class="form-group">
+                <label class="required" for="{$field.field}">{$field.comment} <span class="badge">{$field.aspect}</span></label>
+    {switch $field.aspect ?: $field.type}
+        {case 'text'}
+            {if $field.editor ?}
+                {set $editor[$field.editor] = true}
+                <textarea class="form-control {$field.editor}" rows="4" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
+            {else}
+                <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
+            {/if}
+        {case default}
+                <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
+    {/switch}
+                <span class="help-block"></span>
+            </div>
+        {if 'NO' === $field.null}</div>{/if}
+        {/foreach}
+        </div>
+        {/macro}{macro.additional fields=$additionals}
         {macro template($templates, $inherit = false)}
         <div class="tab-pane {if 'template' == $.cookie.tabs}active{/if}" id="template">
             <div class="form-group">
@@ -148,4 +171,10 @@
 
 {block 'component_footer'}
 <input class="btn btn-default" type="submit" role="button" value="Добавить сайт" form="add">
+{/block}
+
+{block 'component_script'}
+<script src="{$.component}/assets/ace/ace.js"></script>
+<script src="{$.component}/assets/ckeditor/ckeditor.js"></script>
+{parent}
 {/block}

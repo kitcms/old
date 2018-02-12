@@ -1,0 +1,93 @@
+{*
+ * Шаблон для добавления новой модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}{parent}
+{set $menu.main.left.model.class="active"}
+{set $menu.second.left = [
+    ['title' => 'Добавление новой модели', 'link' => $.component ~ '/model/add.html', 'class' => 'active green']
+]}
+
+{if $.request.apply !}
+    {if $.schema->create($.request)->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Новый объект успешно добавлен.
+        </div>
+        {/set}
+        {include 'component:model/list.html'}
+        {exit}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-remove"></span>
+            При добавлении нового объекта возникла ошибка.
+        </div>
+        {/set}
+    {/if}
+{/if}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes = []}
+{set $tree.selected_node = []}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/model/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<form id="add" action="{$.component}/model/add.html?apply" method="post">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    </ul>
+    <div class="tab-content">
+        {macro main($model=false)}
+        <div class="tab-pane active" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.name}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="name">Название модели</label>
+                    <input class="form-control" type="text" value="{$.request.name|e}" name="name" id="name" oninput="this.value = this.value.replace(/\W/g, '')" {if $model.class_name !}disabled{/if}>
+                    <span class="help-block">Является таблицей базы данных, пишется с помощью латинского алфавита.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-light required" for="comment">Описание</label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="comment" id="comment">{$.request.comment|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="label-light required" for="engine">Тип</label>
+                <select class="form-control" name="engine" role="simple" {if $model.class_name !}disabled{/if}>
+                    <option value="MyISAM" title="MyISAM storage engine"{if $.request.engine == 'MyISAM'} selected="selected"{/if}>MyISAM</option>
+                    <option value="InnoDB" title="Supports transactions, row-level locking, and foreign keys"{if $.request.engine == 'InnoDB'} selected="selected"{/if}>InnoDB</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label class="label-light required" for="collation">Кодировка</label>
+                <select class="form-control" name="collation" role="simple" {if $model.class_name !}disabled{/if}>
+                    <option value="utf8_general_ci" title="Юникод (многоязычный), регистронезависимый"{if $.request.collation == 'utf8_general_ci'} selected="selected"{/if}>UTF-8</option>
+                    <option value="cp1251_general_ci" title="Кириллический (многоязычный), регистронезависимый"{if $.request.collation == 'cp1251_general_ci'} selected="selected"{/if}>CP1251</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
+        </div>
+        {/macro}{macro.main}
+    </div>
+</form>
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Добавить модель" form="add">
+{/block}

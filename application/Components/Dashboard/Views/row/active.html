@@ -1,0 +1,24 @@
+{*
+ * Шаблон для изменения статуса выбранных объектов модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $ids = $.request.row ? ($.request.row|split) : [null]}
+
+{if $.request.section ? &&
+    ($section = $.model->factory('Section')->findOne($.request.section)) &&
+    ($rows = $section->infobox()->whereIn('id', $ids)->findMany())}
+    {set $active = 1}
+    {if $.request.disable !}{set $active = 0}{/if}
+    {foreach $rows as $row}
+        {do $row->set('active', $active)->save()}
+    {/foreach}
+{/if}
+{include 'component:row/list.html'}
+{exit}
+{/block}

@@ -83,7 +83,7 @@
         },
         onCanMove: function(node) {
             id = node.id.split('_');
-            if ('group' == id[0] || 'user'== id[0]) return false;
+            if ('group' == id[0] || 'user' == id[0] || 'model' == id[0] || 'field' == id[0]) return false;
             else return true;
         },
         onCanMoveTo: function(moved, target, position) {
@@ -185,6 +185,92 @@
                 $('input[name="' + name + '"]').val(editor.getValue());
             });
         });
+    }
+
+    /* CKEDITOR */
+    if (typeof CKEDITOR != "undefined") {
+
+        CKEDITOR.config.filebrowserBrowseUrl = location.component + '/file/choice.html';
+        CKEDITOR.config.extraPlugins = 'ace';
+
+        CKEDITOR.plugins.add('ace', {
+            requires: ['sourcearea'],
+            init: function(editor) {
+                editor.on('mode', function() {
+                    if (editor.mode == 'source') {
+                        var area = $('textarea', '.' + editor.id);
+                        var holder = area.parent();
+                        var id = editor.id;
+                        area.hide();
+                        area.after('<div id="aceEditor_container_' + id + '" class="aceEditor_container" style=" background-color:white;"><div id="aceEditor_' + id + '" style="width:100%; height:100%;"></div></div>');
+                        $('#aceEditor_container_' + id).css(holder.position()).width(holder.width()).height(holder.height());
+                        var aceEditor = ace.edit("aceEditor_" + id);
+                        aceEditor.getSession().setMode("ace/mode/smarty");
+                        aceEditor.setTheme("ace/theme/chrome");
+                        aceEditor.getSession().setValue(editor.getData());
+                        aceEditor.getSession().setUseWrapMode(false);
+                        aceEditor.getSession().setUseWorker(true);
+                        aceEditor.setShowInvisibles(true);
+                        aceEditor.setAutoScrollEditorIntoView(true);
+                        ace.config.loadModule('ace/ext/language_tools', function () {
+                            aceEditor.setOptions({
+                                enableBasicAutocompletion: true,
+                                enableSnippets: true
+                            });
+                        });
+                        $('#aceEditor_container_' + id).css('z-index', '9997');
+                        var view = function(e) {
+                            if (e.data.name == 'source') {
+                                editor.setData(aceEditor.getSession().getValue(), function() { }, false);
+                                aceEditor.destroy();
+                                $('#aceEditor_container_' + id).remove();
+                                editor.removeListener('beforeCommandExec', view);
+                                editor.removeListener('resize', resize);
+                                editor.removeListener('afterCommandExec', maximize);
+                                editor.fire('dataReady');
+                            }
+                        };
+                        var maximize = function(e) {
+                            if (e.data.name == 'maximize') {
+                                if (e.data.command.state == 1) {
+                                    $('#aceEditor_container_' + id).css('z-index', '9997');
+                                } else {
+                                    $('#aceEditor_container_' + id).css('z-index', 'auto');
+                                }
+                            }
+                        };
+                        var resize = function() {
+                            $('#aceEditor_container_' + id).css(holder.position()).width(holder.width()).height(holder.height());
+                            aceEditor.resize(true);
+                        };
+                        var update = function () {
+                            editor.setData(aceEditor.getSession().getValue(), function () {
+                                aceEditor.blur();
+                                aceEditor.focus();
+                            }, false);
+                            return false;
+                        };
+                        aceEditor.getSession().on('change', update);
+                        editor.on('beforeCommandExec', view);
+                        editor.on('resize', resize);
+                        editor.on('afterCommandExec', maximize);
+                        editor.aceEditor = aceEditor;
+                    }
+                });
+            }
+        });
+        CKEDITOR.on('instanceReady', function(ev) {
+            var name = ev.editor.name;
+            if (height = $.cookie(name)) {
+                height = height.split(',')
+                ev.editor.resize(false, height[0]);
+            }
+            ev.editor.on('resize',function(ev) {
+                container = ev.editor.container.find('.cke_contents');
+                height = $(container.$).height() + 50;
+                $.cookie(name, [height]);
+             });
+         });
     }
 
     /* Sortable */

@@ -37,11 +37,14 @@ class Application
             return $tag->cutContent();
         });
 
+        $views->addAccessorSmart("codename", "'". self::CODENAME ."'");
+        $views->addAccessorSmart("version", "'". self::VERSION ."'");
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
         $views->addAccessorSmart("site", "site", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("section", "section", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessorSmart("infobox", "infobox", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("parents", "parents", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
 
@@ -65,6 +68,13 @@ class Application
                 $container = new Storage\Container();
                 // Определение родительских разделов
                 $views->parents = $views->section->parents()->orderByAsc('path')->findMany();
+
+                // Определение используемых инфобоксов
+                if (false === ($views->infobox = $views->section->infobox())) {
+                    if (false !== ($parent = $views->section->parents()->whereNotNull('model')->orderByDesc('path')->findOne())) {
+                        $views->infobox = $parent->infobox();
+                    }
+                }
 
                 // Определение идентификатора макета дизайна
                 if (false !== $views->section && (null !== ($template = $views->section->template))) {

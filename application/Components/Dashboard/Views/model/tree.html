@@ -1,0 +1,41 @@
+{*
+ * Шаблон для построения дерева
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $json = []}
+{if $.request.model ? && ($model = $.schema->findOne($.request.model))}
+    {set $fields = $model->field()->findMany()}
+    {set $protect = ($.model->factory($model->name)->filter('fields'))|array_column:'field'}
+    {foreach $fields as $field}
+        {set $json[] = [
+            'id' => 'field_' ~ $field.field,
+            'label' => $field.field,
+            'link' => $.component ~ '/field/set.html?model=' ~ $model.name ~ '&field=' ~ $field.field,
+            'model' => $model.name,
+            'icon' => 'glyphicon-flash',
+            'color' => ($field.field in $protect|array_merge:['section']) ? 'grey' : 'blue'
+        ]}
+    {/foreach}
+{else}
+    {set $models = $.schema->findMany()}
+    {foreach $models as $model}
+        {set $json[] = [
+            'id' => 'model_' ~ $model.name,
+            'label' => $model.name,
+            'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
+            'active' => 1,
+            'load_on_demand' => 1,
+            'icon' => 'glyphicon-list-alt',
+            'color' => $model.class_name ? 'grey' : 'blue'
+        ]}
+    {/foreach}
+{/if}
+{$json|json_encode}
+{exit}
+{/block}

@@ -45,6 +45,9 @@
 {if ! $section->extension}
     {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section]}
 {/if}
+{if $section->infobox.model ?}
+    {set $menu.second.left.object = [ 'title' => 'Объекты', 'link' => $.component ~ '/row/list.html?section=' ~ $.request.section]}
+{/if}
 {set $menu.second.right = [
     [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $section.id ],
     [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $section.id, 'class' => 'active' ]

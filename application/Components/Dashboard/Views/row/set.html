@@ -1,0 +1,79 @@
+{*
+ * Шаблон для изменения заданного объекта модели данных
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{use 'component:site/add.html'}
+{import 'component:site/add.html'}
+
+{block 'component_set'}{parent}
+{if $.request.section ? &&
+    ($section = $.model->factory('Section')->findOne($.request.section)) &&
+    ($model = $section->infobox['model']) &&
+    ($row = $section->infobox()->findOne($.request.row))}
+
+    {set $site = $section->site()->findOne()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+
+    {set $schema = $.schema->findOne($model)}
+    {set $protect = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
+    {set $fields = $schema->field()->whereNotIn('field', $protect)->findMany()}
+{else}
+    {exit}
+{/if}
+
+{if $.request.apply !}
+    {if $row->set($.request)->save()}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Данные объекта успешно обновлены.
+        </div>
+        {/set}
+        {var $.request = array_merge($.request, $row->asArray())}
+    {else}
+        {set $message}
+        <div class="alert alert-danger alert-dismissable">
+           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+           <span class="glyphicon glyphicon-remove"></span>
+           Не удалось сохранить изменения.
+        </div>
+        {/set}
+    {/if}
+{/if}
+
+{var $.request = array_merge($row->asArray(), $.request)}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{set $tree.open_nodes[] = 'section_' ~ $section->id}
+{set $tree.selected_node[] = 'section_' ~ $section->id}
+{/block}
+
+{block 'component_content'}{parent}
+{if ! $fields}
+<div class="alert alert-info">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    Нет доступных полей для заполнения.
+</div>
+{else}
+<form id="set" action="{$.component}/row/set.html?section={$row.section}&row={$row.id}&apply" method="post">
+    {macro.additional fields=$fields}
+</form>
+{/if}
+{/block}
+
+{block 'component_footer'}
+<input class="btn btn-default" type="submit" role="button" value="Сохранить изменения" form="set">
+<div class="pull-right">
+    <a class="btn btn-default" href="{$.component}/row/set.html?section={$row.section}&row={$row.id}" role="button">Отменить изменения</a>
+</div>
+{/block}
