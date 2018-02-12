@@ -211,6 +211,24 @@ textarea.ui-resizable + div.ui-resizable-handle,
     border: 1px solid #e5e5e5;
 }
 
+/* CKEditor */
+.cke_editor_text {
+    border-radius: 2px;
+}
+.cke_resizer_vertical {
+    margin: 0px !important;
+    position: absolute !important;
+    display: block !important;
+    left: 0;
+    bottom: 0;
+    width: 100% !important;
+    height: 11px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    border: initial !important;
+    cursor: s-resize !important;
+}
+
 .badge-group {
   color: #707070;
   white-space: nowrap;

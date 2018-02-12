@@ -46,6 +46,14 @@
 
 {* Построение основного меню *}
 {set $menu.main.left.model.class="active"}
+{set $menu.second = [
+    'left' => [
+        ['title' => 'Поля', 'link' => $.component ~ '/field/list.html?model=' ~ $model.name ]
+    ],
+    'right' => [
+        ['title' => 'Изменение настроек', 'link' => $.component ~ '/field/set.html?model=' ~ $model.name ~ '&field=' ~ $field.field, 'class' => 'active' ]
+    ]
+]}
 
 {* Построение древовидного меню *}
 {set $tree.open_nodes = ['model_' ~ $model.name]}
@@ -73,4 +81,26 @@
 <div class="pull-right">
     <a class="btn btn-default" href="{$.component}/field/set.html?model={$model.name}&field={$field.field}" role="button">Отменить изменения</a>
 </div>
+{/block}
+
+{block 'component_script'}
+{parent}
+<script>
+$('[name=aspect]').on("change", function (e) {
+    $('[name=default] option[data-sure!=true]').remove();
+    $('[name=editor],[name=join],[name=column]').prop('disabled', 'disabled').parent().addClass('hidden');
+    switch ($(this).val()) {
+        case 'boolean':
+            var options = [new Option("истина", "1"), new Option("ложь", "0")];
+            $('[name=default]').select2().prepend(options);
+            break;
+        case 'text':
+            $('[name=default]').select2();
+            $('[name=editor]').prop('disabled', false).parent().removeClass('hidden');
+            break;
+        default:
+            $('[name=default]').select2($.fn.select2.tags);
+    }
+}).trigger("change");
+</script>
 {/block}
