@@ -25,14 +25,14 @@ class Accessor {
         'server'  => '$_SERVER',
         'env'     => '$_ENV'
     );
-    
+
     /**
      * @param string $chain template's method name
      * @param Tokenizer $tokens
      * @param Template $tpl
      * @return string
      */
-    public static function parserChain($chain, Fenom\Tokenizer $tokens, Fenom\Template $tpl)
+    public static function parserChain($chain, Fenom\Tokenizer $tokens, Template $tpl)
     {
         return $tpl->parseChain($tokens, '$tpl->getStorage()->'. $chain);
     }

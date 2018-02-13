@@ -20,7 +20,7 @@ class Template extends Fenom\Template
      * @param string $code start point (it is $var)
      * @return string
      */
-    public function parseChain(Tokenizer $tokens, $code)
+    public function parseChain(Fenom\Tokenizer $tokens, $code)
     {
         do {
             if ($tokens->is('(')) {
@@ -29,8 +29,10 @@ class Template extends Fenom\Template
             if ($tokens->is(T_OBJECT_OPERATOR) && $tokens->isNext(T_STRING)) {
                 $code .= '->' . $tokens->next()->getAndNext();
             }
+            if ($tokens->is('.')) {
+                $code = $this->parseVariable($tokens, $code);
+            }
         } while ($tokens->is('(', T_OBJECT_OPERATOR));
-
         return $code;
     }
 }
