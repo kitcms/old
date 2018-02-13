@@ -98,22 +98,22 @@
             </div>
         </div>
         {/macro}{macro.main}
-        {macro meta}
+        {macro meta($meta=false)}
         <div class="tab-pane {if 'meta' == $.cookie.tabs}active{/if}" id="meta">
             <div class="form-group">
-                <label class="label-light required" for="meta_title">Заголовок (тег title)</label>
-                <input class="form-control" type="text" value="{$.request.meta.title|e}" name="meta[title]" id="meta_title">
+                <label class="label-light required" for="meta_title">Заголовок страницы <span class="badge">meta.title</span></label>
+                <input class="form-control" type="text" value="{$.request.meta.title|e}" name="meta[title]" id="meta_title" placeholder="{if $meta.title ?}{$meta.title}{/if}">
                 <span class="help-block">Хороший заголовок должен включать ключевые слова
                 и их лучше использовать вначале заголовка.</span>
             </div>
             <div class="form-group">
-                <label class="required" for="meta_description">Короткое описание (мета тег description)</label>
-                <textarea class="form-control" rows="4" data-resizable="true" name="meta[description]" id="meta_description">{$.request.meta.description|e}</textarea>
+                <label class="required" for="meta_description">Описание страницы <span class="badge">meta.description</span></label>
+                <textarea class="form-control" rows="4" data-resizable="true" name="meta[description]" id="meta_description" placeholder="{if $meta.description ?}{$meta.description}{/if}">{$.request.meta.description|e}</textarea>
                 <span class="help-block"></span>
             </div>
             <div class="form-group">
-                <label class="required" for="meta_keywords">Ключевые слова (мета тег keywords)</label>
-                <select class="form-control" name="meta[keywords][]" id="meta_keywords" role="tags" multiple>
+                <label class="required" for="meta_keywords">Ключевые слова <span class="badge">meta.keywords</span></label>
+                <select class="form-control" name="meta[keywords][]" id="meta_keywords" role="tags" data-placeholder="{if $meta.keywords ?}{$meta.keywords|join}{/if}" multiple>
                 {foreach $.request.meta.keywords as $keyword}
                     <option value="{$keyword|e}" selected>{$keyword|e}</option>
                 {/foreach}
@@ -124,7 +124,7 @@
                 не использует его для оценки содержания страницы</span>
             </div>
         </div>
-        {/macro}{macro.meta}
+        {/macro}{macro.meta meta=$site.meta}
         {macro additional($fields, $infobox=false)}
         <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if}" id="additional">
         {foreach $fields as $field}

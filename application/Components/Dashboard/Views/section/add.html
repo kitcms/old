@@ -65,12 +65,19 @@
     ]
 ]}
 
-{* Построение древовидного меню *}
+{* Построение древовидного меню и определение мета данных *}
+{set $meta = $site.meta}
 {set $tree.open_nodes[] = 'site_' ~ $site->id}
 {foreach $parents as $parent}
     {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+    {foreach $parent->meta as $tag => $value}
+        {if $value ?}{set $meta[$tag] = $value}{/if}
+    {/foreach}
 {/foreach}
 {if $section ?}
+    {foreach $section->meta as $tag => $value}
+        {if $value ?}{set $meta[$tag] = $value}{/if}
+        {/foreach}
     {set $tree.open_nodes[] = 'section_' ~ $section->id}
     {set $tree.selected_node[] = 'section_' ~ $section->id}
 {else}
@@ -116,7 +123,7 @@
             </div>
         </div>
         {/macro}{macro.main}
-        {macro.meta}
+        {macro.meta meta=$meta}
         {macro.additional fields=$additionals}
         {macro.template templates=$templates inherit=true}
         {macro infobox($models)}

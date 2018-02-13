@@ -124,8 +124,8 @@
         tokenSeparators: [',', ' '],
         language: {
             noResults: function (params, el) {
-                return null;
-            }
+                return 'не задано';
+            },
         }
     }
 

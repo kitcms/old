@@ -54,10 +54,14 @@
     [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $section.id ]
 ]}
 
-{* Построение древовидного меню *}
+{* Построение древовидного меню и определение мета данных *}
+{set $meta = $site.meta}
 {set $tree.open_nodes[] = 'site_' ~ $site->id}
 {foreach $parents as $parent}
     {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+    {foreach $parent->meta as $tag => $value}
+        {if $value ?}{set $meta[$tag] = $value}{/if}
+    {/foreach}
 {/foreach}
 {set $tree.open_nodes[] = 'section_' ~ $section->id}
 {set $tree.selected_node[] = 'section_' ~ $section->id}
@@ -85,7 +89,7 @@
     </ul>
     <div class="tab-content">
         {macro.main}
-        {macro.meta}
+        {macro.meta meta=$meta}
         {macro.template templates=$templates inherit=true}
         {macro.infobox models=$models}
     </div>
