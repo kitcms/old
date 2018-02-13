@@ -315,6 +315,7 @@ class Schema extends ORM
             $row = array_change_key_case($row);
             // Переопределение значений при условии, что они заданы в комментарии
             if (null !== ($parts = json_decode($row['comment'], true))) {
+                $row['comment'] = '';
                 $row = array_merge($row, $parts);
             }
             $rows[] = $row;
