@@ -196,7 +196,7 @@ class Schema extends ORM
                 'ENGINE '. $this->_quoteIdentifier($this->engine),
                 'DEFAULT CHARACTER SET '. $this->_quoteIdentifier(current(explode('_', $this->collation))),
                 'COLLATE '. $this->_quoteIdentifier($this->collation),
-                'COMMENT \''. $this->comment .'\'',
+                'COMMENT \''. $this->getDirty('comment') .'\'',
                 'AUTO_INCREMENT 1'
             );
             return $this->_joinIfNotEmpty(" ", $fragments);

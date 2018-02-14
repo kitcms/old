@@ -89,6 +89,9 @@
                 {foreach $.request.groups as $group}
                     <option value="{$group|e}" selected>{$group|e}</option>
                 {/foreach}
+                {if ! $.request.groups}
+                    <option value="Основная информация" selected>Основная информация</option>
+                {/if}
                 </select>
                 <span class="help-block"></span>
             </div>

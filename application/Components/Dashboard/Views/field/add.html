@@ -123,10 +123,10 @@
                 <label class="required" for="groups">Группа</label> <span class="badge pull-right">group</span>
                 <select class="form-control" name="group" id="group" role="simple">
                 {set $schema = $.schema->findOne($.request.model)}
-                    <option value="">не задана</option>
                 {foreach $schema.groups as $group}
                     <option value="{$group|e}" {if $group === $.request.group}selected{/if}>{$group|e}</option>
                 {/foreach}
+                    <option value="">не задана</option>
                 </select>
                 <span class="help-block"></span>
             </div>

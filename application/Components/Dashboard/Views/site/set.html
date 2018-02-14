@@ -107,35 +107,7 @@
         {macro.main}
         {macro.meta}
         {macro.additional fields=$additionals}
-        <div class="tab-pane {if 'service' == $.cookie.tabs}active{/if}" id="service">
-            <div class="form-group">
-                <label class="required" for="index">Главная страница</label>
-                <select class="form-control" name="types[1]" id="index" role="section">
-                    <option value='' {if ! $.request.types.1}selected{/if}>Не определена</option>
-                {foreach $sections as $section}
-                    <option value="{$section.id}" data-keyword="{$section.keyword}" data-level="{$section.path|split:'/'|count}" {if $section.id == $.request.types.1}selected{/if}>{$section.title}</option>
-                {/foreach}
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="required" for="error">Страница не найдена</label>
-                <select class="form-control" name="types[0]" id="error" role="section">
-                    <option value='' {if ! $.request.types.0}selected{/if}>Не определена</option>
-                {foreach $sections as $section}
-                    <option value="{$section.id}" data-keyword="{$section.keyword}" data-level="{$section.path|split:'/'|count}" {if $section.id == $.request.types.0}selected{/if}>{$section.title}</option>
-                {/foreach}
-                </select>
-            </div>
-            <hr>
-            <div class="form-group">
-                <label class="required" for="dashboard">Адрес административной части сайта</label>
-                    <div class="input-group">
-                        <span class="input-group-addon">http://{$site->host}/</span>
-                        <input class="form-control" type="text" value="{$.request.dashboard|e}" name="dashboard" id="dashboard">
-                    </div>
-                <span class="help-block">Изменение параметра означает изменение URL-адреса панели администрирования. Не меняйте этот параметр, если не уверены в результате!</span>
-            </div>
-        </div>
+        {macro.service sections=$sections}
         {macro.template templates=$templates}
     </div>
 </form>

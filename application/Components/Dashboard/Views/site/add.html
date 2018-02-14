@@ -60,6 +60,7 @@
     {if $additionals ?}
         <li class="{if 'additional' == $.cookie.tabs}active{/if}"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     {/if}
+        <li class="{if 'service' == $.cookie.tabs}active{/if}"><a href="#service" data-toggle="tab">Служебные настройки</a></li>
         <li class="{if 'template' == $.cookie.tabs}active{/if}"><a href="#template" data-toggle="tab">Макет дизайна</a></li>
     </ul>
     <div class="tab-content">
@@ -125,6 +126,39 @@
             </div>
         </div>
         {/macro}{macro.meta}
+        {macro service($sections=false)}
+        <div class="tab-pane {if 'service' == $.cookie.tabs}active{/if}" id="service">
+            {if $sections ?}
+            <div class="form-group">
+                <label class="required" for="index">Главная страница</label>
+                <select class="form-control" name="types[1]" id="index" role="section">
+                    <option value='' {if ! $.request.types.1}selected{/if}>Не определена</option>
+                {foreach $sections as $section}
+                    <option value="{$section.id}" data-keyword="{$section.keyword}" data-level="{$section.path|split:'/'|count}" {if $section.id == $.request.types.1}selected{/if}>{$section.title}</option>
+                {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="required" for="error">Страница не найдена</label>
+                <select class="form-control" name="types[0]" id="error" role="section">
+                    <option value='' {if ! $.request.types.0}selected{/if}>Не определена</option>
+                {foreach $sections as $section}
+                    <option value="{$section.id}" data-keyword="{$section.keyword}" data-level="{$section.path|split:'/'|count}" {if $section.id == $.request.types.0}selected{/if}>{$section.title}</option>
+                {/foreach}
+                </select>
+            </div>
+            <hr>
+            {/if}
+            <div class="form-group">
+                <label class="required" for="dashboard">Адрес административной части сайта</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">{if $.root ?}/{$.root}{/if}/</span>
+                        <input class="form-control" type="text" value="{$.request.dashboard|e}" name="dashboard" id="dashboard" {if ! $.request.dashboard}placeholder="admin"{/if}>
+                    </div>
+                <span class="help-block">Изменение параметра означает изменение URL-адреса панели администрирования. Не меняйте этот параметр, если не уверены в результате!</span>
+            </div>
+        </div>
+        {/macro}{macro.service}
         {macro additional($fields, $infobox=false)}
         <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if}" id="additional">
         {foreach $fields as $field}
