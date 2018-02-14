@@ -64,9 +64,16 @@
     <div class="tab-content">
         {macro main($protect=false)}
         <div class="tab-pane {if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}" id="main">
+            <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
+                <div class="form-group">
+                    <label class="label-light required" for="title">Название поля</label>
+                    <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
+                    <span class="help-block"></span>
+                </div>
+            </div>
             <div class="control-group has-warning {if $.request.apply ! && ! $.request.field}has-error{/if}">
                 <div class="form-group">
-                    <label class="label-light required" for="field">Название поля</label>
+                    <label class="label-light required" for="field">Ключевое слово</label>
                     <input class="form-control" type="text" value="{$.request.field|e}" name="field" id="field" oninput="this.value = this.value.replace(/\W/g, '')" {if $.request.field in $protect}disabled{/if}>
                     <span class="help-block">Является полем в таблице базы данных, пишется с помощью латинского алфавита.</span>
                 </div>
@@ -108,6 +115,18 @@
                 <select class="form-control" name="editor" id="editor" role="simple">
                     <option value="">не использовать</option>
                     <option value="ckeditor" {if 'ckeditor' === $.request.editor}selected{/if}>CKEditor</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="groups">Группа</label> <span class="badge pull-right">group</span>
+                <select class="form-control" name="group" id="group" role="simple">
+                {set $schema = $.schema->findOne($.request.model)}
+                    <option value="">не задана</option>
+                {foreach $schema.groups as $group}
+                    <option value="{$group|e}" {if $group === $.request.group}selected{/if}>{$group|e}</option>
+                {/foreach}
                 </select>
                 <span class="help-block"></span>
             </div>

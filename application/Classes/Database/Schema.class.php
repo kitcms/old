@@ -70,13 +70,20 @@ class Schema extends ORM
         parent::create($data);
 
         if ('field' === $this->_getIdColumnName()) {
-            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
-            $data = array_diff_key($this->_data, $fill);
-            foreach (array_keys($data) as $key) {
-                unset($this->_dirty_fields[$key]);
-            }
-            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $fill = array_fill_keys(array('field','type','collation','null',
+                'key','default','extra','privileges','after','first','model','apply'), null);
+
+        } else {
+            $fill = array_fill_keys(array('name','engine','version','row_format',
+                'rows','avg_row_length','data_length','max_data_length','index_length',
+                'data_free','auto_increment','create_time','update_time','check_time',
+                'collation','checksum','create_options', 'model', 'apply'), null);
         }
+        $data = array_diff_key($this->_data, $fill);
+        foreach (array_keys($data) as $key) {
+            unset($this->_dirty_fields[$key]);
+        }
+        $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }
@@ -160,13 +167,19 @@ class Schema extends ORM
             }
         }
         if ('field' === $this->_getIdColumnName()) {
-            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
-            $data = array_diff_key($this->_data, $fill);
-            foreach (array_keys($data) as $key) {
-                unset($this->_dirty_fields[$key]);
-            }
-            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $fill = array_fill_keys(array('field','type','collation','null','key',
+                'default','extra','privileges','after','first','model','apply'), null);
+        } else {
+            $fill = array_fill_keys(array('name','engine','version','row_format',
+                'rows','avg_row_length','data_length','max_data_length','index_length',
+                'data_free','auto_increment','create_time','update_time','check_time',
+                'collation','checksum','create_options', 'model', 'apply'), null);
         }
+        $data = array_diff_key($this->_data, $fill);
+        foreach (array_keys($data) as $key) {
+            unset($this->_dirty_fields[$key]);
+        }
+        $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         return $this;
     }
 

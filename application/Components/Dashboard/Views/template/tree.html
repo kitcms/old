@@ -17,6 +17,7 @@
             'link' => $.component ~ '/template/list.html?template=' ~ $template->id,
             'keyword' => $template->keyword,
             'load_on_demand' => $template->children()->count(),
+            'demand_url' => $.component ~ '/template/tree.html?template=' ~  ~ $template.id,
             'icon' => 'glyphicon-picture',
             'color' => $template->active ? 'blue' : 'grey'
     ]}

@@ -82,6 +82,16 @@
                 </select>
                 <span class="help-block"></span>
             </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="groups">Группы полей</label> <span class="badge pull-right">groups</span>
+                <select class="form-control" name="groups[]" id="groups" role="tags" multiple>
+                {foreach $.request.groups as $group}
+                    <option value="{$group|e}" selected>{$group|e}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
         </div>
         {/macro}{macro.main}
     </div>

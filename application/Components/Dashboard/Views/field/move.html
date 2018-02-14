@@ -1,0 +1,27 @@
+{*
+ * Шаблон для перемещения разделов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $moved = $.request.moved|split:'_'}
+{set $target = $.request.target|split:'_'}
+{set $position = $.request.position}
+{if $.request.model ? &&
+    ($schema = $.schema->findOne($.request.model)) &&
+    ($field = $schema->field()->findOne(next($moved)))}
+    {if 'group' === $target[0] && 'inside' === $position}
+        {do $field->set('group', $target[1])}
+    {elseif $after = $schema->field()->findOne(next($target))}
+        {do $field->set('after', $after.field)->set('group', $after.group)}
+    {elseif 'model' === $target[0] && 'inside' === $position}
+        {do $field->set('first', true)->set('group', '')}
+    {/if}
+    {$field->save()|json_encode}
+{/if}
+{exit}
+{/block}

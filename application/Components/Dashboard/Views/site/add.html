@@ -130,7 +130,7 @@
         {foreach $fields as $field}
         {if 'NO' === $field.null}<div class="control-group has-warning {if $.request.apply ! && ! $.request[$field.field]}has-error{else}has-warning{/if}">{/if}
             <div class="form-group">
-                <label class="required" for="{$field.field}">{$field.comment} <span class="badge">{$field.aspect}</span></label>
+                <label class="required" for="{$field.field}">{$field.title}</label> <span class="badge pull-right">{$field.aspect}</span>
     {switch $field.aspect ?: $field.type}
         {case 'text'}
             {if $field.editor ?}
@@ -142,7 +142,7 @@
         {case default}
                 <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
     {/switch}
-                <span class="help-block"></span>
+                <span class="help-block">{$field.comment}</span>
             </div>
         {if 'NO' === $field.null}</div>{/if}
         {/foreach}

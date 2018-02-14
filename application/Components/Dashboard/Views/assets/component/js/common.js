@@ -57,8 +57,7 @@
     window.tree.tree({
         dataUrl: function(node) {
             if (node) {
-                id = node.id.split('_');
-                return location.component + '/' + id[0] + '/tree.html?' + id[0] +'=' + id[1];
+                return node.demand_url;
             } else {
                 return $('#tree').data('url');
             }
@@ -83,7 +82,7 @@
         },
         onCanMove: function(node) {
             id = node.id.split('_');
-            if ('group' == id[0] || 'user' == id[0] || 'model' == id[0] || 'field' == id[0]) return false;
+            if ('group' == id[0] || 'user' == id[0] || 'model' == id[0]) return false;
             else return true;
         },
         onCanMoveTo: function(moved, target, position) {
@@ -93,6 +92,10 @@
             if ('site' == move[0] && 'section' == targe[0]) return false;
             else if ('site' == move[0] && 'site' == targe[0] && 'inside' == position) return false;
             else if ('section' == move[0] && 'site' == targe[0] && ('before' == position || 'after' == position)) return false;
+            // Модели данных
+            else if ('field' == move[0] && 'field'== targe[0] && 'inside' == position) return false;
+            else if ('field' == move[0] && 'group'== targe[0] && 'after' == position) return false;
+            else if ('field' == move[0] && 'model'== targe[0] && 'after' == position) return false;
             else return true;
         },
         onCanSelectNode: function(node) {
@@ -106,6 +109,9 @@
         target = event.move_info.target_node.id;
         position = event.move_info.position;
         path = moved.split('_')[0];
+        if ('field' === path) {
+            moved = moved + '&model=' + event.move_info.moved_node.model;
+        }
         url = location.component + '/' + path + '/move.html?moved=' + moved + '&target=' + target + '&position=' + position;
         $.ajax({
             url: url,
@@ -121,7 +127,7 @@
     $.fn.select2.defaults.set("width", "100%");
     $.fn.select2.tags = {
         tags: true,
-        tokenSeparators: [',', ' '],
+        tokenSeparators: [','],
         language: {
             noResults: function (params, el) {
                 return 'не задано';
@@ -179,7 +185,7 @@
             var ul = $(select).next('.select2-container').first('ul.select2-selection__rendered');
             ul.sortable({
                 placeholder: 'ui-state-highlight',
-                containment: 'parent',
+                //containment: 'parent',
                 placeholder: {
                     element: function(currentItem) {
                         return $("<li>").addClass('ui-state-highlight')

@@ -18,6 +18,7 @@
             'link' => $.component ~ ($section->infobox.model ? '/row/list.html?section=' : '/section/list.html?section=') ~ $section->id,
             'keyword' => $section->keyword,
             'load_on_demand' => $section->children()->count(),
+            'demand_url' => $.component ~ '/section/tree.html?section=' ~  ~ $section->id,
             'icon' => $section->infobox.model ? 'glyphicon-inbox' : ($section->extension ? 'glyphicon-file' : 'glyphicon-folder-open'),
             'color' => $section->active ? 'blue' : 'grey'
         ]}
@@ -31,6 +32,7 @@
             'link' => $.component ~ '/section/list.html?site=' ~ $site->id,
             'keyword' => $site->host,
             'load_on_demand' => $site->section()->count(),
+            'demand_url' => $.component ~ '/site/tree.html?site=' ~  ~ $site->id,
             'icon' => 'glyphicon-globe',
             'color' => $site->active ? 'blue' : 'grey'
         ]}
