@@ -23,9 +23,9 @@ if (isset($views) && $views instanceof Fenom) {
     $views->addProvider('component', $provider);
 
     $views->addAccessorSmart("component", "component", Template\Engine::ACCESSOR_PROPERTY);
-    $views->component = '/admin';
+    $views->component = $request->getBasePath() .'/admin';
     if ($views->site) {
-        $views->component = '/' . $views->site->dashboard;
+        $views->component = $request->getBasePath(). '/' . $views->site->dashboard;
     }
 
     // Настройка файлового менеджера
@@ -38,9 +38,8 @@ if (isset($views) && $views instanceof Fenom) {
     });
 
     // Сопоставление шаблона с маршрутом
-    $path = substr(trim($request->getPath(), '/'), strlen($views->component));
+    $path = substr(trim($request->getPath(), '/'), strlen(substr($views->component, strlen($request->getBasePath()))));
     $template = $path .'/'. $request->getBaseName();
-
     if ($provider->templateExists($template)) {
         if ($mimeType = $request->getMimeType()) {
             header('Content-Type: '. $mimeType);
