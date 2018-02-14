@@ -173,6 +173,47 @@
         }
     });
 
+    $.fn.extend({
+        select2_sortable: function(){
+            var select = $(this);
+            var ul = $(select).next('.select2-container').first('ul.select2-selection__rendered');
+            ul.sortable({
+                placeholder: 'ui-state-highlight',
+                containment: 'parent',
+                placeholder: {
+                    element: function(currentItem) {
+                        return $("<li>").addClass('ui-state-highlight')
+                            .height($(currentItem).outerHeight())
+                            .width($(currentItem).outerWidth());
+                    },
+                    update: function() {
+                        return;
+                    }
+                },
+                items: 'li:not(.select2-search)',
+                tolerance: 'pointer',
+                stop: function() {
+                    $($(ul).find('.select2-selection__choice').get().reverse()).each(function() {
+                        var id = $(this).attr('title').replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+                        var option = select.find('option[value="' + id + '"]')[0];
+                        $(select).prepend(option);
+                    });
+                }
+            });
+        }
+    });
+
+    $('select[multiple]').each(function() {
+        $(this).select2_sortable();
+        length = $(this).find('option:selected').length;
+        $(this).prev('.count').html(length);
+        $(this).on("change", function (e) {
+            length = $(this).find('option:selected').length;
+            $(this).prev('.count').html(length);
+            //console.log($(e.target).find('option:selected').length);
+        });
+    });
+
     if (typeof ace != "undefined") {
         $('pre').each(function() {
             var editor = ace.edit(this), name = $(this).attr('data-name');

@@ -67,7 +67,7 @@
         <div class="tab-pane {if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}" id="main">
             <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
                 <div class="form-group">
-                    <label class="label-light required" for="title">Название сайта</label>
+                    <label class="label-light required" for="title">Название сайта</label> <span class="badge pull-right">site.title</span>
                     <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
                     <span class="help-block"></span>
                 </div>
@@ -75,14 +75,14 @@
             <hr>
             <div class="control-group has-warning {if $.request.apply ! && ! $.request.host}has-error{/if}">
                 <div class="form-group">
-                    <label class="required" for="host">Основной домен </label>
+                    <label class="required" for="host">Основной домен</label> <span class="badge pull-right">site.host</span>
                     <input class="form-control" type="text" value="{!$.request.host ? $.server.http_host : $.request.host|e}" name="host" id="host">
                     <span class="help-block"></span>
                 </div>
             </div>
             <div class="form-group">
                 <input type="hidden" name="alias">
-                <label class="required" for="alias">Зеркала</label>
+                <label class="required" for="alias">Зеркала</label> <span class="badge pull-right">site.alias</span>
                 <select class="form-control" name="alias[]" id="alias" role="tags" multiple>
                 {foreach $.request.alias as $alias}
                     <option value="{$alias|e}" selected>{$alias|e}</option>
@@ -92,7 +92,7 @@
             </div>
             <hr>
             <div class="form-group">
-                <label class="required" for="description">Описание</label>
+                <label class="required" for="description">Описание</label> <span class="badge pull-right">site.description</span>
                 <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
                 <span class="help-block"></span>
             </div>
@@ -101,18 +101,18 @@
         {macro meta($meta=false)}
         <div class="tab-pane {if 'meta' == $.cookie.tabs}active{/if}" id="meta">
             <div class="form-group">
-                <label class="label-light required" for="meta_title">Заголовок страницы <span class="badge">meta.title</span></label>
+                <label class="label-light required" for="meta_title">Заголовок страницы</label> <span class="badge pull-right">meta.title</span>
                 <input class="form-control" type="text" value="{$.request.meta.title|e}" name="meta[title]" id="meta_title" placeholder="{if $meta.title ?}{$meta.title}{/if}">
                 <span class="help-block">Хороший заголовок должен включать ключевые слова
                 и их лучше использовать вначале заголовка.</span>
             </div>
             <div class="form-group">
-                <label class="required" for="meta_description">Описание страницы <span class="badge">meta.description</span></label>
+                <label class="required" for="meta_description">Описание страницы</label> <span class="badge pull-right">meta.description</span>
                 <textarea class="form-control" rows="4" data-resizable="true" name="meta[description]" id="meta_description" placeholder="{if $meta.description ?}{$meta.description}{/if}">{$.request.meta.description|e}</textarea>
                 <span class="help-block"></span>
             </div>
             <div class="form-group">
-                <label class="required" for="meta_keywords">Ключевые слова <span class="badge">meta.keywords</span></label>
+                <label class="required" for="meta_keywords">Ключевые слова</label> <span class="badge pull-right">meta.keywords</span>
                 <select class="form-control" name="meta[keywords][]" id="meta_keywords" role="tags" data-placeholder="{if $meta.keywords ?}{$meta.keywords|join}{/if}" multiple>
                 {foreach $.request.meta.keywords as $keyword}
                     <option value="{$keyword|e}" selected>{$keyword|e}</option>
@@ -124,7 +124,7 @@
                 не использует его для оценки содержания страницы</span>
             </div>
         </div>
-        {/macro}{macro.meta meta=$site.meta}
+        {/macro}{macro.meta}
         {macro additional($fields, $infobox=false)}
         <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if}" id="additional">
         {foreach $fields as $field}
@@ -149,9 +149,10 @@
         </div>
         {/macro}{macro.additional fields=$additionals}
         {macro template($templates, $inherit = false)}
+        {set $parts = $.tpl.basename|split:'/'}
         <div class="tab-pane {if 'template' == $.cookie.tabs}active{/if}" id="template">
             <div class="form-group">
-                <label class="label-light required" for="keyword">Макет дизайна</label>
+                <label class="label-light required" for="keyword">Макет дизайна</label> <span class="badge pull-right">{$parts.0}.template</span>
                 <select class="form-control" name="template" role="template">
                     <option value="">Не задан</option>
                 {if $inherit ?}

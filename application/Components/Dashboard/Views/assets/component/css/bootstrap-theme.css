@@ -105,6 +105,7 @@ html, body {
 .main {
   height: inherit;
   height: calc(100% - 150px);
+  overflow: hidden;
 }
 .main .aside {
   position: relative;
