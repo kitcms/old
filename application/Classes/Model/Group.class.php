@@ -18,15 +18,17 @@ class Group extends Model
 
     protected $fields = array(
         array(
+            'title' => 'Название группы',
             'field' => 'title',
             'type' => 'varchar(255)',
-            'comment' => 'Название группы'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Описание',
             'field' => 'description',
             'type' => 'text',
             'null' => 'yes',
-            'comment' => 'Описание'
+            'group' => 'main'
         )
     );
 

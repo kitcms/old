@@ -18,27 +18,29 @@ class Template extends Model
 
     protected $fields = array(
         array(
+            'title' => 'Идентификатор родительского объекта',
             'field' => 'parent',
             'type' => 'int(10) unsigned',
             'key' => 'mul',
-            'default' => '0',
-            'comment' => 'Идентификатор родительского объекта'
+            'default' => '0'
         ),
         array(
+            'title' => 'Материализованный путь',
             'field' => 'path',
-            'type' => 'varchar(255)',
-            'comment' => 'Материализованный путь'
+            'type' => 'varchar(255)'
         ),
         array(
+            'title' => 'Название макета',
             'field' => 'title',
             'type' => 'varchar(255)',
-            'comment' => 'Название макета'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Описание',
             'field' => 'description',
             'type' => 'text',
             'null' => 'yes',
-            'comment' => 'Описание'
+            'group' => 'main'
         )
     );
 

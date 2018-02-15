@@ -18,46 +18,53 @@ class Site extends Model
 
     protected $fields = array(
         array(
+            'title' => 'Сайт',
             'field' => 'host',
             'type' => 'varchar(255)',
             'key' => 'uni',
-            'comment' => 'Сайт'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Зеркала сайта',
             'field' => 'alias',
             'type' => 'varchar(255)',
             'null' => 'yes',
-            'comment' => 'Зеркала сайта'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Идентификатор макета дизайна',
             'field' => 'template',
             'type' => 'int(10) unsigned',
             'null' => 'yes',
             'key' => 'mul',
-            'comment' => 'Идентификатор макета дизайна'
+            'group' => 'template'
         ),
         array(
+            'title' => 'Адрес административной части сайта',
             'field' => 'dashboard',
             'type' => 'varchar(255)',
             'default' => 'admin',
-            'comment' => 'Адрес административной части сайта'
+            'group' => 'service'
         ),
         array(
+            'title' => 'Название сайта',
             'field' => 'title',
             'type' => 'varchar(255)',
-            'comment' => 'Название сайта'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Описание',
             'field' => 'description',
             'type' => 'text',
             'null' => 'yes',
-            'comment' => 'Описание'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Метаинформация',
             'field' => 'meta',
             'type' => 'longtext',
             'null' => 'yes',
-            'comment' => 'Метаинформация'
+            'group' => 'meta'
         )
     );
 
