@@ -132,10 +132,22 @@
             noResults: function (params, el) {
                 return 'не задано';
             },
+        },
+        templateSelection: function(state, container) {
+            if ($(state.element).attr('locked')){
+                $(container).addClass('locked-tag');
+                state.locked = true;
+            }
+            return state.text;
         }
     }
 
-    $('[role="tags"]').select2($.fn.select2.tags);
+    $('[role="tags"]').select2($.fn.select2.tags).on('select2:unselecting', function(e) {
+        $(e.target).data('unselecting', true);
+        if ($(e.params.args.data.element).attr('locked')) {
+            return false;
+        }
+    });
 
     $('[role="simple"').select2();
 
