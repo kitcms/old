@@ -17,10 +17,6 @@
     {set $site = $section->site()->findOne()}
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
     {set $infobox = $section->infobox()}
-
-    {set $schema = $.schema->findOne($model)}
-    {set $protect = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
-    {set $fields = $schema->field()->whereNotIn('field', $protect)->findMany()}
 {else}
     {exit}
 {/if}
@@ -47,6 +43,12 @@
     {/if}
     {var $.request = array_merge($.request, $infobox->asArray())}
 {/if}
+
+{* Выборка необходимых данных *}
+{set $schema = $.schema->findOne($model)}
+{set $groups = $schema.groups}
+{set $fields = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
+{set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
 
 {* Формирование меню *}
 {set $menu.main.left.site.class="active"}
@@ -75,7 +77,19 @@
 </div>
 {else}
 <form id="add" action="{$.component}/row/add.html?section={$section.id}&apply" method="post">
-    {macro.additional fields=$fields}
+    <ul class="nav nav-tabs">
+    {foreach $groups as $keyword=>$group first=$first}
+        <li class="{if ('tab_' ~ $keyword) == $.cookie.tabs || (!$.cookie.tabs && $first)}active{/if}"><a href="#tab_{$keyword}" data-toggle="tab">{$group}</a></li>
+    {/foreach}
+    </ul>
+    <div class="tab-content">
+    {foreach $groups as $keyword => $group first=$first}
+        {set $keys = array_keys(array_column($fields, 'group'), $keyword)}
+        <div class="tab-pane {if ('tab_' ~ $keyword) == $.cookie.tabs || (!$.cookie.tabs && $first)}active{/if}" id="tab_{$keyword}">
+        {foreach $keys as $key}{macro.field field=$fields[$key]}{/foreach}
+        </div>
+    {/foreach}
+    </div>
 </form>
 {/if}
 {/block}

@@ -41,14 +41,14 @@
                 'color' => ($field.field in $protect|array_merge:['section']) ? 'grey' : 'blue'
             ]}
         {/foreach}
-        {foreach $model.groups as $group}
+        {foreach $model.groups as $keyword => $group}
             {set $json[] = [
-                'id' => 'group_' ~ $group,
+                'id' => 'group_' ~ $keyword,
                 'label' => $group,
                 'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
                 'model' => $model.name,
-                'load_on_demand' => ($groups[$group] ? ($groups[$group]|count) : 0),
-                'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name ~ '&group=' ~ $group,
+                'load_on_demand' => ($groups[$keyword] ? ($groups[$keyword]|count) : 0),
+                'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name ~ '&group=' ~ $keyword,
                 'icon' => 'glyphicon-flash',
                 'color' => 'blue'
             ]}

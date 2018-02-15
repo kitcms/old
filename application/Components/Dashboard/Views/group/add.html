@@ -7,6 +7,9 @@
  * @link      Kit.cms <http://www.kitcms.ru>
  *}
 
+ {use 'component:site/add.html'}
+ {import 'component:site/add.html'}
+
 {block 'component_set'}{parent}
 {set $menu.main.left.user.class="active"}
 {set $menu.second.left = [
@@ -36,6 +39,12 @@
     {/if}
 {/if}
 
+{* Выборка необходимых данных *}
+{set $schema = $.schema->findOne('Group')}
+{set $groups = $schema.groups}
+{set $fields = array_column($.model->factory('Group')->fields(), 'field')}
+{set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
+
 {* Построение древовидного меню *}
 {set $tree.open_nodes = []}
 {set $tree.selected_node = []}
@@ -45,30 +54,40 @@
 <div id="tree" data-url="{$.component}/group/tree.html"></div>
 {/block}
 
+{macro main}
+    <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
+        <div class="form-group">
+            <label class="label-light required" for="title">Название группы</label>
+            <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
+            <span class="help-block"></span>
+        </div>
+    </div>
+    <hr>
+    <div class="form-group">
+        <label class="required" for="description">Описание</label>
+        <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
+        <span class="help-block"></span>
+    </div>
+{/macro}
+
 {block 'component_content'}
 {parent}
 <form id="add" action="{$.component}/group/add.html?apply" method="post">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
+    {foreach $groups as $keyword=>$group first=$first}
+        <li class="{if ('tab_' ~ $keyword) == $.cookie.tabs || (!$.cookie.tabs && $first)}active{/if}"><a href="#tab_{$keyword}" data-toggle="tab">{$group}</a></li>
+    {/foreach}
     </ul>
     <div class="tab-content">
-        {macro main}
-        <div class="tab-pane active" id="main">
-            <div class="control-group has-warning {if $.request.apply ! && ! $.request.title}has-error{/if}">
-                <div class="form-group">
-                    <label class="label-light required" for="title">Название группы</label>
-                    <input class="form-control" type="text" value="{$.request.title|e}" name="title" id="title">
-                    <span class="help-block"></span>
-                </div>
-            </div>
-            <hr>
-            <div class="form-group">
-                <label class="required" for="description">Описание</label>
-                <textarea class="form-control" rows="4" data-resizable="true" name="description" id="description">{$.request.description|e}</textarea>
-                <span class="help-block"></span>
-            </div>
+    {foreach $groups as $keyword => $group first=$first}
+        {set $keys = array_keys(array_column($fields, 'group'), $keyword)}
+        <div class="tab-pane {if ('tab_' ~ $keyword) == $.cookie.tabs || (!$.cookie.tabs && $first)}active{/if}" id="tab_{$keyword}">
+        {switch $keyword}
+            {case 'main'}{macro.main}{if $keys ?}<hr>{/if}
+        {/switch}
+        {foreach $keys as $key}{macro.field field=$fields[$key]}{/foreach}
         </div>
-        {/macro}{macro.main}
+    {/foreach}
     </div>
 </form>
 {/block}
