@@ -20,11 +20,13 @@ class Schema extends ORM
     protected $_field_name;
 
     protected $aspects = array(
+        'identifier' => 'bigint(20) unsigned',
         'integer' => 'int(11)',
         'string' => 'varchar(255)',
         'text' => 'longtext',
         'boolean' => 'tinyint(1)',
-        'file' => 'longblob'
+        'file' => 'longblob',
+        'join' => 'char(20)'
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {

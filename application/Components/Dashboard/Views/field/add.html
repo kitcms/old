@@ -95,6 +95,31 @@
                     <option value="double" title="Число с плавающей запятой. Диапазон от -1.7976931348623157E+308 до -2.2250738585072014E-308." {if 'double' == $.request.aspect}selected{/if}>Число с плавающей запятой</option>
                     <option value="boolean" title="Двоичное число. Два возможных значения 0 (false) и 1 (true)." {if 'boolean' == $.request.aspect}selected{/if}>Логическая переменная</option>
                     <option value="file" title="Информация о файле" {if 'file' == $.request.aspect}selected{/if}>Информация о файле</option>
+                    <option value="join" title="Связь с другой моделью данных" {if 'join' == $.request.aspect}selected{/if}>Связь с моделью данных</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
+            {set $models = $.schema->findMany()}
+            <div class="form-group hidden">
+                <label class="label-light required" for="join">Модель данных</label>
+                <select class="form-control" name="join" id="join" role="simple">
+                {foreach $models as $model}
+                    {foreach $model->field()->findArray() as $column}
+                        {set $columns[$model.name][] = $column.field}
+                    {/foreach}
+                    <option value="{$model.name}" data-columns="{$columns[$model.name]|join}" {if $model.name === $.request.join}selected{/if}>{$model.name}</option>
+                {/foreach}
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group hidden">
+                <label class="label-light required" for="column">Отображаемое поле</label>
+                <select class="form-control" name="column" id="column" role="simple">
+            {if $.request.join ?}
+                {foreach $columns[$.request.join] as $column}
+                    <option value="{$column}" {if $column === $.request.column}selected{/if}>{$column}</option>
+                {/foreach}
+            {/if}
                 </select>
                 <span class="help-block"></span>
             </div>
@@ -215,6 +240,22 @@ function setDefault(type) {
             $('[name=default]').select2();
             $('a[href="#additional"]').parent().removeClass('hidden');
             $('#additional').removeClass('hidden').find('[name]').prop('disabled', false);
+            break;
+        case 'join':
+            $('[name=join],[name=column]').prop('disabled', false).parent().removeClass('hidden');
+            $('[name=default]').select2();
+            $('[name=join]').on("change", function (e) {
+                columns = $('[name=join] option[value=' + $(this).val() + ']').data('columns').split(',');
+                value = $('[name=column]').val();
+                $('[name=column] option').remove();
+                $.each(columns, function(key,val) {
+                     $('[name=column]').append(new Option(val, val));
+                });
+                if (value) {
+                    $('[name=column]').val(value);
+                }
+                $('[name=column]').trigger("change");
+            }).trigger("change");
             break;
         default:
             $('[name=default]').select2($.fn.select2.tags);

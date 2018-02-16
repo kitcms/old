@@ -424,9 +424,6 @@ textarea.ui-resizable + div.ui-resizable-handle,
     padding-top: 8px;
 }
 .form-group .progress {
-    margin-bottom: 0px;
-    margin-top: 8px;
-
     height: 19px;
     margin-bottom: 0px;
     margin: 5px 6px 7px;

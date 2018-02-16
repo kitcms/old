@@ -107,6 +107,22 @@ $('[name=aspect]').on("change", function (e) {
             $('a[href="#additional"]').parent().removeClass('hidden');
             $('#additional').removeClass('hidden').find('[name]').prop('disabled', false);
             break;
+        case 'join':
+            $('[name=join],[name=column]').prop('disabled', false).parent().removeClass('hidden');
+            $('[name=default]').select2();
+            $('[name=join]').on("change", function (e) {
+                columns = $('[name=join] option[value=' + $(this).val() + ']').data('columns').split(',');
+                value = $('[name=column]').val();
+                $('[name=column] option').remove();
+                $.each(columns, function(key,val) {
+                    $('[name=column]').append(new Option(val, val));
+                });
+                if (value) {
+                    $('[name=column]').val(value);
+                }
+                $('[name=column]').trigger("change");
+            }).trigger("change");
+            break;
         default:
             $('[name=default]').select2($.fn.select2.tags);
     }

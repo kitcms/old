@@ -173,20 +173,18 @@
     <div class="form-group">
         <label class="required" for="{$field.field}">{$field.title}</label> <span class="badge pull-right">{$field.field}</span>
 {switch $field.aspect ?: $field.type}
-{case 'text'}
-    {if $field.editor ?}
-        {set $editor[$field.editor] = true}
+    {case 'text'}
+        {if $field.editor ?}
+            {set $editor[$field.editor] = true}
         <textarea class="form-control {$field.editor}" rows="4" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
-    {else}
+        {else}
         <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
-    {/if}
-{case 'file'}
+        {/if}
+    {case 'file'}
         <input type="hidden" name="{$field.field}">
         <span class="count pull-right"></span>
         <select class="form-control file {$field.field}" name="{$field.field}[]" role="file" multiple="multiple">
         {foreach $.request[$field.field] as $file}
-            {print_r($file)}
-            {print_r($.root)}
             <option value='{$file|json_encode}'
                 {if $file.type ?}data-type='{$file.type}'{/if}
                 {if $file.size ?}data-size='{$file.size}'{/if}
@@ -204,7 +202,17 @@
         <div class="btn-group input-group-btn-upload pull-right" role="group">
             <button class="btn btn-default btn-clear" type="button">Очистить все</button>
         </div>
-{case default}
+    {case 'join'}
+        {set $rows = $.model->factory($field.join)->selectMany('id', $field.column)->findArray()}
+        <select class="form-control" name="{$field.field}" role="join">
+        {if 'YES' === $field.null}
+            <option value=''>Не задано</option>
+        {/if}
+        {foreach $rows as $row}
+            <option value='{$row.id}' {if $row.id === $.request[$field.field]|e}selected{/if}>{$row[$field.column]}</option>
+        {/foreach}
+        </select>
+    {case default}
         <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
 {/switch}
         <span class="help-block">{$field.comment}</span>
