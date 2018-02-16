@@ -60,7 +60,6 @@
 <form id="add" action="{$.component}/field/add.html?model={$model.name}&apply" method="post">
     <ul class="nav nav-tabs">
         <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
-        <li class="{if 'additional' == $.cookie.tabs}active{/if} hidden"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     </ul>
     <div class="tab-content">
         {macro main($protect=false)}
@@ -99,8 +98,34 @@
                 </select>
                 <span class="help-block"></span>
             </div>
+            <div class="form-group">
+                <label class="label-light required" for="default">Значение по умолчанию</label>
+                <select class="form-control" name="default" id="default" role="tags" {if $.request.field in $protect}disabled{/if}>
+                {if $.request.default ?}
+                    <option value="{$.request.default|e}" selected data-sure="true">{$.request.default|e}</option>
+                    <option value="NULL" data-sure="true">может быть пустым</option>
+                    <option value="" data-sure="true">обязательно для заполнения</option>
+                {else}
+                    <option value="NULL" data-sure="true">может быть пустым</option>
+                    <option value="" data-sure="true" {if 'NO' === $.request.null}selected{/if}>обязательно для заполнения</option>
+                {/if}
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label class="required" for="group">Группа</label> <span class="badge pull-right">group</span>
+                <select class="form-control" name="group" id="group" role="simple">
+                {set $schema = $.schema->findOne($.request.model)}
+                {foreach $schema.groups as $keyword => $group}
+                    <option value="{$keyword}" {if $keyword == $.request.group}selected{/if}>{$group|e}</option>
+                {/foreach}
+                    <option value="">не задана</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
             {set $models = $.schema->findMany()}
             <div class="form-group hidden">
+                <hr>
                 <label class="label-light required" for="join">Модель данных</label>
                 <select class="form-control" name="join" id="join" role="simple">
                 {foreach $models as $model}
@@ -123,21 +148,8 @@
                 </select>
                 <span class="help-block"></span>
             </div>
-            <div class="form-group">
-                <label class="label-light required" for="default">Значение по умолчанию</label>
-                <select class="form-control" name="default" id="default" role="tags" {if $.request.field in $protect}disabled{/if}>
-                {if $.request.default ?}
-                    <option value="{$.request.default|e}" selected data-sure="true">{$.request.default|e}</option>
-                    <option value="NULL" data-sure="true">может быть пустым</option>
-                    <option value="" data-sure="true">обязательно для заполнения</option>
-                {else}
-                    <option value="NULL" data-sure="true">может быть пустым</option>
-                    <option value="" data-sure="true" {if 'NO' === $.request.null}selected{/if}>обязательно для заполнения</option>
-                {/if}
-                </select>
-                <span class="help-block"></span>
-            </div>
             <div class="form-group hidden">
+                <hr>
                 <label class="label-light required" for="editor">Встраиваемый редактор</label>
                 <select class="form-control" name="editor" id="editor" role="simple">
                     <option value="">не использовать</option>
@@ -145,72 +157,55 @@
                 </select>
                 <span class="help-block"></span>
             </div>
-            <hr>
-            <div class="form-group">
-                <label class="required" for="group">Группа</label> <span class="badge pull-right">group</span>
-                <select class="form-control" name="group" id="group" role="simple">
-                {set $schema = $.schema->findOne($.request.model)}
-                {foreach $schema.groups as $keyword => $group}
-                    <option value="{$keyword}" {if $keyword == $.request.group}selected{/if}>{$group|e}</option>
-                {/foreach}
-                    <option value="">не задана</option>
-                </select>
-                <span class="help-block"></span>
-            </div>
-        </div>
-        {/macro}{macro.main}
-        {macro additional}
-        <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if} hidden" id="additional">
-            <div class="form-group">
+            <div class="form-group hidden">
+                <hr>
                 <label class="label-light required" for="types">Тип файлов</label>
                 <input class="form-control" name="types" id="types" value="{$.request.types|e}">
                 <span class="help-block">Определяет, какие файлы (исходя из их названия) принимаются для загрузки. Например: (gif|jpe?g|png)</span>
+            </div>
+            <div class="form-group hidden">
+                <label class="label-light required" for="min_width">Минимальный размер изображения</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <span>Ширина</span>
+                        <input class="form-control" name="min_width" id="min_width" value="{$.request.min_width|e}">
+                    </div>
+                    <div class="col-xs-6">
+                        <span>Высота</span>
+                        <input class="form-control" name="min_height" id="min_height" value="{$.request.min_height|e}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="hidden" name="increase">
+                    <input type="checkbox" name="increase" {if $.request.increase ?}checked{/if}> увеличить изображение до заданных размеров
+                </div>
+                <span class="help-block">Размеры задаются в пикселях (px)</span>
+            </div>
+            <div class="form-group hidden">
+                <label class="label-light required" for="min_width">Максимальный размер изображения</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <span>Ширина</span>
+                        <input class="form-control" name="max_width" id="max_width" value="{$.request.max_width|e}" placeholder="например: 1280">
+                    </div>
+                        <div class="col-xs-6">
+                        <span>Высота</span>
+                        <input class="form-control" name="max_height" id="max_height" value="{$.request.max_height|e}" placeholder="например: 960">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="hidden" name="reduction">
+                    <input type="checkbox" name="reduction" {if $.request.reduction ?}checked{/if}> уменьшить изображение до заданных размеров
+                </div>
+                <span class="help-block">Размеры задаются в пикселях (px)</span>
             </div>
             {*<div class="form-group">
                 <label class="label-light required" for="number">Максимальное количество файлов</label>
                 <input class="form-control" name="number" id="number" value="{$.request.number|e}">
                 <span class="help-block">По умолчанию - без ограничений</span>
             </div>*}
-            <hr>
-            <div class="row">
-                <div class="col-xs-6 form-group">
-                    <label class="label-light required" for="min_width">Минимальный размер изображения</label>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <span>Ширина</span>
-                            <input class="form-control" name="min_width" id="min_width" value="{$.request.min_width|e}">
-                        </div>
-                        <div class="col-xs-6">
-                            <span>Высота</span>
-                            <input class="form-control" name="min_height" id="min_height" value="{$.request.min_height|e}">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <input type="hidden" name="increase">
-                        <input type="checkbox" name="increase" {if $.request.increase ?}checked{/if}> увеличить изображение до заданных размеров
-                    </div>
-                    <span class="help-block">Размеры задаются в пикселях (px)</span>
-                </div>
-                <div class="col-xs-6 form-group">
-                    <label class="label-light required" for="max_width">Максимальный размер изображения</label>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <span>Ширина</span>
-                            <input class="form-control" name="max_width" id="max_width" value="{$.request.max_width|e}" placeholder="например: 1280">
-                        </div>
-                            <div class="col-xs-6">
-                            <span>Высота</span>
-                            <input class="form-control" name="max_height" id="max_height" value="{$.request.max_height|e}" placeholder="например: 960">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <input type="hidden" name="reduction">
-                        <input type="checkbox" name="reduction" {if $.request.reduction ?}checked{/if}> уменьшить изображение до заданных размеров
-                    </div>
-                </div>
-            </div>
         </div>
-        {/macro}{macro.additional}
+        {/macro}{macro.main}
     </div>
 </form>
 {/block}
@@ -224,9 +219,7 @@
 <script>
 function setDefault(type) {
     $('[name=default] option[data-sure!=true]').remove();
-    $('[name=editor],[name=join],[name=column]').prop('disabled', 'disabled').parent().addClass('hidden');
-    $('#additional').addClass('hidden').find('[name]').prop('disabled', 'disabled');
-    $('a[href="#additional"]').parent().addClass('hidden');
+    $('[name=editor],[name=join],[name=column],[name=types],[name^=min],[name^=max],[name=increase],[name=reduction]').prop('disabled', 'disabled').closest('.form-group').addClass('hidden');
     switch (type) {
         case 'boolean':
             var options = [new Option("истина", "1"), new Option("ложь", "0")];
@@ -234,15 +227,14 @@ function setDefault(type) {
             break;
         case 'text':
             $('[name=default]').select2();
-            $('[name=editor]').prop('disabled', false).parent().removeClass('hidden');
+            $('[name=editor]').prop('disabled', false).closest('.form-group').removeClass('hidden');
             break;
         case 'file':
             $('[name=default]').select2();
-            $('a[href="#additional"]').parent().removeClass('hidden');
-            $('#additional').removeClass('hidden').find('[name]').prop('disabled', false);
+            $('[name=types],[name^=min],[name^=max],[name=increase],[name=reduction]').prop('disabled', false).closest('.form-group').removeClass('hidden');
             break;
         case 'join':
-            $('[name=join],[name=column]').prop('disabled', false).parent().removeClass('hidden');
+            $('[name=join],[name=column]').prop('disabled', false).closest('.form-group').removeClass('hidden');
             $('[name=default]').select2();
             $('[name=join]').on("change", function (e) {
                 columns = $('[name=join] option[value=' + $(this).val() + ']').data('columns').split(',');
