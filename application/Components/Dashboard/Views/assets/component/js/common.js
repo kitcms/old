@@ -196,6 +196,7 @@
         templateSelection: function(el) {
             element = $(el.element);
             size = element.data('size');
+            url = location.root + element.data('url');
             if ('number' == typeof size) {
                 kb = size / 1024;
                 mb = kb / 1024;
@@ -205,13 +206,13 @@
             }
             node = $('<div class="info"></div>').append(
                 $('<a>' + el.text + '</a>')
-                    .attr('href', element.data('url')/* + '?' + Date.now()*/)
+                    .attr('href', url/* + '?' + Date.now()*/)
                     .attr('onclick', "window.open(this.href, \'_blank\');return false;")
             ).append(' <div><small class="grey">' + size + '</small></div>');
             if ('image' == element.data('type').split('/')[0]) {
                 node = $('<span></span>').append(
                     $('<div class="preview"></div>')
-                        .css('background-image', 'url("' + element.data('url') + /*'?' + Date.now() +*/ '")')
+                        .css('background-image', 'url("' + url + /*'?' + Date.now() +*/ '")')
                 ).append(node);
             }
             return node;

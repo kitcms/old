@@ -186,12 +186,13 @@
         <select class="form-control file {$field.field}" name="{$field.field}[]" role="file" multiple="multiple">
         {foreach $.request[$field.field] as $file}
             {print_r($file)}
+            {print_r($.root)}
             <option value='{$file|json_encode}'
                 {if $file.type ?}data-type='{$file.type}'{/if}
                 {if $file.size ?}data-size='{$file.size}'{/if}
                 {if $file.width ?}data-width='{$file.width}'{/if}
                 {if $file.height ?}data-height='{$file.height}'{/if}
-                {if $file.url ?}data-url='{$.root}{$file.url}'{/if}
+                {if $file.url ?}data-url='{$.root}/{$file.url}'{/if}
                 data-status='temporary' selected>{$file.name}</option>
         {/foreach}
         </select>
