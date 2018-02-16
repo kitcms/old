@@ -20,7 +20,7 @@ class Template extends Model
         array(
             'title' => 'Идентификатор родительского объекта',
             'field' => 'parent',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'mul',
             'default' => '0'
         ),

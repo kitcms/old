@@ -23,7 +23,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
     protected $fields = array(
         array(
             'field' => 'id',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'pri',
             'extra' => 'auto_increment',
             'comment' => 'Идентификатор'
@@ -42,7 +42,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         ),
         array(
             'field' => 'user',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'mul',
             'default' => '0',
             'comment' => 'Идентификатор пользователя'
@@ -56,7 +56,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         ),
         array(
             'field' => 'priority',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'default' => '0',
             'comment' => 'Приоритет объекта'
         )

@@ -34,7 +34,7 @@ class Site extends Model
         array(
             'title' => 'Идентификатор макета дизайна',
             'field' => 'template',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'null' => 'yes',
             'key' => 'mul',
             'group' => 'template'

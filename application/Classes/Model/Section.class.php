@@ -21,21 +21,21 @@ class Section extends Model
         array(
             'title' => 'Идентификатор сайта',
             'field' => 'site',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'mul',
             'default' => '0'
         ),
         array(
             'title' => 'Идентификатор родительского объекта',
             'field' => 'parent',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'mul',
             'default' => '0'
         ),
         array(
             'title' => 'Идентификатор макета дизайна',
             'field' => 'template',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'null' => 'yes',
             'key' => 'mul',
             'group' => 'template'
