@@ -31,6 +31,7 @@
             'link' => $.component ~ '/user/list.html?group=' ~ $group.id,
             'keyword' => '',
             'load_on_demand' => $group->user()->count(),
+            'demand_url' => $.component ~ '/user/tree.html?group=' ~  ~ $group.id,
             'icon' => '',
             'color' => $group->active ? 'blue' : 'grey'
         ]}

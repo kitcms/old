@@ -132,3 +132,7 @@ input.select2-search__field:focus {
   height: 54px;
   width: 54px;
 }
+/* remove X from locked tag */
+.locked-tag .select2-selection__choice__remove {
+  display: none !important;
+}

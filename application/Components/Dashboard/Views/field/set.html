@@ -69,9 +69,11 @@
 <form id="set" action="{$.component}/field/set.html?model={$model.name}&field={$field.field}&apply" method="post">
     <ul class="nav nav-tabs">
         <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
+        <li class="{if 'additional' == $.cookie.tabs}active{/if} hidden"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     </ul>
     <div class="tab-content">
         {macro.main}
+        {macro.additional}
     </div>
 </form>
 {/block}
@@ -89,6 +91,8 @@
 $('[name=aspect]').on("change", function (e) {
     $('[name=default] option[data-sure!=true]').remove();
     $('[name=editor],[name=join],[name=column]').prop('disabled', 'disabled').parent().addClass('hidden');
+    $('#additional').addClass('hidden').find('[name]').prop('disabled', 'disabled');
+    $('a[href="#additional"]').parent().addClass('hidden');
     switch ($(this).val()) {
         case 'boolean':
             var options = [new Option("истина", "1"), new Option("ложь", "0")];
@@ -97,6 +101,11 @@ $('[name=aspect]').on("change", function (e) {
         case 'text':
             $('[name=default]').select2();
             $('[name=editor]').prop('disabled', false).parent().removeClass('hidden');
+            break;
+        case 'file':
+            $('[name=default]').select2();
+            $('a[href="#additional"]').parent().removeClass('hidden');
+            $('#additional').removeClass('hidden').find('[name]').prop('disabled', false);
             break;
         default:
             $('[name=default]').select2($.fn.select2.tags);

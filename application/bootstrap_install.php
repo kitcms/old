@@ -17,7 +17,13 @@ if (false === $schema->findOne()) {
         'name' => 'Site',
         'engine' => 'MyISAM',
         'collation' => 'utf8_general_ci',
-        'comment' => 'Сайты'
+        'comment' => 'Сайты',
+        'groups' => array(
+            'main' => 'Основная информация',
+            'meta' => 'Метаинформация',
+            'service' => 'Служебные настройки',
+            'template' => 'Макет дизайна'
+        )
     );
     $schema->create($data)->save();
 }
@@ -29,7 +35,13 @@ if (false === $schema->findOne()) {
         'name' => 'Section',
         'engine' => 'MyISAM',
         'collation' => 'utf8_general_ci',
-        'comment' => 'Разделы сайтов'
+        'comment' => 'Разделы сайтов',
+        'groups' => array(
+            'main' => 'Основная информация',
+            'meta' => 'Метаинформация',
+            'template' => 'Макет дизайна',
+            'infobox' => 'Инфобокс'
+        )
     );
     $schema->create($data)->save();
 }
@@ -41,7 +53,10 @@ if (false === $schema->findOne()) {
         'name' => 'Template',
         'engine' => 'MyISAM',
         'collation' => 'utf8_general_ci',
-        'comment' => 'Макеты дизайна'
+        'comment' => 'Макеты дизайна',
+        'groups' => array(
+            'main' => 'Основная информация'
+        )
     );
     $schema->create($data)->save();
 }
@@ -53,7 +68,10 @@ if (false === $schema->findOne()) {
         'name' => 'Group',
         'engine' => 'MyISAM',
         'collation' => 'utf8_general_ci',
-        'comment' => 'Группы пользователей'
+        'comment' => 'Группы пользователей',
+        'groups' => array(
+            'main' => 'Основная информация'
+        )
     );
     if ($schema->create($data)->save()) {
         $model->create(array('title' => 'Администраторы'))->save();
@@ -69,7 +87,11 @@ if (false === $schema->findOne()) {
         'name' => 'User',
         'engine' => 'MyISAM',
         'collation' => 'utf8_general_ci',
-        'comment' => 'Пользователи'
+        'comment' => 'Пользователи',
+        'groups' => array(
+            'main' => 'Основная информация',
+            'permission' => 'Права доступа'
+        )
     );
     if ($schema->create($data)->save()) {
         $data = array(

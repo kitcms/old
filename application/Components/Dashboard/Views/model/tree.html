@@ -10,20 +10,52 @@
 {block 'component_set'}
 {set $json = []}
 {if $.request.model ? && ($model = $.schema->findOne($.request.model))}
-    {set $fields = $model->field()->findMany()}
+    {set $fields = $model->field()->findArray()}
     {set $protect = ($.model->factory($model->name)->filter('fields'))|array_column:'field'}
-    {foreach $fields as $field}
-        {set $json[] = [
-            'id' => 'field_' ~ $field.field,
-            'label' => $field.field,
-            'link' => $.component ~ '/field/set.html?model=' ~ $model.name ~ '&field=' ~ $field.field,
-            'model' => $model.name,
-            'icon' => 'glyphicon-flash',
-            'color' => ($field.field in $protect|array_merge:['section']) ? 'grey' : 'blue'
-        ]}
+    {foreach $fields as $key => $field}
+        {if $field.group ?}
+            {set $groups[$field.group][] = $field}
+            {unset $fields[$key]}
+        {/if}
     {/foreach}
+
+    {if $.request.group ?}
+        {foreach $groups[$.request.group] as $field}
+            {set $json[] = [
+                'id' => 'field_' ~ $field.field,
+                'label' => $field.field,
+                'link' => $.component ~ '/field/set.html?model=' ~ $model.name ~ '&field=' ~ $field.field,
+                'model' => $model.name,
+                'icon' => 'glyphicon-flash',
+                'color' => ($field.field in $protect|array_merge:['section']) ? 'grey' : 'blue'
+            ]}
+        {/foreach}
+    {else}
+        {foreach $fields as $field}
+            {set $json[] = [
+                'id' => 'field_' ~ $field.field,
+                'label' => $field.field,
+                'link' => $.component ~ '/field/set.html?model=' ~ $model.name ~ '&field=' ~ $field.field,
+                'model' => $model.name,
+                'icon' => 'glyphicon-flash',
+                'color' => ($field.field in $protect|array_merge:['section']) ? 'grey' : 'blue'
+            ]}
+        {/foreach}
+        {foreach $model.groups as $keyword => $group}
+            {set $json[] = [
+                'id' => 'group_' ~ $keyword,
+                'label' => $group,
+                'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
+                'model' => $model.name,
+                'load_on_demand' => ($groups[$keyword] ? ($groups[$keyword]|count) : 0),
+                'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name ~ '&group=' ~ $keyword,
+                'icon' => 'glyphicon-flash',
+                'color' => 'blue'
+            ]}
+        {/foreach}
+    {/if}
 {else}
-    {set $models = $.schema->findMany()}
+    {set $models = $.schema->findArray()}
     {foreach $models as $model}
         {set $json[] = [
             'id' => 'model_' ~ $model.name,
@@ -31,6 +63,7 @@
             'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
             'active' => 1,
             'load_on_demand' => 1,
+            'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name,
             'icon' => 'glyphicon-list-alt',
             'color' => $model.class_name ? 'grey' : 'blue'
         ]}

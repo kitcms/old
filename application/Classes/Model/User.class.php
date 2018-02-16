@@ -19,39 +19,45 @@ class User extends Model
 
     protected $fields = array(
         array(
+            'title' => 'Идентификатор группы',
             'field' => 'group',
             'type' => 'int(10) unsigned',
             'null' => 'yes',
             'key' => 'mul',
-            'comment' => 'Идентификатор группы'
+            'group' => 'permission'
         ),
         array(
+            'title' => 'Логин',
             'field' => 'login',
             'type' => 'varchar(255)',
             'key' => 'uni',
-            'comment' => 'Логин'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Имя пользователя',
             'field' => 'name',
             'type' => 'varchar(255)',
-            'comment' => 'Имя пользователя'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Электронный адрес',
             'field' => 'email',
             'type' => 'varchar(255)',
             'key' => 'uni',
-            'comment' => 'Электронный адрес'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Хеш пароля',
             'field' => 'password',
             'type' => 'varchar(255)',
-            'comment' => 'Хеш пароля'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Описание',
             'field' => 'description',
             'type' => 'text',
             'null' => 'yes',
-            'comment' => 'Описание'
+            'group' => 'main'
         )
     );
 

@@ -23,7 +23,8 @@ class Schema extends ORM
         'integer' => 'int(11)',
         'string' => 'varchar(255)',
         'text' => 'longtext',
-        'boolean' => 'tinyint(1)'
+        'boolean' => 'tinyint(1)',
+        'file' => 'longblob'
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
@@ -58,6 +59,7 @@ class Schema extends ORM
         $array = parent::findArray();
         if ('field' === $this->_getIdColumnName()) {
             foreach ($array as $key => $data) {
+                $array[$key]['table'] = $this->_table_name;
                 if (false === ($array[$key]['aspect'] = array_search($data['type'], $this->aspects))) {
                     $array[$key]['aspect'] = $data['type'];
                 }
@@ -70,13 +72,19 @@ class Schema extends ORM
         parent::create($data);
 
         if ('field' === $this->_getIdColumnName()) {
-            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
-            $data = array_diff_key($this->_data, $fill);
-            foreach (array_keys($data) as $key) {
-                unset($this->_dirty_fields[$key]);
-            }
-            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $fill = array_fill_keys(array('field','type','collation','null','key',
+            'default','extra','privileges','after','first','model','apply','table'), null);
+        } else {
+            $fill = array_fill_keys(array('name','engine','version','row_format',
+                'rows','avg_row_length','data_length','max_data_length','index_length',
+                'data_free','auto_increment','create_time','update_time','check_time',
+                'collation','checksum','create_options', 'model', 'apply'), null);
         }
+        $data = array_diff_key($this->_data, $fill);
+        foreach (array_keys($data) as $key) {
+            unset($this->_dirty_fields[$key]);
+        }
+        $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }
@@ -160,13 +168,19 @@ class Schema extends ORM
             }
         }
         if ('field' === $this->_getIdColumnName()) {
-            $fill = array_fill_keys(array('field', 'type', 'collation', 'null', 'key', 'default', 'extra', 'privileges', 'model', 'apply'), null);
-            $data = array_diff_key($this->_data, $fill);
-            foreach (array_keys($data) as $key) {
-                unset($this->_dirty_fields[$key]);
-            }
-            $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+            $fill = array_fill_keys(array('field','type','collation','null','key',
+                'default','extra','privileges','after','first','model','apply', 'table'), null);
+        } else {
+            $fill = array_fill_keys(array('name','engine','version','row_format',
+                'rows','avg_row_length','data_length','max_data_length','index_length',
+                'data_free','auto_increment','create_time','update_time','check_time',
+                'collation','checksum','create_options', 'model', 'apply'), null);
         }
+        $data = array_diff_key($this->_data, $fill);
+        foreach (array_keys($data) as $key) {
+            unset($this->_dirty_fields[$key]);
+        }
+        $this->_dirty_fields['comment'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         return $this;
     }
 
@@ -183,7 +197,7 @@ class Schema extends ORM
                 'ENGINE '. $this->_quoteIdentifier($this->engine),
                 'DEFAULT CHARACTER SET '. $this->_quoteIdentifier(current(explode('_', $this->collation))),
                 'COLLATE '. $this->_quoteIdentifier($this->collation),
-                'COMMENT \''. $this->comment .'\'',
+                'COMMENT \''. $this->getDirty('comment') .'\'',
                 'AUTO_INCREMENT 1'
             );
             return $this->_joinIfNotEmpty(" ", $fragments);
@@ -315,7 +329,11 @@ class Schema extends ORM
             $row = array_change_key_case($row);
             // Переопределение значений при условии, что они заданы в комментарии
             if (null !== ($parts = json_decode($row['comment'], true))) {
+                $row['comment'] = '';
                 $row = array_merge($row, $parts);
+            }
+            if ('field' === $this->_getIdColumnName()) {
+                $row['table'] = $this->_table_name;
             }
             $rows[] = $row;
         }

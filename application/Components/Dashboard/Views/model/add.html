@@ -14,6 +14,11 @@
 ]}
 
 {if $.request.apply !}
+    {foreach $.request.groups as $group}
+        {set $parts = $group|split}
+        {if $parts.1 ?} {set $groups[$parts.0] = $parts.1} {else} {set $groups[$parts.0|crc32] = $parts.0} {/if}
+    {/foreach}
+    {var $.request.groups = $groups}
     {if $.schema->create($.request)->save()}
         {set $message}
         <div class="alert alert-success alert-dismissable">
@@ -79,6 +84,23 @@
                 <select class="form-control" name="collation" role="simple" {if $model.class_name !}disabled{/if}>
                     <option value="utf8_general_ci" title="Юникод (многоязычный), регистронезависимый"{if $.request.collation == 'utf8_general_ci'} selected="selected"{/if}>UTF-8</option>
                     <option value="cp1251_general_ci" title="Кириллический (многоязычный), регистронезависимый"{if $.request.collation == 'cp1251_general_ci'} selected="selected"{/if}>CP1251</option>
+                </select>
+                <span class="help-block"></span>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label class="required" for="groups">Группы полей</label> <span class="badge pull-right">groups</span>
+                <select class="form-control" name="groups[]" id="groups" role="tags" multiple>
+                {foreach $.request.groups as $key => $group}
+                    {if $key in string 'main meta service template infobox permission'}
+                    <option value="{$key},{$group}" title="{$key},{$group}" locked="locked" selected>{$group|e}</option>
+                    {else}
+                    <option value="{$group|e}" title="{$group|e}" selected>{$group|e}</option>
+                    {/if}
+                {/foreach}
+                {if ! $.request.groups}
+                    <option value="main,Основная информация" title="main,Основная информация" locked="locked" selected>Основная информация</option>
+                {/if}
                 </select>
                 <span class="help-block"></span>
             </div>

@@ -19,59 +19,64 @@ class Section extends Model
 
     protected $fields = array(
         array(
+            'title' => 'Идентификатор сайта',
             'field' => 'site',
             'type' => 'int(10) unsigned',
             'key' => 'mul',
-            'default' => '0',
-            'comment' => 'Идентификатор сайта'
+            'default' => '0'
         ),
         array(
+            'title' => 'Идентификатор родительского объекта',
             'field' => 'parent',
             'type' => 'int(10) unsigned',
             'key' => 'mul',
-            'default' => '0',
-            'comment' => 'Идентификатор родительского объекта'
+            'default' => '0'
         ),
         array(
+            'title' => 'Идентификатор макета дизайна',
             'field' => 'template',
             'type' => 'int(10) unsigned',
             'null' => 'yes',
             'key' => 'mul',
-            'comment' => 'Идентификатор макета дизайна'
+            'group' => 'template'
         ),
         array(
+            'title' => 'Материализованный путь',
             'field' => 'path',
-            'type' => 'varchar(255)',
-            'comment' => 'Материализованный путь'
+            'type' => 'varchar(255)'
         ),
         array(
+            'title' => 'Тип раздела',
             'field' => 'type',
             'type' => 'tinyint(1)',
-            'null' => 'yes',
-            'comment' => 'Тип раздела'
+            'null' => 'yes'
         ),
         array(
+            'title' => 'Инфобокс',
             'field' => 'infobox',
             'type' => 'varchar(255)',
             'null' => 'yes',
-            'comment' => 'Инфобокс',
+            'group' => 'infobox'
         ),
         array(
+            'title' => 'Название раздела',
             'field' => 'title',
             'type' => 'varchar(255)',
-            'comment' => 'Название раздела'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Описание',
             'field' => 'description',
             'type' => 'text',
             'null' => 'yes',
-            'comment' => 'Описание'
+            'group' => 'main'
         ),
         array(
+            'title' => 'Метаинформация',
             'field' => 'meta',
             'type' => 'longtext',
             'null' => 'yes',
-            'comment' => 'Метаинформация'
+            'group' => 'meta'
         )
     );
 

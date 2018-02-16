@@ -12,6 +12,11 @@
 {block 'component_set'}{parent}
 {if $.request.model ? && ($model = $.schema->findOne($.request.model))}
     {if $.request.apply !}
+        {foreach $.request.groups as $group}
+            {set $parts = $group|split}
+            {if $parts.1 ?} {set $groups[$parts.0] = $parts.1} {else} {set $groups[$parts.0|crc32] = $parts.0} {/if}
+            {/foreach}
+        {var $.request.groups = $groups}
         {if $model->set($.request)->save()}
             {set $message}
             <div class="alert alert-success alert-dismissable">
