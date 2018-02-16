@@ -1,30 +1,17 @@
 /**
- * elFinder translation template
- * use this file to create new translation
- * submit new translation via https://github.com/Studio-42/elFinder/issues
- * or make a pull request
+ * English translation
+ * @author Troex Nevelin <troex@fury.scancode.ru>
+ * @author Naoki Sawada <hypweb+elfinder@gmail.com>
+ * @version 2018-02-06
  */
-
-/**
- * XXXXX translation
- * @author Translator Name <translator@email.tld>
- * @version 201x-xx-xx
- */
-(function(root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
-	} else {
-		factory(root.elFinder);
-	}
-}(this, function(elFinder) {
-	elFinder.prototype.i18.REPLACE_WITH_xx_OR_xx_YY_LANG_CODE = {
-		translator : 'Translator name &lt;translator@email.tld&gt;',
-		language   : 'Language of translation in your language',
+// elfinder.en.js is integrated into elfinder.(full|min).js by jake build
+if (typeof elFinder === 'function' && elFinder.prototype.i18) {
+	elFinder.prototype.i18.en = {
+		translator : 'Troex Nevelin &lt;troex@fury.scancode.ru&gt;, Naoki Sawada &lt;hypweb+elfinder@gmail.com&gt;',
+		language   : 'English',
 		direction  : 'ltr',
-		dateFormat : 'd.m.Y H:i', // Mar 13, 2012 05:27 PM
-		fancyDateFormat : '$1 H:i', // will produce smth like: Today 12:25 PM
+		dateFormat : 'M d, Y h:i A', // Mar 13, 2012 05:27 PM
+		fancyDateFormat : '$1 h:i A', // will produce smth like: Today 12:25 PM,
 		nonameDateFormat : 'ymd-His', // to apply if upload file is noname: 120513172700
 		messages   : {
 
@@ -535,5 +522,5 @@
 			'kindVideoOGG'    : 'Ogg movie'
 		}
 	};
-}));
+}
 
