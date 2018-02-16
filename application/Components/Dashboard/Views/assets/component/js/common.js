@@ -191,6 +191,79 @@
         }
     });
 
+    $("select[role=file]").select2({
+        dropdownCssClass: 'no-search',
+        templateSelection: function(el) {
+            element = $(el.element);
+            size = element.data('size');
+            if ('number' == typeof size) {
+                kb = size / 1024;
+                mb = kb / 1024;
+                if (mb >= 1) size = Math.round((mb)*100)/100 + ' мб';
+                else if (kb >= 1) size = Math.round((kb)*100)/100 + ' кб';
+                else size = size + ' б';
+            }
+            node = $('<div class="info"></div>').append(
+                $('<a>' + el.text + '</a>')
+                    .attr('href', element.data('url')/* + '?' + Date.now()*/)
+                    .attr('onclick', "window.open(this.href, \'_blank\');return false;")
+            ).append(' <div><small class="grey">' + size + '</small></div>');
+            if ('image' == element.data('type').split('/')[0]) {
+                node = $('<span></span>').append(
+                    $('<div class="preview"></div>')
+                        .css('background-image', 'url("' + element.data('url') + /*'?' + Date.now() +*/ '")')
+                ).append(node);
+            }
+            return node;
+        }
+    }).on("select2:closing", function (e) {
+        // ...
+    }).on("select2:unselect", function (e) {
+        el = e.params.data.element,
+        id = e.params.data.id;
+        data = $.parseJSON(id);
+        if ('temporary' === $(el).data('status')) {
+            action = $(this).parent().find('input[type=file]').data('url') + '&file=' + data.url;
+            $.ajax({
+                url: action,
+                type: 'DELETE',
+                dataType: 'json'
+            });
+        }
+    }).next().bind('keyup', function (e) {
+        if (e.which == 13) {
+            var node = $(this).prev();
+            var field = $(node).attr('name').replace('[]', '');
+            var action = $(this).next().data('url');
+            var files = $(this).find('.select2-search__field').val().split(' ');
+            var total = files.length;
+            var count = 0;
+            $(this).find('.select2-search__field').val('');
+            $(this).next().after('<div class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>');
+            $.each(files, function (index, file) {
+                data = new Object();
+                data.field = field;
+                data.files = file.split('?')[0];
+                $.ajax({
+                    url: action,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function(data) {
+                        selectedFiles(data.web, node);
+                    },
+                    complete: function () {
+                        count = count + 1;
+                        progress = parseInt(count * 100 / total, 10);
+                        $(node).parent().find('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).html(progress + '%');
+                        if (progress == 100) $(node).parent().find('.progress').remove();
+                    }
+                });
+            });
+            //$(this).prev().trigger("select2:closing").trigger('select2:update');
+        }
+    });
+
     $.fn.extend({
         select2_sortable: function(){
             var select = $(this);
@@ -230,6 +303,58 @@
             $(this).prev('.count').html(length);
             //console.log($(e.target).find('option:selected').length);
         });
+    });
+
+    $('.btn-upload').click(function() {
+        var field = $(this).parent().parent().find('.form-control').attr('name').replace('[]', '');
+        $(this).parent().prev().fileupload({
+            dataType: 'json',
+            formData: { 'field': field },
+            maxChunkSize: 2000000,
+            add: function (e, data) { data.submit() },
+            done: function (e, data) {
+                var node = $(this).prevAll('.file:first');
+                selectedFiles(data.result.files, node);
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $(e.target).next().find('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).html(progress + '%');
+            },
+            start: function(e, data) {
+                $(e.target).after('<div class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>');
+            },
+            stop: function(e, data) {
+                $(e.target).next().remove();
+            }
+        }).click();
+    });
+
+    $('.btn-choice').click(function() {
+        window.btnChoice = this;
+        var field = $(this).parent().parent().find('.form-control').attr('name').replace('[]', '');
+        var action = $(this).parent().parent().find('.file-upload').data('url');
+        window.choice = function(file) {
+            file.field = field;
+            $.ajax({
+                url: action,
+                type: 'POST',
+                dataType: 'json',
+                data: file,
+                success: function(data) {
+                    var node = $(window.btnChoice).parent().prevAll('.file:first');
+                    selectedFiles(data.web, node);
+                }
+            });
+        };
+        var width = screen.width / 1.25;
+        var height = screen.height / 1.43;
+        var filemanager = window.open(location.component + '/file/choice.html', 'filemanager', 'width=' + width + ',height=' + height);
+        filemanager.focus();
+    });
+
+    $('.btn-clear').click(function() {
+        $(this).parent().prevAll('select').val(null).trigger('change');
+        //$(this).parent().prevAll('.select2').find('.select2-selection__choice__remove').click();
     });
 
     if (typeof ace != "undefined") {
@@ -401,3 +526,30 @@
         return false;
     });
 })(jQuery);
+
+function selectedFiles(data, node) {
+    $.each(data, function (index, object) {
+        if (!object.error && object.size !== 0) {
+            type = object.type.split('/');
+            file = {
+                name: object.name,
+                type: object.type,
+                size: object.size,
+                width: object.width,
+                height: object.height,
+                url: location.root + object.url
+            };
+            if ('image' === type[0]) file.color = object.color;
+            var option = $('<option selected>' + file.name + '</option>')
+                .data('type', file.type)
+                .data('size', file.size)
+                .data('width', file.width)
+                .data('height', file.height)
+                .data('url', file.url)
+                .data('status', 'temporary')
+                .val(JSON.stringify(file));
+            if ('image' === type[0]) option.data('color', file.color)
+            $(node).append(option).trigger('change');
+        }
+    });
+}

@@ -180,6 +180,29 @@
     {else}
         <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
     {/if}
+{case 'file'}
+        <input type="hidden" name="{$field.field}">
+        <span class="count pull-right"></span>
+        <select class="form-control file {$field.field}" name="{$field.field}[]" role="file" multiple="multiple">
+        {foreach $.request[$field.field] as $file}
+            {print_r($file)}
+            <option value='{$file|json_encode}'
+                {if $file.type ?}data-type='{$file.type}'{/if}
+                {if $file.size ?}data-size='{$file.size}'{/if}
+                {if $file.width ?}data-width='{$file.width}'{/if}
+                {if $file.height ?}data-height='{$file.height}'{/if}
+                {if $file.url ?}data-url='{$.root}{$file.url}'{/if}
+                data-status='temporary' selected>{$file.name}</option>
+        {/foreach}
+        </select>
+        <input type="file" class="file-upload hidden" name="files[]" data-url="{$.component}/file/upload.html?model={$field.table}&field={$field.field}" multiple="multiple">
+        <div class="btn-group input-group-btn-upload" role="group">
+            <button class="btn btn-default btn-choice" type="button">Выбор файла</button>
+            <button class="btn btn-default btn-upload" type="button">Загрузка файла</button>
+        </div>
+        <div class="btn-group input-group-btn-upload pull-right" role="group">
+            <button class="btn btn-default btn-clear" type="button">Очистить все</button>
+        </div>
 {case default}
         <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
 {/switch}
@@ -222,5 +245,7 @@
 {block 'component_script'}
 <script src="{$.component}/assets/ace/ace.js"></script>
 <script src="{$.component}/assets/ckeditor/ckeditor.js"></script>
+<script src="{$.component}/assets/jquery-fileupload/jquery.iframe-transport.js"></script>
+<script src="{$.component}/assets/jquery-fileupload/jquery.fileupload.js"></script>
 {parent}
 {/block}

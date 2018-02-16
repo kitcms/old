@@ -60,6 +60,7 @@
 <form id="add" action="{$.component}/field/add.html?model={$model.name}&apply" method="post">
     <ul class="nav nav-tabs">
         <li class="{if 'main' == $.cookie.tabs || ! $.cookie.tabs}active{/if}"><a href="#main" data-toggle="tab">Основная информация</a></li>
+        <li class="{if 'additional' == $.cookie.tabs}active{/if} hidden"><a href="#additional" data-toggle="tab">Дополнительная информация</a></li>
     </ul>
     <div class="tab-content">
         {macro main($protect=false)}
@@ -93,6 +94,7 @@
                     <option value="integer" title="Целое число обыкновенной разрядности. Диапазон чисел: -2 147 483 648 … 2 147 483 647." {if 'integer' == $.request.aspect}selected{/if}>Целое число</option>
                     <option value="double" title="Число с плавающей запятой. Диапазон от -1.7976931348623157E+308 до -2.2250738585072014E-308." {if 'double' == $.request.aspect}selected{/if}>Число с плавающей запятой</option>
                     <option value="boolean" title="Двоичное число. Два возможных значения 0 (false) и 1 (true)." {if 'boolean' == $.request.aspect}selected{/if}>Логическая переменная</option>
+                    <option value="file" title="Информация о файле" {if 'file' == $.request.aspect}selected{/if}>Информация о файле</option>
                 </select>
                 <span class="help-block"></span>
             </div>
@@ -132,6 +134,58 @@
             </div>
         </div>
         {/macro}{macro.main}
+        {macro additional}
+        <div class="tab-pane {if 'additional' == $.cookie.tabs}active{/if} hidden" id="additional">
+            <div class="form-group">
+                <label class="label-light required" for="types">Тип файлов</label>
+                <input class="form-control" name="types" id="types" value="{$.request.types|e}">
+                <span class="help-block">Определяет, какие файлы (исходя из их названия) принимаются для загрузки. Например: (gif|jpe?g|png)</span>
+            </div>
+            {*<div class="form-group">
+                <label class="label-light required" for="number">Максимальное количество файлов</label>
+                <input class="form-control" name="number" id="number" value="{$.request.number|e}">
+                <span class="help-block">По умолчанию - без ограничений</span>
+            </div>*}
+            <hr>
+            <div class="row">
+                <div class="col-xs-6 form-group">
+                    <label class="label-light required" for="min_width">Минимальный размер изображения</label>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <span>Ширина</span>
+                            <input class="form-control" name="min_width" id="min_width" value="{$.request.min_width|e}">
+                        </div>
+                        <div class="col-xs-6">
+                            <span>Высота</span>
+                            <input class="form-control" name="min_height" id="min_height" value="{$.request.min_height|e}">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="hidden" name="increase">
+                        <input type="checkbox" name="increase" {if $.request.increase ?}checked{/if}> увеличить изображение до заданных размеров
+                    </div>
+                    <span class="help-block">Размеры задаются в пикселях (px)</span>
+                </div>
+                <div class="col-xs-6 form-group">
+                    <label class="label-light required" for="max_width">Максимальный размер изображения</label>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <span>Ширина</span>
+                            <input class="form-control" name="max_width" id="max_width" value="{$.request.max_width|e}" placeholder="например: 1280">
+                        </div>
+                            <div class="col-xs-6">
+                            <span>Высота</span>
+                            <input class="form-control" name="max_height" id="max_height" value="{$.request.max_height|e}" placeholder="например: 960">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="hidden" name="reduction">
+                        <input type="checkbox" name="reduction" {if $.request.reduction ?}checked{/if}> уменьшить изображение до заданных размеров
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/macro}{macro.additional}
     </div>
 </form>
 {/block}
@@ -140,13 +194,14 @@
 <input class="btn btn-default" type="submit" role="button" value="Добавить поле" form="add">
 {/block}
 
-
 {block 'component_script'}
 {parent}
 <script>
 function setDefault(type) {
     $('[name=default] option[data-sure!=true]').remove();
     $('[name=editor],[name=join],[name=column]').prop('disabled', 'disabled').parent().addClass('hidden');
+    $('#additional').addClass('hidden').find('[name]').prop('disabled', 'disabled');
+    $('a[href="#additional"]').parent().addClass('hidden');
     switch (type) {
         case 'boolean':
             var options = [new Option("истина", "1"), new Option("ложь", "0")];
@@ -155,6 +210,11 @@ function setDefault(type) {
         case 'text':
             $('[name=default]').select2();
             $('[name=editor]').prop('disabled', false).parent().removeClass('hidden');
+            break;
+        case 'file':
+            $('[name=default]').select2();
+            $('a[href="#additional"]').parent().removeClass('hidden');
+            $('#additional').removeClass('hidden').find('[name]').prop('disabled', false);
             break;
         default:
             $('[name=default]').select2($.fn.select2.tags);

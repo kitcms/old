@@ -23,7 +23,8 @@ class Schema extends ORM
         'integer' => 'int(11)',
         'string' => 'varchar(255)',
         'text' => 'longtext',
-        'boolean' => 'tinyint(1)'
+        'boolean' => 'tinyint(1)',
+        'file' => 'longblob'
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
@@ -58,6 +59,7 @@ class Schema extends ORM
         $array = parent::findArray();
         if ('field' === $this->_getIdColumnName()) {
             foreach ($array as $key => $data) {
+                $array[$key]['table'] = $this->_table_name;
                 if (false === ($array[$key]['aspect'] = array_search($data['type'], $this->aspects))) {
                     $array[$key]['aspect'] = $data['type'];
                 }
@@ -70,9 +72,8 @@ class Schema extends ORM
         parent::create($data);
 
         if ('field' === $this->_getIdColumnName()) {
-            $fill = array_fill_keys(array('field','type','collation','null',
-                'key','default','extra','privileges','after','first','model','apply'), null);
-
+            $fill = array_fill_keys(array('field','type','collation','null','key',
+            'default','extra','privileges','after','first','model','apply','table'), null);
         } else {
             $fill = array_fill_keys(array('name','engine','version','row_format',
                 'rows','avg_row_length','data_length','max_data_length','index_length',
@@ -168,7 +169,7 @@ class Schema extends ORM
         }
         if ('field' === $this->_getIdColumnName()) {
             $fill = array_fill_keys(array('field','type','collation','null','key',
-                'default','extra','privileges','after','first','model','apply'), null);
+                'default','extra','privileges','after','first','model','apply', 'table'), null);
         } else {
             $fill = array_fill_keys(array('name','engine','version','row_format',
                 'rows','avg_row_length','data_length','max_data_length','index_length',
@@ -330,6 +331,9 @@ class Schema extends ORM
             if (null !== ($parts = json_decode($row['comment'], true))) {
                 $row['comment'] = '';
                 $row = array_merge($row, $parts);
+            }
+            if ('field' === $this->_getIdColumnName()) {
+                $row['table'] = $this->_table_name;
             }
             $rows[] = $row;
         }
