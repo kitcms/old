@@ -107,8 +107,8 @@ class Schema extends ORM
             if (!$this->isNew() && $this->_field_name !== $this->field) {
                 // Нахождение зависимостей
                 // Files
-                $dir = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->_field_name}");
-                $dirs = glob_recursive($dir);
+                $directory = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->_field_name}");
+                $directories = glob_recursive($directory);
                 $dependences = array(
                     'rename' => array(),
                     'query' => array("UPDATE `{$this->_table_name}` ".
@@ -120,9 +120,9 @@ class Schema extends ORM
                                "LIKE '%\\\\\\\\/". mb_strtolower($this->_field_name) ."\\\\\\\\/%'"
                     )
                 );
-                foreach ($dirs as $dir) {
-                    if (false !== $pos = strrpos(rtrim($dir, DS), '/')) {
-                        array_push($dependences['rename'], array($dir, substr($dir, 0, $pos + 1) . $this->field));
+                foreach ($directories as $directory) {
+                    if (false !== $pos = strrpos(rtrim($directory, DS), '/')) {
+                        array_push($dependences['rename'], array($directory, substr($directory, 0, $pos + 1) . $this->field));
                     }
                 }
                 // Join column
@@ -230,15 +230,16 @@ class Schema extends ORM
                 }
             }
             $query = array('ALTER TABLE', $this->_quoteIdentifier($this->_table_name), 'DROP', $this->_quoteIdentifier($this->field));
-            $dir = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->field}");
-            $dependences['file'] = glob_recursive("{$dir}/*");
-            $dependences['dir'] = glob_recursive("{$dir}");
+            $directory = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->field}");
+            $dependences['file'] = glob_recursive("{$directory}/*");
+            $dependences['dir'] = glob_recursive("{$directory}");
         } else {
             $query = array('DROP TABLE', $this->_quoteIdentifier($this->name));
-            $dependences['section'] = Model::factory('Section')->whereLike('infobox', '%"model":"'. $this->_table_name .'"%')->findMany();
-            $dir = mb_strtolower("{$dir['public']}/files/{$this->name}");
-            $dependences['file'] = glob_recursive("{$dir}/*");
-            array_unshift($dependences['file'], $dir);
+            // FIXME Проверка на наличие таблицы
+            $dependences['section'] = @Model::factory('Section')->whereLike('infobox', '%"model":"'. $this->_table_name .'"%')->findMany();
+            $directory = mb_strtolower("{$dir['public']}/files/{$this->name}");
+            $dependences['file'] = glob_recursive("{$directory}/*");
+            array_unshift($dependences['file'], $directory);
         }
         $data = is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true));
         if (self::_execute(join(" ", $query), $data, $this->_connection_name)) {
@@ -266,9 +267,9 @@ class Schema extends ORM
             }
             if (isset($dependences['dir'])) {
                 $dependences['dir'] = array_reverse($dependences['dir']);
-                foreach ($dependences['dir'] as $dir) {
-                    if (is_dir($dir)) {
-                        rmdir($dir);
+                foreach ($dependences['dir'] as $directory) {
+                    if (is_dir($directory)) {
+                        rmdir($directory);
                     }
                 }
             }

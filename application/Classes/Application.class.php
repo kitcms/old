@@ -76,6 +76,24 @@ class Application
                     }
                 }
 
+                // Определение дополнительных параметров
+                if ($views->infobox && !$views->section->extension) {
+                    if (!$pattern = $views->section->infobox['pattern']) {
+                        // /(?J)(?P<name>\w+)[_-](?P<digit>\w+)/
+                        $pattern = '(?J)(?P<id>\d+)|\w+[_-](?P<offset>\d+)';
+                    }
+                    preg_match('/'. $pattern .'/', $request->getFileName(), $matches);
+                    $matches = array_diff($matches, array(''));
+                    array_shift($matches);
+                    if (isset($matches['id'])) {
+                        $views->infobox->where('id', $matches['id']);
+                    }
+                    if (isset($matches['offset'])) {
+                        $views->infobox->offset((int) $matches['offset']);
+                    }
+                    $_ENV = array_replace($_ENV, array_unique($matches));
+                }
+
                 // Определение идентификатора макета дизайна
                 if (false !== $views->section && (null !== ($template = $views->section->template))) {
                     if (false === filter_var((bool) $template, FILTER_VALIDATE_BOOLEAN)) {
