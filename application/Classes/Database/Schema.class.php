@@ -20,11 +20,14 @@ class Schema extends ORM
     protected $_field_name;
 
     protected $aspects = array(
+        'identifier' => 'bigint(20) unsigned',
         'integer' => 'int(11)',
         'string' => 'varchar(255)',
         'text' => 'longtext',
         'boolean' => 'tinyint(1)',
-        'file' => 'longblob'
+        'file' => 'longblob',
+        'join' => 'char(20)',
+        'group' => 'char(255)',
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
@@ -91,6 +94,7 @@ class Schema extends ORM
 
     public function save()
     {
+        global $dir;
         if ('field' === $this->_getIdColumnName()) {
             if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->field) || preg_match("/^[\d-_.]+$/", $this->field)) {
                 return false;
@@ -99,23 +103,175 @@ class Schema extends ORM
             if (($this->isNew() || ($this->_field_name !== $this->field)) && $this->findOne($this->field)) {
                 return false;
             }
+
+            if (!$this->isNew() && $this->_field_name !== $this->field) {
+                // Нахождение зависимостей
+                // Files
+                $dir = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->_field_name}");
+                $dirs = glob_recursive($dir);
+                $dependences = array(
+                    'rename' => array(),
+                    'query' => array("UPDATE `{$this->_table_name}` ".
+                               "SET `{$this->field}` = ".
+                               "REPLACE(`{$this->field}`, ".
+                               "'\\\\/". mb_strtolower($this->_field_name) ."\\\\/', ".
+                               "'\\\\/". mb_strtolower($this->field) ."\\\\/') ".
+                               "WHERE `{$this->field}` ".
+                               "LIKE '%\\\\\\\\/". mb_strtolower($this->_field_name) ."\\\\\\\\/%'"
+                    )
+                );
+                foreach ($dirs as $dir) {
+                    if (false !== $pos = strrpos(rtrim($dir, DS), '/')) {
+                        array_push($dependences['rename'], array($dir, substr($dir, 0, $pos + 1) . $this->field));
+                    }
+                }
+                // Join column
+                $self = new self('');
+                foreach ($self->findMany() as $table) {
+                    foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'","column":"'. $this->_field_name .'"%')->findMany() as $field) {
+                        $dependences['column'][$table->name][] = $field;
+                    }
+                }
+            }
         } else {
             if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->name) || preg_match("/^[\d-_.]+$/", $this->name)) {
                 return false;
             }
+            if (!$this->isNew() && $this->_table_name !== $this->name) {
+                // Нахождение зависимостей
+                // Infobox & files
+                $dependences = array(
+                    'section' => Model::factory('Section')->whereLike('infobox', '%"model":"'. $this->_table_name .'"%')->findMany(),
+                    'rename' => array(
+                        array(
+                            mb_strtolower("{$dir['public']}/files/{$this->_table_name}"),
+                            mb_strtolower("{$dir['public']}/files/{$this->name}")
+                        )
+                    ),
+                    'query' => array()
+                );
+                // Join
+                $self = new self('');
+                foreach ($self->findMany() as $table) {
+                    foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'"%')->findMany() as $field) {
+                        $dependences['join'][$table->name][] = $field;
+                    }
+                }
+                // Query
+                if ($fields = self::forTable($this->_table_name)->field()->where('type', 'longblob')->findArray()) {
+                    foreach ($fields as $field) {
+                        array_push(
+                            $dependences['query'],
+                            "UPDATE `{$this->name}` ".
+                            "SET `{$field['field']}` = ".
+                            "REPLACE(`{$field['field']}`, ".
+                                "'files\\\\/". mb_strtolower($this->_table_name) ."\\\\/', ".
+                                "'files\\\\/". mb_strtolower($this->name) ."\\\\/') ".
+                            "WHERE `{$field['field']}` ".
+                            "LIKE '%files\\\\\\\\/". mb_strtolower($this->_table_name) ."\\\\\\\\/%'"
+                        );
+                    }
+                }
+            }
+        };
+        if (parent::save()) {
+            // Join
+            if (isset($dependences['join'])) {
+                foreach ((array) $dependences['join'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('join', $this->name)->save();
+                    }
+                }
+            }
+            // Join column
+            if (isset($dependences['column'])) {
+                foreach ((array) $dependences['column'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('column', $this->field)->save();
+                    }
+                }
+            }
+            // Infobox
+            if (isset($dependences['section'])) {
+                foreach ((array) $dependences['section'] as $section) {
+                    $infobox = $section->get('infobox');
+                    $infobox['model'] = $this->name;
+                    $section->set('infobox', $infobox)->save();
+                }
+            }
+            // Files
+            if (isset($dependences['rename'])) {
+                foreach ((array) $dependences['rename'] as $dependence) {
+                    if (is_array($dependence)) {
+                        // FIXME Добавить проверку на существование и наличие необходимых прав в дальнейшем
+                        @rename(current($dependence), next($dependence));
+                    }
+                }
+                foreach ((array) $dependences['query'] as $query) {
+                    // Может использовать _execute ?
+                    $this->getDb()->query($query);
+                }
+            }
+            return true;
         }
-        return parent::save();
+        return false;
     }
 
     public function delete()
     {
+        global $dir;
+        $dependences = array();
         if ('field' === $this->_getIdColumnName()) {
+            // Join column
+            $self = new self('');
+            foreach ($self->findMany() as $table) {
+                foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'","column":"'. $this->_field_name .'"%')->findMany() as $field) {
+                    $dependences['column'][$table->name][] = $field;
+                }
+            }
             $query = array('ALTER TABLE', $this->_quoteIdentifier($this->_table_name), 'DROP', $this->_quoteIdentifier($this->field));
+            $dir = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->field}");
+            $dependences['file'] = glob_recursive("{$dir}/*");
+            $dependences['dir'] = glob_recursive("{$dir}");
         } else {
             $query = array('DROP TABLE', $this->_quoteIdentifier($this->name));
+            $dependences['section'] = Model::factory('Section')->whereLike('infobox', '%"model":"'. $this->_table_name .'"%')->findMany();
+            $dir = mb_strtolower("{$dir['public']}/files/{$this->name}");
+            $dependences['file'] = glob_recursive("{$dir}/*");
+            array_unshift($dependences['file'], $dir);
         }
         $data = is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true));
         if (self::_execute(join(" ", $query), $data, $this->_connection_name)) {
+            if (isset($dependences['section'])) {
+                foreach ((array) $dependences['section'] as $section) {
+                    $section->set('infobox', '')->save();
+                }
+            }
+            // Join column
+            if (isset($dependences['column'])) {
+                foreach ((array) $dependences['column'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('column', 'id')->save();
+                    }
+                }
+            }
+            if (isset($dependences['file'])) {
+                foreach ($dependences['file'] as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
+                    } else {
+                        $dependences['dir'][] = $file;
+                    }
+                }
+            }
+            if (isset($dependences['dir'])) {
+                $dependences['dir'] = array_reverse($dependences['dir']);
+                foreach ($dependences['dir'] as $dir) {
+                    if (is_dir($dir)) {
+                        rmdir($dir);
+                    }
+                }
+            }
             return true;
         }
         return false;

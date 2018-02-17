@@ -1,0 +1,75 @@
+{*
+ * Шаблон для отображения файлового менеджера
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_css'}
+<link rel="stylesheet" type="text/css" href="{$.component}/assets/elfinder/css/elfinder.min.css">
+<link rel="stylesheet" type="text/css" href="{$.component}/assets/component/css/elfinder.theme.css">
+<style>
+.container-fluid {
+    background-color: #dfe2e6 !important;
+}
+</style>
+{/block}
+
+{block 'component_body'}
+<div class="filemanager"></div>
+<script src="{$.component}/assets/jquery/jquery.min.js"></script>
+<script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
+<script src="{$.component}/assets/js-cookie/jquery.cookie.js"></script>
+<script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="{$.component}/assets/elfinder/js/elfinder.min.js"></script>
+<script src="{$.component}/assets/elfinder/js/i18n/elfinder.ru.js"></script>
+{if $.request.CKEditor !}
+<script src="{$.component}/assets/ckeditor/ckeditor.js"></script>
+{/if}
+<script>
+$(document).ready(function() {
+{if $.request.CKEditor !}
+    function getUrlParam(paramName) {
+        var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
+        var match = window.location.search.match(reParam) ;
+        return (match && match.length > 1) ? match[1] : '' ;
+    }
+    var funcNum = getUrlParam('CKEditorFuncNum');
+{/if}
+    $('.filemanager').elfinder({
+        url : '{$.component}/file/connector.html',
+        lang: 'ru',
+        resizable: false,
+        ui: ['toolbar', 'places', 'tree', 'path', 'stat'],
+        uiOptions: {
+            toolbar: [
+                ['home', 'up'],
+                ['back', 'forward'],
+                ['reload'],
+                ['mkdir', 'mkfile', 'upload'],
+                ['open', 'download', 'getfile'],
+                ['info'],
+                ['quicklook'],
+                ['copy', 'cut', 'paste'],
+                ['rm'],
+                ['duplicate', 'rename', 'edit', 'resize'],
+                ['extract', 'archive'],
+                ['search'],
+                ['view', 'sort']
+            ]
+        },
+        contextmenu : {
+            cwd: ['reload', 'back', '|', 'mkdir', 'mkfile', 'paste', '|', 'sort', '|','info']
+        },
+        height: $(window).height(),
+        getFileCallback: function(file) {
+{if $.request.CKEditor !}window.opener.CKEDITOR.tools.callFunction(funcNum, file.url){else}window.opener.choice(file){/if};
+            window.close();
+        }
+    });
+    $('footer').remove();
+});
+</script>
+{/block}

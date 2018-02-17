@@ -23,7 +23,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
     protected $fields = array(
         array(
             'field' => 'id',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'pri',
             'extra' => 'auto_increment',
             'comment' => 'Идентификатор'
@@ -42,7 +42,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         ),
         array(
             'field' => 'user',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'key' => 'mul',
             'default' => '0',
             'comment' => 'Идентификатор пользователя'
@@ -56,7 +56,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         ),
         array(
             'field' => 'priority',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'default' => '0',
             'comment' => 'Приоритет объекта'
         )
@@ -111,8 +111,11 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
 
     public function save()
     {
+        global $dir;
         $schema = $this->schema()->findOne();
+        $table = $schema->get('name');
         $fields = $schema->field()->findArray();
+
         // Исключение не используемых данных
         foreach ($this->asArray() as $field => $value) {
             if (false === ($key = array_search($field, array_column($fields, 'field')))) {
@@ -159,8 +162,81 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
                     $this->set($field['field'], $field['default']);
                 }
             }
+            if ('file' === $field['aspect']) {
+                $path = mb_strtolower("files/{$table}/{$id}/{$field['field']}");
+                $directory = $dir['public'] . DS . $path;
+                $currentFiles = array();
+                if (false === is_dir($directory)) {
+                    mkdir($directory, 0755, true);
+                } else {
+                    $currentFiles = array_diff(scandir($directory), array('..', '.'));
+                }
+                $files = $this->get($field['field']);
+                $temporaries = array();
+                foreach ((array) $files as $key => $file) {
+                    if (isset($file['url'])) {
+                        $url = urldecode($file['url']);
+                        $filename = $dir['public'] . DS . trim($url, DS);
+                        $basename = basename($url);
+                        if (false === is_file($filename)) {
+                            unset($files[$key]);
+                        } else {
+                            // Перемещение файлов в предопределенную директорию
+                            $rename = $directory . DS . $basename;
+                            if (($filename !== $rename) && rename($filename, $rename)) {
+                                $temporaries[] = pathinfo($filename, PATHINFO_DIRNAME);
+                                $files[$key]['url'] = $path . DS . $basename;
+                            }
+                        }
+                        if (false !== ($key = array_search($basename, $currentFiles))) {
+                            unset($currentFiles[$key]);
+                        }
+                    } else {
+                        unset($files[$key]);
+                    }
+                }
+                $this->set($field['field'], $files);
+                foreach ($currentFiles as $file) {
+                    $filename = $directory . DS . $file;
+                    if (is_file($filename)) {
+                        unlink($filename);
+                    }
+                }
+                // Удаление временных файлов
+                foreach ($temporaries as $directory) {
+                    $files = array_diff(scandir($directory), array('..', '.'));
+                    foreach ($files as $file) {
+                        $filename = $directory . DS . $file;
+                        if (is_file($filename)) {
+                            unlink($filename);
+                        }
+                    }
+                }
+            }
         }
         return parent::save();
+    }
+
+    public function delete()
+    {
+        global $dir;
+        $table = $this->orm->getTableName();
+        $directory = mb_strtolower("{$dir['public']}/files/{$table}/{$this->id}");
+        $files = glob_recursive($directory .'/*');
+        array_push($files, $directory);
+        if (parent::delete()) {
+            // Удаление зависимых файлов и директорий
+            foreach ($files as $key => $file) {
+                if ((is_file($file) && unlink($file)) || false === is_dir($file)) {
+                    unset($files[$key]);
+                }
+            }
+            foreach ($files as $file) {
+                rmdir($file);
+            }
+            return true;
+        }
+        return false;
     }
 
     protected function _has_one_or_many($associated_class_name, $foreign_key_name=null, $foreign_key_name_in_current_models_table=null, $connection_name=null) {

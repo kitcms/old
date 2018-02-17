@@ -14,7 +14,8 @@
 {if $.request.section ? &&
     ($section = $.model->factory('Section')->findOne($.request.section)) &&
     ($model = $section->infobox['model']) &&
-    ($row = $section->infobox()->findOne($.request.row))}
+    ($infobox = $section->infobox()) &&
+    ($row = $infobox->findOne($.request.row))}
 
     {set $site = $section->site()->findOne()}
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
@@ -50,6 +51,17 @@
 {set $groups = $schema.groups}
 {set $fields = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
 {set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
+
+{* Формирование основного меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second = []}
+{if ! $section->extension}
+    {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section ]}
+{/if}
+{set $menu.second.left.object = [ 'title' => 'Объекты', 'link' => $.component ~ '/row/list.html?section=' ~ $.request.section ]}
+{set $menu.second.right = [
+    [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/row/set.html?section=' ~ $row.section ~ '&row=' ~ $row.id,  'class' => 'active' ]
+]}
 
 {* Построение древовидного меню *}
 {set $tree.open_nodes[] = 'site_' ~ $site->id}

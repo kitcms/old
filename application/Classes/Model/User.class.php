@@ -21,7 +21,7 @@ class User extends Model
         array(
             'title' => 'Идентификатор группы',
             'field' => 'group',
-            'type' => 'int(10) unsigned',
+            'type' => 'bigint(20) unsigned',
             'null' => 'yes',
             'key' => 'mul',
             'group' => 'permission'

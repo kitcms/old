@@ -420,6 +420,18 @@ textarea.ui-resizable + div.ui-resizable-handle,
     white-space: nowrap;
 }
 
+.form-group .input-group-btn-upload {
+    padding-top: 8px;
+}
+.form-group .progress {
+    height: 19px;
+    margin-bottom: 0px;
+    margin: 5px 6px 7px;
+    margin-top: -26px;
+    left: 0;
+    position: relative;
+}
+
 .tooltip.top .tooltip-arrow {
     border-top-color: #dfe2e6;
 }

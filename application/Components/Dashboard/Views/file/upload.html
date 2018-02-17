@@ -47,6 +47,14 @@
     {if $server.request_method !== 'DELETE'}
         {if $.files ?}
             {set $handler = $options|upload_handler}
+        {else}
+            {set $parts = $.request.path|split:$.const.DS}
+            {do $parts|array_shift}
+            {set $path = $parts|join:'/'}
+            {set $url = $.request.files ?: ($server.request_scheme ?: 'http')  ~ '://' ~ $server.server_name ~ '/' ~ $path}
+            {set $options.print_response = false}
+            {set $handler = $options|upload_handler}
+            {do $handler->importFromUrl($url)}
         {/if}
     {elseif $.request.file ?}
         {do $options|upload_handler}

@@ -1,5 +1,10 @@
 <?php
 /*
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *
  * jQuery File Upload Plugin PHP Class
  * https://github.com/blueimp/jQuery-File-Upload
  *
@@ -1409,5 +1414,44 @@ class UploadHandler
     protected function basename($filepath, $suffix = null) {
         $splited = preg_split('/\//', rtrim ($filepath, '/ '));
         return substr(basename('X'.$splited[count($splited)-1], $suffix), 1);
+    }
+
+    public function importFromUrl ($urls, $print_response = true) {
+        $files = array();
+        $content_range = $this->get_server_var('HTTP_CONTENT_RANGE') ?
+        preg_split('/[^0-9]+/', $this->get_server_var('HTTP_CONTENT_RANGE')) : null;
+        $web_import_dir = $this->get_upload_path(null, null, 'web_import_temp_dir');
+        if (!is_dir($web_import_dir)) {
+            mkdir($web_import_dir, $this->options['mkdir_mode'], true);
+        }
+        if (!is_array($urls)) {
+            $urls = array($urls);
+        }
+        foreach ($urls as $fileUrl) {
+            $url=parse_url($fileUrl);
+            if (!empty($url['host'])) {
+                $pInfo = pathinfo($fileUrl);
+                $imgExtension = 'jpg';
+                if (isset($pInfo['extension'])) {
+                    $imgExtension = $pInfo['extension'];
+                }
+                $fileName = mt_rand(1, 99999) . '_' . time() . '.' . strtolower($imgExtension);
+                $tmpFile = $this->get_upload_path($fileName, null, 'web_import_temp_dir');
+                $content = file_get_contents($fileUrl);
+                $size = file_put_contents($tmpFile, $content);
+                $files[] = $this->handle_file_upload(
+                    $tmpFile,
+                    $pInfo['basename'],  //$this->options['use_unique_hash_for_names'] ? $fileName : $pInfo['basename'],
+                    $size,
+                    mime_content_type($tmpFile),/*$this->get_server_var('CONTENT_TYPE'),*/
+                    null,
+                    null,
+                    $content_range,
+                    true
+                );
+            }
+        }
+        $response = array('web' => $files);
+        return $this->generate_response($response, $print_response);
     }
 }
