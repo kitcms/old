@@ -174,21 +174,25 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
                 $files = $this->get($field['field']);
                 $temporaries = array();
                 foreach ((array) $files as $key => $file) {
-                    $url = urldecode($file['url']);
-                    $filename = $dir['public'] . DS . trim($url, DS);
-                    $basename = basename($url);
-                    if (false === is_file($filename)) {
-                        unset($files[$key]);
-                    } else {
-                        // Перемещение файлов в предопределенную директорию
-                        $rename = $directory . DS . $basename;
-                        if (($filename !== $rename) && rename($filename, $rename)) {
-                            $temporaries[] = pathinfo($filename, PATHINFO_DIRNAME);
-                            $files[$key]['url'] = $path . DS . $basename;
+                    if (isset($file['url'])) {
+                        $url = urldecode($file['url']);
+                        $filename = $dir['public'] . DS . trim($url, DS);
+                        $basename = basename($url);
+                        if (false === is_file($filename)) {
+                            unset($files[$key]);
+                        } else {
+                            // Перемещение файлов в предопределенную директорию
+                            $rename = $directory . DS . $basename;
+                            if (($filename !== $rename) && rename($filename, $rename)) {
+                                $temporaries[] = pathinfo($filename, PATHINFO_DIRNAME);
+                                $files[$key]['url'] = $path . DS . $basename;
+                            }
                         }
-                    }
-                    if (false !== ($key = array_search($basename, $currentFiles))) {
-                        unset($currentFiles[$key]);
+                        if (false !== ($key = array_search($basename, $currentFiles))) {
+                            unset($currentFiles[$key]);
+                        }
+                    } else {
+                        unset($files[$key]);
                     }
                 }
                 $this->set($field['field'], $files);
