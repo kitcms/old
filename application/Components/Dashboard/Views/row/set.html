@@ -14,7 +14,8 @@
 {if $.request.section ? &&
     ($section = $.model->factory('Section')->findOne($.request.section)) &&
     ($model = $section->infobox['model']) &&
-    ($row = $section->infobox()->findOne($.request.row))}
+    ($infobox = $section->infobox()) &&
+    ($row = $infobox->findOne($.request.row))}
 
     {set $site = $section->site()->findOne()}
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
@@ -59,7 +60,7 @@
 {/if}
 {set $menu.second.left.object = [ 'title' => 'Объекты', 'link' => $.component ~ '/row/list.html?section=' ~ $.request.section ]}
 {set $menu.second.right = [
-    [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/row/set.html?section=' ~ $row.section ~ '&row=' ~ $row.id,  'class' => 'active' ] 
+    [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/row/set.html?section=' ~ $row.section ~ '&row=' ~ $row.id,  'class' => 'active' ]
 ]}
 
 {* Построение древовидного меню *}

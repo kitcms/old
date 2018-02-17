@@ -212,6 +212,16 @@
             <option value='{$row.id}' {if $row.id === $.request[$field.field]|e}selected{/if}>{$row[$field.column]}</option>
         {/foreach}
         </select>
+    {case 'group'}
+        {set $options = $.model->factory($field.table)->select($field.field)->whereNotNull($field.field)->groupBy($field.field)->findArray()}
+        <select class="form-control" name="{$field.field}" role="tags">
+        {if 'YES' === $field.null}
+            <option value="">не задано</option>
+        {/if}
+        {foreach $options as $array}
+            <option value="{$array[$field.field]}"{if $.request[$field.field]|e == $array[$field.field]} selected{/if}>{$array[$field.field]}</option>
+        {/foreach}
+        </select>
     {case default}
         <input class="form-control" type="text" value="{$.request[$field.field]|e}" name="{$field.field}" id="{$field.field}">
 {/switch}

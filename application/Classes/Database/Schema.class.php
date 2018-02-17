@@ -26,7 +26,8 @@ class Schema extends ORM
         'text' => 'longtext',
         'boolean' => 'tinyint(1)',
         'file' => 'longblob',
-        'join' => 'char(20)'
+        'join' => 'char(20)',
+        'group' => 'char(255)',
     );
 
     public function __construct($table_name = '', $data = array(), $connection_name = self::DEFAULT_CONNECTION) {
