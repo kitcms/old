@@ -101,12 +101,47 @@ class Schema extends ORM
             if (($this->isNew() || ($this->_field_name !== $this->field)) && $this->findOne($this->field)) {
                 return false;
             }
+            // Нахождение зависимостей
+            // Join column
+            $self = new self('');
+            foreach ($self->findMany() as $table) {
+                foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'","column":"'. $this->_field_name .'"%')->findMany() as $field) {
+                    $dependences['column'][$table->name][] = $field;
+                }
+            }
         } else {
             if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->name) || preg_match("/^[\d-_.]+$/", $this->name)) {
                 return false;
             }
+            // Нахождение зависимостей
+            // Join
+            $self = new self('');
+            foreach ($self->findMany() as $table) {
+                foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'"%')->findMany() as $field) {
+                    $dependences['join'][$table->name][] = $field;
+                }
+            }
         }
-        return parent::save();
+        if (parent::save()) {
+            // Join
+            if (isset($dependences['join'])) {
+                foreach ((array) $dependences['join'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('join', $this->name)->save();
+                    }
+                }
+            }
+            // Join column
+            if (isset($dependences['column'])) {
+                foreach ((array) $dependences['column'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('column', $this->field)->save();
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public function delete()
