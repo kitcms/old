@@ -218,13 +218,59 @@ class Schema extends ORM
 
     public function delete()
     {
+        global $dir;
+        $dependences = array();
         if ('field' === $this->_getIdColumnName()) {
+            // Join column
+            $self = new self('');
+            foreach ($self->findMany() as $table) {
+                foreach ($table->field()->whereLike('comment', '%"aspect":"join"%"join":"'. $this->_table_name .'","column":"'. $this->_field_name .'"%')->findMany() as $field) {
+                    $dependences['column'][$table->name][] = $field;
+                }
+            }
             $query = array('ALTER TABLE', $this->_quoteIdentifier($this->_table_name), 'DROP', $this->_quoteIdentifier($this->field));
+            $dir = mb_strtolower("{$dir['public']}/files/{$this->_table_name}/*/{$this->field}");
+            $dependences['file'] = glob_recursive("{$dir}/*");
+            $dependences['dir'] = glob_recursive("{$dir}");
         } else {
             $query = array('DROP TABLE', $this->_quoteIdentifier($this->name));
+            $dependences['section'] = Model::factory('Section')->whereLike('infobox', '%"model":"'. $this->_table_name .'"%')->findMany();
+            $dir = mb_strtolower("{$dir['public']}/files/{$this->name}");
+            $dependences['file'] = glob_recursive("{$dir}/*");
+            array_unshift($dependences['file'], $dir);
         }
         $data = is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true));
         if (self::_execute(join(" ", $query), $data, $this->_connection_name)) {
+            if (isset($dependences['section'])) {
+                foreach ((array) $dependences['section'] as $section) {
+                    $section->set('infobox', '')->save();
+                }
+            }
+            // Join column
+            if (isset($dependences['column'])) {
+                foreach ((array) $dependences['column'] as $fields) {
+                    foreach ((array) $fields as $field) {
+                        $field->set('column', 'id')->save();
+                    }
+                }
+            }
+            if (isset($dependences['file'])) {
+                foreach ($dependences['file'] as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
+                    } else {
+                        $dependences['dir'][] = $file;
+                    }
+                }
+            }
+            if (isset($dependences['dir'])) {
+                $dependences['dir'] = array_reverse($dependences['dir']);
+                foreach ($dependences['dir'] as $dir) {
+                    if (is_dir($dir)) {
+                        rmdir($dir);
+                    }
+                }
+            }
             return true;
         }
         return false;
