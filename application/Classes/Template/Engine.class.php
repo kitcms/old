@@ -23,7 +23,7 @@ class Engine extends Fenom
      *
      * @return Fenom\Template
      */
-    public function getRawTemplate($parent = null)
+    public function getRawTemplate(Fenom\Template $parent = null)
     {
         return new Template($this, $this->_options, $parent);
     }

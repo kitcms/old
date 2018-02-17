@@ -884,13 +884,29 @@ class UploadHandler
         $new_height = $max_height = $img_height = $image->getImageHeight();
 
         // use isset(). User might be setting max_width = 0 (auto in regular resizing). Value 0 would be considered empty when you use empty()
-        if (isset($options['max_width'])) {
+        if (isset($options['max_width']) && $img_width > $options['max_width']) {
             $image_resize = true;
             $new_width = $max_width = $options['max_width'];
         }
-        if (isset($options['max_height'])) {
+        if (isset($options['max_height']) && $img_height > $options['max_height']) {
             $image_resize = true;
             $new_height = $max_height = $options['max_height'];
+        }
+
+        if (isset($options['min_width']) && $img_width < $options['min_width']) {
+            $image_resize = true;
+            $new_width = $max_width = $options['min_width'];
+        }
+        if (isset($options['min_height']) && $img_height < $options['min_height']) {
+            $image_resize = true;
+            $new_height = $max_height = $options['min_height'];
+        }
+
+        if ($img_width < $img_height && $img_height < $options['max_height']) {
+            $new_height = null;
+        }
+        if ($img_width > $img_height && $img_width < $options['max_width']) {
+            $new_width= null;
         }
 
         $image_strip = (isset($options['strip']) ? $options['strip'] : false);
