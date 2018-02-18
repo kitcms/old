@@ -32,7 +32,7 @@
             {foreach $sections as $section}
                 {do $section->set('type', null)->save()}
             {/foreach}
-            {if $types = array_diff($.request.types, ['']) ?}
+            {if $.request.types ? && ($types = array_diff($.request.types, [''])) ?}
                 {set $ids = array_values($types)}
                 {set $sections = $site->section()->whereIn('id', $ids)->findMany()}
                 {foreach $sections as $section}
@@ -107,7 +107,7 @@
         {switch $keyword}
             {case 'main'}{macro.main}{if $keys ?}<hr>{/if}
             {case 'meta'}{macro.meta}{if $keys ?}<hr>{/if}
-            {case 'service'}{macro.service}{if $keys ?}<hr>{/if}
+            {case 'service'}{macro.service sections=$sections}{if $keys ?}<hr>{/if}
             {case 'template'}{macro.template templates=$templates}{if $keys ?}<hr>{/if}
         {/switch}
         {foreach $keys as $key}{macro.field field=$fields[$key]}{/foreach}
