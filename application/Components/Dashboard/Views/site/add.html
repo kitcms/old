@@ -20,7 +20,7 @@
 {if $.request.apply !}
     {set $site = $.model->factory('Site')->create($.request)}
     {if $site->save()}
-        {if $.request.host === $.server.http_host}
+        {if $.request.host == $.server.http_host}
             {set $location = $site.config.dashboard ~ '/site/set.html?site=' ~ $site.id}
             {do header('Location: /' ~ $location)}
             {exit}
