@@ -40,10 +40,10 @@ class Site extends Model
             'group' => 'template'
         ),
         array(
-            'title' => 'Адрес административной части сайта',
-            'field' => 'dashboard',
-            'type' => 'varchar(255)',
-            'default' => 'admin',
+            'title' => 'Конфигурационные данные',
+            'field' => 'config',
+            'type' => 'longtext',
+            'null' => 'yes',
             'group' => 'service'
         ),
         array(
@@ -119,7 +119,8 @@ class Site extends Model
         $hosts = array_unique($hosts);
         $hosts = array_diff($hosts, array(''));
         $regex = '('. join('|', $hosts) .')';
-        return self::whereAnyIs(
+        $model = new Model();
+        return $model->factory(__CLASS__)->whereAnyIs(
             array(
                 array('Site.host' => '^'. $regex. '$'),
                 array('Site.alias' => '[[:<:]]'. $regex .'[[:>:]]')

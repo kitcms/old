@@ -140,8 +140,10 @@ class Section extends Model
             $keyword = mb_strtolower($keyword);
             $keyword = trim($keyword, "-");
 
-            if ($this->get('transliterate')) {
-                
+            $site = $this->site()->findOne();
+            
+            if ('transliteration' === $site['config']['url']) {
+
                 // Транслитерация по правилам яндекса
                 $cyr = array(
                     'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п',

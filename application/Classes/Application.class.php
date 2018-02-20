@@ -53,7 +53,7 @@ class Application
 
         // Определение текущего сайта
         $instance = $model->factory('Site')->whereHostIn(array($request->getHost()));
-        if (false === ($views->site = $instance->findOne()) || preg_match('/^'. $views->site->dashboard .'\\//', $path .'/')) {
+        if (false === ($views->site = $instance->findOne()) || preg_match('/^'. $views->site->config['dashboard'] .'\\//', $path .'/')) {
             // Запрос к компоненту администрирования
             require 'Components/Dashboard/bootstrap.php';
         } else {

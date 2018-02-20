@@ -26,7 +26,7 @@ if (isset($views) && $views instanceof Fenom) {
     $views->addAccessorSmart("component", "component", Template\Engine::ACCESSOR_PROPERTY);
     $views->component = $request->getBasePath() .'/admin';
     if ($views->site) {
-        $views->component = $request->getBasePath(). '/' . $views->site->dashboard;
+        $views->component = $request->getBasePath(). '/' . $views->site->config['dashboard'];
     }
 
     // Настройка файлового менеджера

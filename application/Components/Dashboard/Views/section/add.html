@@ -96,12 +96,10 @@
             заголовков title для всех страниц сайта.</span>
         </div>
     </div>
-    <div class="control-group has-warning {if $.request.apply ! && ! $.request.keyword}has-error{/if}">
-        <div class="form-group">
-            <label class="label-light required" for="keyword">Адрес</label>
-            <input class="form-control" type="text" value="{$.request.keyword|e}" name="keyword" id="keyword">
-            <span class="help-block">Адрес может содержать только буквы, цифры, дефис, символ нижнего подчеркивания и точку.</span>
-        </div>
+    <div class="form-group">
+        <label class="label-light required" for="keyword">Адрес</label>
+        <input class="form-control" type="text" value="{$.request.keyword|e}" name="keyword" id="keyword">
+        <span class="help-block">Адрес может содержать только буквы, цифры, дефис, символ нижнего подчеркивания и точку.</span>
     </div>
     <hr>
     <div class="form-group">
