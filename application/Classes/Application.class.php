@@ -12,7 +12,7 @@ namespace Classes;
 
 class Application
 {
-    const VERSION  = '0.2.0';
+    const VERSION  = '0.2.1';
     const CODENAME = 'Black whale';
 
     public function run()
