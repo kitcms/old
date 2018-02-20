@@ -109,8 +109,11 @@ class Site extends Model
     public static function whereHostIn($hosts)
     {
         if (function_exists('idn_to_utf8')) {
+            // See link https://wiki.php.net/rfc/deprecate-and-remove-intl_idna_variant_2003
+            // INTL_IDNA_VARIANT_2003 || INTL_IDNA_VARIANT_UTS46 для PHP >= 7.2.0
+            $idnaVariant = intval(version_compare(PHP_VERSION, '7.2.0', '>='));
             foreach ($hosts as $host) {
-                $hosts[] = idn_to_utf8($host);
+                $hosts[] = idn_to_utf8($host, 0, $idnaVariant);
             }
         }
         $hosts = array_unique($hosts);
