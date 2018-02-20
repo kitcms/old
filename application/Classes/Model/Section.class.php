@@ -132,12 +132,50 @@ class Section extends Model
             $this->id = $schema->auto_increment;
         }
         if ($this->isDirty('keyword')) {
-            // Проверка на корректность
-            if (!preg_match("/^[[:alnum:]-.]+$/iu", $this->keyword)) {
-                return false;
+            if (!$keyword = $this->get('keyword')) {
+                $keyword = $this->get('title');
             }
+            // Очистка от лишних символов
+            $keyword = preg_replace('~[^\\pL0-9_.]+~u', '-', $keyword);
+            $keyword = mb_strtolower($keyword);
+            $keyword = trim($keyword, "-");
+
+            $site = $this->site()->findOne();
+            
+            if ('transliteration' === $site['config']['url']) {
+
+                // Транслитерация по правилам яндекса
+                $cyr = array(
+                    'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п',
+                    'р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я',
+                    'ch','sh'
+                );
+                $lat = array(
+                    'a','b','v','g','d','e','yo','zh','z','i','j','k','l','m','n','o','p',
+                    'r','s','t','u','f','h','c','c+h','s+h','s+hc+h','','y','','eh','yu','ya',
+                    'c+h','s+h'
+                );
+                $keyword = str_replace($cyr, $lat, $keyword);
+                $pattern = '/(c|s|e|h)h/i';
+                $replacement = '$1kh';
+                while (preg_match($pattern, $keyword)) {
+                    $keyword = preg_replace($pattern, $replacement, $keyword);
+                }
+                $pattern = '/(c|s)\+h/i';
+                $replacement = '$1h';
+                while (preg_match($pattern, $keyword)) {
+                    $keyword = preg_replace($pattern, $replacement, $keyword);
+                }
+
+            }
+            $this->set('keyword', $keyword);
+
+            // Проверка на корректность
+            //if (!preg_match("/^[[:alnum:]-_.]+$/iu", $keyword)) {
+            //    return false;
+            //}
         }
-        $this->set('path', $this->keyword);
+        $this->set('path', $this->get('keyword'));
         if ($parent = $this->parent()->findOne()) {
             // Если раздел имеет расширение, то нельзя добавлять подразделы
             if ($parent->extension) {

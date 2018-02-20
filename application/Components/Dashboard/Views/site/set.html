@@ -23,9 +23,10 @@
     {/foreach}
 
     {if $.request.apply !}
-        {var $.request.dashboard = $.request.dashboard|trim:'/'}
-        {if ($.request.site === $.site->id) && ($.request.dashboard !== $site.dashboard)}
-            {set $location = $.request.dashboard ~ '/site/set.html?site=' ~ $site.id}
+        {var $.request.config.dashboard = $.request.config.dashboard|trim:'/'}
+        {if ($.request.site == $.site.id) && ($.request.config.dashboard != $site.config.dashboard)}
+            {set $location = $.request.config.dashboard ~ '/site/set.html?site=' ~ $site.id}
+            {$location}
         {/if}
         {if $site->set($.request)->save()}
             {set $sections = $site->section()->whereNotNull('type')->findMany()}

@@ -1,8 +1,0 @@
-.idea
-vendor
-build
-composer.phar
-tests/resources/compile/*
-!.gitkeep
-tests/resources/template/*
-sandbox/compiled/*

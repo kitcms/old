@@ -22,6 +22,24 @@ class ORMWrapper extends \ORMWrapper
         return $this->_table_name;
     }
 
+    public function find_array() {
+        $rows = $this->_run();
+        foreach ($rows as $index => $row) {
+            foreach ($row as $field => $values) {
+                if (is_array($values)) {
+                    foreach ($values as $key => $value) {
+                        if (!is_array($value) && $value = json_decode(trim($value, '"'), true)) {
+                            $rows[$index][$field][$key] = $value;
+                        }
+                    }
+                } elseif (!is_array($values) && $values = json_decode(trim($values, '"'), true)) {
+                    $rows[$index][$field] = $values;
+                }
+            }
+        }
+        return $rows;
+    }
+
     protected function _create_model_instance($orm)
     {
         if ($orm === false) {
