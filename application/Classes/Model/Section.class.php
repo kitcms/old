@@ -141,8 +141,8 @@ class Section extends Model
             $keyword = trim($keyword, "-");
 
             $site = $this->site()->findOne();
-            
-            if ('transliteration' === $site['config']['url']) {
+
+            if ('transliteration' === $site->config['url']) {
 
                 // Транслитерация по правилам яндекса
                 $cyr = array(
