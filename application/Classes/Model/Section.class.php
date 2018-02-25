@@ -142,8 +142,7 @@ class Section extends Model
 
             $site = $this->site()->findOne();
 
-            if ('transliteration' === $site->config['url']) {
-
+            if (isset($site->config['url']) && 'transliteration' === $site->config['url']) {
                 // Транслитерация по правилам яндекса
                 $cyr = array(
                     'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п',
