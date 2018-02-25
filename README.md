@@ -21,7 +21,7 @@
 > :bulb: Так как, на данный момент, отсутствует полноценный инсталятор системы, вам придется в ручную редактировать
 конфигурационные файлы.
 
-1. [Скачайте](https://github.com/kitcms/cms/archive/0.1.0.zip) и распакуйте архив.
+1. [Скачайте](https://github.com/kitcms/cms/releases/latest) и распакуйте архив с последней версией системы.
 2. Содержимое папки ``public_html`` разместите в корневой(публичной) директории вашего сайта.
 3. Папку ``application`` рекомендуется разместить рядом. Если у вас нет необходимых для этого полномочий, вы можете переместить данную папку в корневую директорию.
 4. Отредактируйте содержимое файла [mysql.config.php](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php).  Укажите [хост](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php#L15), [порт](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php#L15) MySQL сервера и [название](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php#L15) базы данных, так же [логин](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php#L16) и [пароль](https://github.com/kitcms/cms/blob/0.1.0/application/Configs/mysql.config.php#L17) пользователя.
