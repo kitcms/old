@@ -13,11 +13,31 @@
 {if $.request.section ? &&
     ($section = $.model->factory('Section')->findOne($.request.section)) &&
     ($model = $section->infobox['model'])}
+    {set $schema = $.schema->findOne($model)}
+
     {set $site = $section->site()->findOne()}
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
-    {set $rows = $section->infobox()->findMany()}
+    {set $infobox = $section->infobox()}
 
-    {set $schema = $.schema->findOne($model)}
+    {if ! ($priority = $section->infobox.field) || ! $schema->field()->findOne($priority)}
+        {set $priority = 'priority'}
+    {/if}
+
+    {set $order = $section->infobox.order}
+
+    {switch $order}
+        {case 'asc'}
+            {do $infobox->orderByAsc($priority)}
+        {default}
+            {do $infobox->orderByDesc($priority)}
+    {/switch}
+
+    {if $limit = $section->infobox.limit|intval}
+        {do $infobox->limit($limit)}
+    {/if}
+
+    {set $rows = $infobox->findMany()}
+
     {if ! ($field = $schema->field()->whereLike('type', 'varchar%')->findOne())}
         {set $field = $schema->field()->whereLike('type', '%text%')->findOne()}
     {/if}
@@ -63,7 +83,7 @@
     </thead>
     <tbody class="sortable selectable" data-target="row" data-item="section={$section.id}&row">
     {foreach $rows as $row}
-        <tr id="{$row.id}">
+        <tr {if $priority === 'priority'}id="{$row.id}"{/if}>
             <td>
                 <small class="grey">{$row->id}.</small>
                 {if $field ?}{$row[$field.field]}{/if}

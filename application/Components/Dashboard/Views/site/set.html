@@ -14,14 +14,6 @@
 {var $.server = $.server|array_change_key_case}
 
 {if $.request.site ? && ($site = $.model->factory('Site')->findOne($.request.site))}
-    {set $additionals = $site->schema()->field()->whereNotIn('field', array_column($site->fields(), 'field'))->findMany()}
-    {set $sections = $site->section()->orderByAsc('path')->findMany()}
-    {foreach $sections as $section}
-        {if $section.type is not null}
-            {var $.request.types[$section.type] = $section.id}
-        {/if}
-    {/foreach}
-
     {if $.request.apply !}
         {var $.request.config.dashboard = $.request.config.dashboard|trim:'/'}
         {if ($.request.site == $.site.id) && ($.request.config.dashboard != $site.config.dashboard)}
@@ -71,6 +63,12 @@
 {set $fields = array_column($.model->factory('Site')->fields(), 'field')}
 {set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
 {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
+{set $sections = $site->section()->orderByAsc('path')->findMany()}
+{foreach $sections as $section}
+    {if $section.type is not null}
+        {var $.request.types[$section.type] = $section.id}
+    {/if}
+{/foreach}
 {var $.request = array_merge($.request,  $site->asArray())}
 
 {* Формирование меню *}

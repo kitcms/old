@@ -115,10 +115,40 @@
         <select class="form-control" name="infobox[model]" id="model" role="simple">
             <option value="">Не задана</option>
         {foreach $models as $model}
-            <option value="{$model.name}" {if $.request.infobox.model == $model.name}selected{/if}>{$model.name}</option>
+            {foreach $model->field()->findArray() as $field}
+                {set $fields[$model.name][] = $field.field}
+            {/foreach}
+            <option value="{$model.name}" data-fields="{$fields[$model.name]|join}" {if $.request.infobox.model == $model.name}selected{/if}>{$model.name}</option>
         {/foreach}
         </select>
     </div>
+    <div class="form-group">
+        <label class="label-light required" for="field">Сортировать по полю</label>
+        <div class="row">
+            <div class="col-md-6">
+                <select class="form-control" name="infobox[field]" id="field" role="simple">
+    {if $.request.infobox.field ?}
+        {foreach $fields[$.request.infobox.model] as $field}
+                    <option value="{$field}" {if $field === $.request.infobox.field}selected{/if}>{$field}</option>
+        {/foreach}
+    {/if}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control" name="infobox[order]" id="order" role="simple">
+                    <option value="desc" {if 'desc' === $.request.infobox.order}selected{/if}>в порядке убывания</option>
+                    <option value="asc" {if 'asc' === $.request.infobox.order}selected{/if}>в порядке возрастания</option>
+                </select>
+            </div>
+        </div>
+        <span class="help-block"></span>
+    </div>
+    <div class="form-group">
+        <label class="label-light required" for="pattern">Количество объектов на странице</label>
+        <input class="form-control" type="text" value="{$.request.infobox.limit|e}" name="infobox[limit]" id="pattern" {if $.request.extension ?}disabled{/if}>
+        <span class="help-block"></span>
+    </div>
+    <hr>
     <div class="form-group">
         <label class="label-light required" for="pattern">Паттерн</label>
         <input class="form-control" type="text" value="{$.request.infobox.pattern|e}" name="infobox[pattern]" id="pattern" {if $.request.extension ?}disabled{/if}>
@@ -153,4 +183,25 @@
 
 {block 'component_footer'}
 <input class="btn btn-default" type="submit" role="button" value="Добавить раздел" form="add">
+{/block}
+
+{block 'component_script'}
+{parent}
+<script>
+$('[name=infobox\\[model\\]]').on("change", function (e) {
+    if (value = $(this).val()) {
+        fields = $('[name=infobox\\[model\\]] option[value=' + $(this).val() + ']').data('fields').split(',');
+        value = $('[name=infobox\\[field\\]]').val();
+        $('[name=infobox\\[field\\]] option').remove();
+        $.each(fields, function(key,val) {
+             $('[name=infobox\\[field\\]]').append(new Option(val, val));
+        });
+        $('[name=infobox\\[field\\]]').val('priority');
+        if (value) {
+            $('[name=infobox\\[field\\]]').val(value);
+        }
+        $('[name=infobox\\[field\\]]').trigger("change");
+    }
+}).trigger("change");
+</script>
 {/block}

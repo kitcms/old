@@ -12,7 +12,7 @@ namespace Classes;
 
 class Application
 {
-    const VERSION  = '0.2.1';
+    const VERSION  = '0.2.2';
     const CODENAME = 'Black whale';
 
     public function run()
@@ -47,13 +47,16 @@ class Application
         $views->addAccessorSmart("infobox", "infobox", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("parents", "parents", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessorSmart("meta", "meta", Template\Engine::ACCESSOR_CHAIN);
 
         // Определение текущего пользователя
         $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
 
         // Определение текущего сайта
         $instance = $model->factory('Site')->whereHostIn(array($request->getHost()));
-        if (false === ($views->site = $instance->findOne()) || preg_match('/^'. $views->site->config['dashboard'] .'\\//', $path .'/')) {
+        if (false === ($views->site = $instance->findOne()) ||
+            !isset($views->site->config['dashboard']) ||
+            preg_match('/^'. $views->site->config['dashboard'] .'\\//', $path .'/')) {
             // Запрос к компоненту администрирования
             require 'Components/Dashboard/bootstrap.php';
         } else {
@@ -117,6 +120,17 @@ class Application
                     $container->prepend('templates', "section:{$views->section->id}.tpl");
                 } else {
                     $container->set('templates', "section:{$views->section->id}.tpl");
+                }
+
+                // Формирование метаинформации
+                $views->meta = array('title' => '', 'description' => '', 'keywords' => '');
+                $dependences = array_merge(array($views->site), (array) $views->parents, array($views->section));
+                foreach ($dependences as $dependence) {
+                    foreach ((array) $dependence->meta as $key => $value) {
+                        if (!empty($value)) {
+                            $views->meta[$key] = implode(',', (array) $value);
+                        }
+                    }
                 }
 
                 // Отображение макетов

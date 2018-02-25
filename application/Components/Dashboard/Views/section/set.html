@@ -111,3 +111,24 @@
     <a class="btn btn-default" href="{$.component}/section/set.html?section={$section.id}" role="button">Отменить изменения</a>
 </div>
 {/block}
+
+{block 'component_script'}
+{parent}
+<script>
+$('[name=infobox\\[model\\]]').on("change", function (e) {
+    if (value = $(this).val()) {
+        fields = $('[name=infobox\\[model\\]] option[value=' + $(this).val() + ']').data('fields').split(',');
+        value = $('[name=infobox\\[field\\]]').val();
+        $('[name=infobox\\[field\\]] option').remove();
+        $.each(fields, function(key,val) {
+             $('[name=infobox\\[field\\]]').append(new Option(val, val));
+        });
+        $('[name=infobox\\[field\\]]').val('priority');
+        if (value) {
+            $('[name=infobox\\[field\\]]').val(value);
+        }
+        $('[name=infobox\\[field\\]]').trigger("change");
+    }
+}).trigger("change");
+</script>
+{/block}

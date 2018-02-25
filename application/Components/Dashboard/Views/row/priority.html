@@ -1,0 +1,42 @@
+{*
+ * Шаблон для изменения приоритета объектов
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{set $ids = $.request.row ? ($.request.row|split) : [null]}
+{if $.request.section ? &&
+    ($section = $.model->factory('Section')->findOne($.request.section)) &&
+    ($infobox = $section->infobox())}
+    {if ($order = $section->infobox['order']) ? && 'desc' === $order}
+        {set $ids = $ids|array_reverse}
+    {/if}
+    {set $rows = $infobox->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
+    {if count($rows) > 1}
+        {foreach $rows as $item}
+            {set $array[$item->id] = $item}
+        {/foreach}
+        {set $priority = current($array)->priority}
+        {foreach $ids as $id}
+            {if $array[$id] !}
+                {set $array[$id]->priority = $priority}
+                {do $array[$id]->save()}
+                {do $priority++}
+            {/if}
+        {/foreach}
+        {set $message}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <span class="glyphicon glyphicon-ok"></span>
+            Приоритет объектов успешно изменен.
+        </div>
+        {/set}
+    {/if}
+    {include 'component:row/list.html'}
+{/if}
+{exit}
+{/block}
