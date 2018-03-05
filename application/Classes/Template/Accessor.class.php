@@ -36,4 +36,18 @@ class Accessor {
     {
         return $tpl->parseChain($tokens, '$tpl->getStorage()->'. $chain);
     }
+
+    public static function compile(Fenom\Tokenizer $tokens, Template $tpl)
+    {
+        $tokens->skip('(');
+        $name = $tpl->parsePlainArg($tokens, $static);
+        if($tokens->is(',')) {
+            $tokens->skip()->need('[');
+            $vars = $tpl->parseArray($tokens) . ' + $var';
+        } else {
+            $vars = '$var';
+        }
+        $tokens->skip(')');
+        return '$tpl->getStorage()->compileCode('.$name.', "Accessor compile")->fetch('.$vars.')';
+    }
 }
