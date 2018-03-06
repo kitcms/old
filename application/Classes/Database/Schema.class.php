@@ -316,6 +316,13 @@ class Schema extends ORM
             $key = array($key => $value);
         }
         foreach ($key as $field => $value) {
+            // Корректировка полня type на основании значения поля aspect
+            if ('aspect' === $field) {
+                $this->_data['type'] = $value;
+                if (key_exists($value, $this->aspects)) {
+                    $this->_data['type'] = $this->aspects[$value];
+                }
+            }
             $this->_data[$field] = $value;
             $this->_dirty_fields[$field] = $value;
             if (false === $expr and isset($this->_expr_fields[$field])) {
