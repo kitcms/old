@@ -1090,12 +1090,20 @@ class UploadHandler
             $file->error = $this->get_error_message('image_resize')
                     .' ('.implode($failed_versions, ', ').')';
         }
+
+        if (!empty($options['color_thief']) && class_exists('\ColorThief\ColorThief')) {
+            $file->color = array(
+                'dominant' => \ColorThief\ColorThief::getColor($file_path, 100),
+                'palette' => \ColorThief\ColorThief::getPalette($file_path, 10, 100)
+            );
+        }
+
         // Free memory:
         $this->destroy_image_object($file_path);
     }
 
     protected function handle_file_upload($uploaded_file, $name, $size, $type, $error,
-            $index = null, $content_range = null) {
+            $index = null, $content_range = null, $isUrlImport = false) {
         $file = new \stdClass();
         $file->name = $this->get_file_name($uploaded_file, $name, $size, $type, $error,
             $index, $content_range);
@@ -1121,6 +1129,8 @@ class UploadHandler
                 } else {
                     move_uploaded_file($uploaded_file, $file_path);
                 }
+            }  elseif ($isUrlImport) {
+                rename($uploaded_file, $file_path);
             } else {
                 // Non-multipart uploads (PUT method support)
                 file_put_contents(

@@ -12,7 +12,7 @@ namespace Classes;
 
 class Application
 {
-    const VERSION  = '0.2.3';
+    const VERSION  = '0.3.0';
     const CODENAME = 'Black whale';
 
     public function run()
@@ -41,6 +41,7 @@ class Application
         $views->addAccessorSmart("version", "'". self::VERSION ."'");
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
+        $views->addAccessorSmart("mailer", "(new PHPMailer\PHPMailer\PHPMailer())");
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
         $views->addAccessorSmart("site", "site", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("section", "section", Template\Engine::ACCESSOR_CHAIN);
