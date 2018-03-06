@@ -16,6 +16,27 @@ class Engine extends Fenom
 {
     use Fenom\StorageTrait;
 
+    protected $_accessors = array(
+        'get'     => 'Fenom\Accessor::getVar',
+        'env'     => 'Fenom\Accessor::getVar',
+        'post'    => 'Fenom\Accessor::getVar',
+        'request' => 'Fenom\Accessor::getVar',
+        'cookie'  => 'Fenom\Accessor::getVar',
+        'globals' => 'Fenom\Accessor::getVar',
+        'server'  => 'Fenom\Accessor::getVar',
+        'session' => 'Fenom\Accessor::getVar',
+        'files'   => 'Fenom\Accessor::getVar',
+        'tpl'     => 'Fenom\Accessor::tpl',
+        'version' => 'Fenom\Accessor::version',
+        'const'   => 'Fenom\Accessor::constant',
+        'php'     => 'Fenom\Accessor::call',
+        'call'    => 'Fenom\Accessor::call',
+        'tag'     => 'Fenom\Accessor::Tag',
+        'fetch'   => 'Fenom\Accessor::fetch',
+        'block'   => 'Fenom\Accessor::block',
+        'compile'   => 'Classes\Template\Accessor::compile'
+    );
+
     const ACCESSOR_CHAIN = 'Classes\Template\Accessor::parserChain';
 
     /**

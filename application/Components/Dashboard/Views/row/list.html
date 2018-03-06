@@ -19,26 +19,26 @@
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
     {set $infobox = $section->infobox()}
 
-    {if ! ($priority = $section->infobox.field) || ! $schema->field()->findOne($priority)}
+    {if ! isset($section->infobox.field) || ! ($priority = $section->infobox.field) || ! $schema->field()->findOne($priority)}
         {set $priority = 'priority'}
     {/if}
 
-    {set $order = $section->infobox.order}
+    {if $section->infobox.order ? && ($order = $section->infobox.order)}
+        {switch $order}
+            {case 'asc'}
+                {do $infobox->orderByAsc($priority)}
+            {default}
+                {do $infobox->orderByDesc($priority)}
+        {/switch}
+    {/if}
 
-    {switch $order}
-        {case 'asc'}
-            {do $infobox->orderByAsc($priority)}
-        {default}
-            {do $infobox->orderByDesc($priority)}
-    {/switch}
-
-    {if $limit = $section->infobox.limit|intval}
+    {if $section->infobox.limit ? && ($limit = $section->infobox.limit|intval)}
         {do $infobox->limit($limit)}
     {/if}
 
     {set $rows = $infobox->findMany()}
 
-    {if ! ($field = $schema->field()->whereLike('type', 'varchar%')->findOne())}
+    {if ! ($field = $schema->field()->whereLike('type', '%char%')->findOne())}
         {set $field = $schema->field()->whereLike('type', '%text%')->findOne()}
     {/if}
 {else}

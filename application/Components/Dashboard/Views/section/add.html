@@ -187,6 +187,9 @@
 
 {block 'component_script'}
 {parent}
+<script src="{$.component}/assets/ckeditor/ckeditor.js"></script>
+<script src="{$.component}/assets/jquery-fileupload/jquery.iframe-transport.js"></script>
+<script src="{$.component}/assets/jquery-fileupload/jquery.fileupload.js"></script>
 <script>
 $('[name=infobox\\[model\\]]').on("change", function (e) {
     if (value = $(this).val()) {

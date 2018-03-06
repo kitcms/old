@@ -12,7 +12,7 @@
 {if $.request.section ? &&
     ($section = $.model->factory('Section')->findOne($.request.section)) &&
     ($infobox = $section->infobox())}
-    {if ($order = $section->infobox['order']) ? && 'desc' === $order}
+    {if $section->infobox['order'] ? && ($order = $section->infobox['order']) ? && 'desc' === $order}
         {set $ids = $ids|array_reverse}
     {/if}
     {set $rows = $infobox->whereIn('id', $ids)->orderByAsc('priority')->findMany()}
