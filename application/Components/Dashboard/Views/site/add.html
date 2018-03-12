@@ -217,7 +217,7 @@
             <option value=''>Не задано</option>
         {/if}
         {foreach $rows as $row}
-            <option value='{$row.id}' {if $row.id === $.request[$field.field]|e}selected{/if}>{$row[$field.column]}</option>
+            <option value='{$row.id}' {if $row.id == $.request[$field.field]|e}selected{/if}>{$row[$field.column]}</option>
         {/foreach}
         </select>
     {case 'group'}

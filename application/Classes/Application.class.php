@@ -10,9 +10,11 @@
 
 namespace Classes;
 
+use PHPMailer\PHPMailer;
+
 class Application
 {
-    const VERSION  = '0.3.0';
+    const VERSION  = '0.3.1';
     const CODENAME = 'Black whale';
 
     public function run()
@@ -41,7 +43,7 @@ class Application
         $views->addAccessorSmart("version", "'". self::VERSION ."'");
         $views->addAccessorSmart("model", "(new Classes\Database\Model())");
         $views->addAccessorSmart("schema", "(new Classes\Database\Schema())");
-        $views->addAccessorSmart("mailer", "(new PHPMailer\PHPMailer\PHPMailer())");
+        $views->addAccessorSmart("mailer", "mailer", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("root", "'". $request->getBasePath() ."'");
         $views->addAccessorSmart("site", "site", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("section", "section", Template\Engine::ACCESSOR_CHAIN);
@@ -49,6 +51,8 @@ class Application
         $views->addAccessorSmart("parents", "parents", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("meta", "meta", Template\Engine::ACCESSOR_CHAIN);
+
+        $views->mailer = new PHPMailer\PHPMailer();
 
         // Определение текущего пользователя
         $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
