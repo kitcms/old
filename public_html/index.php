@@ -14,7 +14,8 @@ use Classes\Application;
 $files = glob('{.,..}/*/bootstrap*.php', GLOB_BRACE);
 foreach ($files as $file) {
     // Не допускается использование загрузчиков в одной директории с фронт-контроллером системы
-    if (__DIR__ !== pathinfo(realpath($file), PATHINFO_DIRNAME) && is_file($file)) {
+    $file = realpath(__DIR__ .'/'. $file);
+    if (__DIR__ !== pathinfo($file, PATHINFO_DIRNAME) && is_file($file)) {
         require_once $file;
     }
 }
