@@ -104,7 +104,7 @@ html, body {
 
 .main {
   height: inherit;
-  height: calc(100% - 150px);
+  height: calc(100% - 151px);
 
 }
 .main .aside {

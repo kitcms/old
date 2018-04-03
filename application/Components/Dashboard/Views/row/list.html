@@ -81,9 +81,9 @@
             <th></th>
         </tr>
     </thead>
-    <tbody class="sortable selectable" data-target="row" data-item="section={$section.id}&row">
+    <tbody class="{if $priority === 'priority'}sortable{/if} selectable" data-target="row" data-item="section={$section.id}&row">
     {foreach $rows as $row}
-        <tr {if $priority === 'priority'}id="{$row.id}"{/if}>
+        <tr id="{$row.id}">
             <td>
                 <small class="grey">{$row->id}.</small>
                 {if $field ?}{$row[$field.field]}{/if}
