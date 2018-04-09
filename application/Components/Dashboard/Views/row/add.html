@@ -22,7 +22,7 @@
 {/if}
 
 {if $.request.apply !}
-    {if $infobox = $infobox->create($.request)->save()}
+    {if $infobox->create($.request)->save()}
         {set $message}
         <div class="alert alert-success alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
