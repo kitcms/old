@@ -19,6 +19,8 @@
     {set $parents = $section->parents()->orderByAsc('path')->findMany()}
     {set $infobox = $section->infobox()}
 
+    {var $.session['pagination'][$section.id] = $.request.page ?: $.session['pagination'][$section.id] ?: 1}
+
     {if ! isset($section->infobox.field) || ! ($priority = $section->infobox.field) || ! $schema->field()->findOne($priority)}
         {set $priority = 'priority'}
     {/if}
@@ -33,7 +35,14 @@
     {/if}
 
     {if $section->infobox.limit ? && ($limit = $section->infobox.limit|intval)}
-        {do $infobox->limit($limit)}
+        {set $count = $section->infobox()->count()}
+        {set $pages = ($count/$limit)|ceil}
+        {if ($page = $.session['pagination'][$section.id]) > $pages}
+            {set $page = $pages}
+        {elseif $page < 1}
+            {set $page = 1}
+        {/if}
+        {do $infobox->limit($limit)->offset(($page - 1) * $limit)}
     {/if}
 
     {set $rows = $infobox->findMany()}
@@ -109,6 +118,15 @@
     {/foreach}
     </tbody>
 </table>
+{if $pages ?}
+<nav aria-label="page navigation" class="page-navigation">
+    <ul class="pagination pagination-sm">
+    {foreach 1..$pages as $index}
+        <li><a class="{if $page == $index}active{/if}" href="{$.component}/row/list.html?section={$.request.section}&page={$index}">{$index}</a></li>
+    {/foreach}
+    </ul>
+</nav>
+{/if}
 {/if}
 {/block}
 
