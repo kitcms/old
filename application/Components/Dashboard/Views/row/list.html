@@ -57,6 +57,7 @@
 {* Построение основного меню *}
 {set $menu.main.left.site.class="active"}
 {set $menu.second = []}
+    {set $menu.second.left.info = [ 'title' => 'Информация', 'link' => $.component ~ '/section/info.html?section=' ~ $.request.section]}
 {if ! $section->extension}
     {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section ]}
 {/if}

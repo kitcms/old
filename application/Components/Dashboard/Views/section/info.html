@@ -1,0 +1,115 @@
+{*
+ * Шаблон для отображения информации о разделе
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{extends 'component:index.html'}
+
+{block 'component_set'}{parent}
+{* Выборка объектов *}
+{if $.request.section ? && ($section = $.model->factory('Section')->findOne($.request.section))}
+    {set $sections = $section->children()->count()}
+    {set $parents = $section->parents()->orderByAsc('path')->findMany()}
+    {set $site = $section->site()->findOne()}
+    {if (null !== ($template = $section->template))}
+        {if (false === filter_var(boolval($template), $.const.FILTER_VALIDATE_BOOLEAN))}
+            {set $reverse = array_reverse($parents)}
+            {do array_push($reverse, $site)}
+            {foreach $reverse as $parent}
+            {if (null === $template = $parent->template) ||
+                (true === filter_var(boolval($template), $.const.FILTER_VALIDATE_BOOLEAN))}
+                {break}
+            {/if}
+            {/foreach}
+        {/if}
+    {/if}
+    {set $template = $.model->factory('Template')->where('id', $template)->findOne()}
+{else}
+    {exit}
+{/if}
+
+{* Формирование меню *}
+{set $menu.main.left.site.class="active"}
+{set $menu.second = []}
+{if $.request.section ?}
+    {set $menu.second.left.info = [ 'title' => 'Информация', 'link' => $.component ~ '/section/info.html?section=' ~ $.request.section, 'class' => 'active']}
+    {if ! $section->extension}
+        {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/section/list.html?section=' ~ $.request.section ]}
+    {/if}
+    {if $section->infobox.model ?}
+        {set $menu.second.left.object = [ 'title' => 'Объекты', 'link' => $.component ~ '/row/list.html?section=' ~ $.request.section]}
+    {/if}
+    {set $menu.second.right = [
+        [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/section/set.html?section=' ~ $.request.section ],
+        [ 'title' => 'Редактирование шаблона', 'link' => $.component ~ '/section/edit.html?section=' ~ $.request.section ],
+    ]}
+{else}
+    {set $menu.second.left.section = [ 'title' => 'Разделы', 'link' => $.component ~ '/site/list.html?site=' ~ $.request.site, 'class' => 'active' ]}
+    {set $menu.second.right = [
+        [ 'title' => 'Изменение настроек', 'link' => $.component ~ '/site/set.html?site=' ~ $.request.site ]
+    ]}
+{/if}
+
+{* Построение древовидного меню *}
+{set $tree.open_nodes[] = 'site_' ~ $site->id}
+{foreach $parents as $parent}
+    {set $tree.open_nodes[] = 'section_' ~ $parent->id}
+{/foreach}
+{if $section ?}
+    {set $tree.open_nodes[] = 'section_' ~ $section->id}
+    {set $tree.selected_node[] = 'section_' ~ $section->id}
+{else}
+    {set $tree.selected_node[] = 'site_' ~ $site->id}
+{/if}
+{/block}
+
+{block 'component_aside'}
+<div id="tree" data-url="{$.component}/site/tree.html"></div>
+{/block}
+
+{block 'component_content'}
+{parent}
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-xs-6"></th>
+            <th class="col-xs-6"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><small class="grey">1.</small> Дата изменения информации о разделе</td>
+            <td>{$section.updated}</td>
+        </tr>
+        <tr>
+            <td><small class="grey">2.</small> Количество подразделов</td>
+            <td>{$sections}</td>
+        </tr>
+        <tr>
+            <td><small class="grey">3.</small> Макет дизайна</td>
+            <td>
+            {if $section->template.0 !}
+                {if $template ?}
+                    <small class="grey">{$template.id}.</small> {$template.title}
+                {else}не задан{/if}
+                {if 0 == $section->template}(наcледование){/if}
+            {else}не задан{/if}
+            </td>
+        </tr>
+    {if ($model = $.schema->findOne($section.infobox.model)) ?}
+        <tr>
+            <td><small class="grey">4.</small> Модель данных</td>
+            <td>{$model.comment}  <span class="badge">{$model.name}</span></td>
+        </tr>
+        <tr>
+            <td><small class="grey">5.</small> Количество объектов</td>
+            <td>{$section->infobox()->count()}</td>
+        </tr>
+    {/if}
+    </tbody>
+</table>
+{/block}
