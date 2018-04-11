@@ -1091,13 +1091,15 @@ class UploadHandler
                     .' ('.implode($failed_versions, ', ').')';
         }
 
+        list($file->width, $file->height) = getimagesize($file_path);
+
         if (!empty($options['color_thief']) && class_exists('\ColorThief\ColorThief')) {
             $file->color = array(
                 'dominant' => \ColorThief\ColorThief::getColor($file_path, 100),
                 'palette' => \ColorThief\ColorThief::getPalette($file_path, 10, 100)
             );
         }
-
+        
         // Free memory:
         $this->destroy_image_object($file_path);
     }

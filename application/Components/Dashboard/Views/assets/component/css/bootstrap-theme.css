@@ -104,7 +104,7 @@ html, body {
 
 .main {
   height: inherit;
-  height: calc(100% - 150px);
+  height: calc(100% - 151px);
 
 }
 .main .aside {
@@ -416,7 +416,7 @@ textarea.ui-resizable + div.ui-resizable-handle,
     border-bottom: 1px solid #e5e5e5;
 }
 .btn-group,
-.btn-group > .tooltip {
+.tooltip {
     white-space: nowrap;
 }
 
@@ -438,6 +438,36 @@ textarea.ui-resizable + div.ui-resizable-handle,
 .tooltip-inner {
     background-color: #dfe2e6;
     color: #2e2e2e;
+}
+
+nav.page-navigation {
+    position: absolute;
+    z-index: 10;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+    left: 0;
+    background: #fafafa;
+    border-top: 1px solid #e5e5e5;
+    padding: 0px 15px;
+}
+nav.page-navigation .pagination {
+    margin: initial;
+    display: inline;
+}
+nav.page-navigation .pagination > li > a {
+    background-color: initial;
+    border: initial;
+    color: #9d9d9d;
+    padding: 5px 8px;
+}
+nav.page-navigation .pagination > li > a:hover,
+nav.page-navigation .pagination > li > a:focus {
+    color: #000000;
+}
+nav.page-navigation .pagination > li > a.active {
+    color: #1f78d1;
+    font-weight: 600;
 }
 
 .grey,
