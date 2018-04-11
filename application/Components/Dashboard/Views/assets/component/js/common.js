@@ -50,7 +50,7 @@
         $(this).tab('show');
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 
     /* JqTree */
     window.tree = $('#tree');

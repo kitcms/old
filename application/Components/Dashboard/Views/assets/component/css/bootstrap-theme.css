@@ -416,7 +416,7 @@ textarea.ui-resizable + div.ui-resizable-handle,
     border-bottom: 1px solid #e5e5e5;
 }
 .btn-group,
-.btn-group > .tooltip {
+.tooltip {
     white-space: nowrap;
 }
 
