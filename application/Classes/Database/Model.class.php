@@ -136,7 +136,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
         // FIXME
         if (null === $id = $this->id()) {
             $id = $schema->auto_increment;
-            $this->set('user', isset($_SESSION['user']) ? $_SESSION['user'] : false);
+            $this->set('user', isset($_SESSION['cms']['user']) ? $_SESSION['cms']['user'] : false);
         }
         $this->set('created', $this->get('created') ?: date("Y-m-d H:i:s"));
         $this->set('updated', date("Y-m-d H:i:s"));

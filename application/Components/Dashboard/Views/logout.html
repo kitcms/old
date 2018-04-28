@@ -8,7 +8,7 @@
  *}
 
 {block 'component_set'}
-{var $.session.user = false}
+{var $.session.cms.user = false}
 {set $server = $.server|array_change_key_case}
 {do header('Location: ' ~ $.component ~ '/login.html')}
 {exit}

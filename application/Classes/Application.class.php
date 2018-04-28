@@ -14,7 +14,7 @@ use PHPMailer\PHPMailer;
 
 class Application
 {
-    const VERSION  = '0.3.1';
+    const VERSION  = '0.3.2';
     const CODENAME = 'Black whale';
 
     public function run()
@@ -55,7 +55,7 @@ class Application
         $views->mailer = new PHPMailer\PHPMailer();
 
         // Определение текущего пользователя
-        $views->user = $model->factory('User')->findOne((isset($_SESSION['user']) ? $_SESSION['user'] : 0));
+        $views->user = $model->factory('User')->findOne((isset($_SESSION['cms']['user']) ? $_SESSION['cms']['user'] : 0));
 
         // Определение текущего сайта
         $instance = $model->factory('Site')->whereHostIn(array($request->getHost()));
