@@ -179,7 +179,7 @@
 <div class="control-group has-warning {if $.request.apply ! && ! $.request[$field.field]}has-error{else}has-warning{/if}">
 {/if}
     <div class="form-group">
-        <label class="required" for="{$field.field}">{$field.title}</label> <span class="badge pull-right">{$field.field}</span>
+        <label class="required" for="{$field.field}">{$field.title ?: ''}</label> <span class="badge pull-right">{$field.field}</span>
 {switch $field.aspect ?: $field.type}
     {case 'text'}
         {if $field.editor ?}
