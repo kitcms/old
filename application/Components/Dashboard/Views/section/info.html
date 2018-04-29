@@ -73,6 +73,26 @@
 
 {block 'component_content'}
 {parent}
+<div class="h3">{$section.title}</div>
+<p>{$section.description}</p>
+<hr>
+<div class="h4">Мета</div>
+<div class="row">
+    <div class="col-xs-2">title</div>
+    <div class="col-xs-10">
+        <span class="grey">{$section.meta.title ?: 'не задано'}</span>
+    </div>
+    <div class="col-xs-2">keywords</div>
+    <div class="col-xs-10">
+        <span class="grey">{$section.meta.keywords ? ($section.meta.keywords|join:',') : 'не задано'}</span>
+    </div>
+    <div class="col-xs-2">description</div>
+    <div class="col-xs-10">
+        <span class="grey">{$section.meta.description ?: 'не задано'}</span>
+    </div>
+</div>
+<hr>
+<div class="h4">Дополнительная информация</div>
 <table class="table">
     <thead>
         <tr>
