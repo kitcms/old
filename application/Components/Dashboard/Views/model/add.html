@@ -40,8 +40,8 @@
     {/if}
 {/if}
 
-{foreach $.schema->findMany() as $model}
-    {set $categories[] = $model->category}
+{foreach $.schema->findMany() as $schema}
+    {set $categories[] = $schema->category}
 {/foreach}
 {set $categories = array_diff($categories, [''])}
 {set $categories = array_unique($categories)}
