@@ -40,6 +40,12 @@
     {/if}
 {/if}
 
+{foreach $.schema->findMany() as $model}
+    {set $categories[] = $model->category}
+{/foreach}
+{set $categories = array_diff($categories, [''])}
+{set $categories = array_unique($categories)}
+
 {* Построение древовидного меню *}
 {set $tree.open_nodes = []}
 {set $tree.selected_node = []}
@@ -56,7 +62,7 @@
         <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
     </ul>
     <div class="tab-content">
-        {macro main($model=false)}
+        {macro main($model=false, $categories=false)}
         <div class="tab-pane active" id="main">
             <div class="control-group has-warning {if $.request.apply ! && ! $.request.name}has-error{/if}">
                 <div class="form-group">
@@ -68,6 +74,16 @@
             <div class="form-group">
                 <label class="label-light required" for="comment">Описание</label>
                 <textarea class="form-control" rows="4" data-resizable="true" name="comment" id="comment">{$.request.comment|e}</textarea>
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label class="required" for="category">Категория</label> <span class="badge pull-right">category</span>
+                <select class="form-control" name="category" id="category" role="tags">
+                    <option value="">не задана</option>
+                {foreach $categories as $keyword => $category}
+                    <option value="{$category}" {if $category == $.request.category}selected{/if}>{$category|e}</option>
+                {/foreach}
+                </select>
                 <span class="help-block"></span>
             </div>
             <hr>
@@ -105,7 +121,7 @@
                 <span class="help-block"></span>
             </div>
         </div>
-        {/macro}{macro.main}
+        {/macro}{macro.main categories=$categories}
     </div>
 </form>
 {/block}

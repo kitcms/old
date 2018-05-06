@@ -56,18 +56,55 @@
     {/if}
 {else}
     {set $models = $.schema->findArray()}
-    {foreach $models as $model}
-        {set $json[] = [
-            'id' => 'model_' ~ $model.name,
-            'label' => $model.name,
-            'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
-            'active' => 1,
-            'load_on_demand' => 1,
-            'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name,
-            'icon' => 'glyphicon-list-alt',
-            'color' => $model.class_name ? 'grey' : 'blue'
-        ]}
+    {set $categories = []}
+    {foreach $models as $key => $model}
+        {if $model.category ?}
+            {set $categories[$model.category][] = $model}
+            {unset $models[$key]}
+        {/if}
     {/foreach}
+
+    {if $.request.category ? && $categories[$.request.category] ?}
+        {foreach $categories[$.request.category] as $model}
+            {set $json[] = [
+                'id' => 'model_' ~ $model.name,
+                'label' => $model.name,
+                'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
+                'active' => 1,
+                'load_on_demand' => 1,
+                'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name,
+                'icon' => 'glyphicon-list-alt',
+                'color' => $model.class_name ? 'grey' : 'blue'
+            ]}
+        {/foreach}
+    {else}
+        {foreach $categories as $category => $data}
+            {set $json[] = [
+                'id' => 'category_' ~ $category,
+                'label' => $category,
+                'link' => $.component ~ '/field/list.html?category=' ~ $category,
+                'active' => 1,
+                'load_on_demand' => 1,
+                'demand_url' => $.component ~ '/model/tree.html?category=' ~ $category,
+                'icon' => '',
+                'color' => 'grey'
+            ]}
+        {/foreach}
+
+        {foreach $models as $model}
+            {set $json[] = [
+                'id' => 'model_' ~ $model.name,
+                'label' => $model.name,
+                'link' => $.component ~ '/field/list.html?model=' ~ $model.name,
+                'active' => 1,
+                'load_on_demand' => 1,
+                'demand_url' => $.component ~ '/model/tree.html?model=' ~ $model.name,
+                'icon' => 'glyphicon-list-alt',
+                'color' => $model.class_name ? 'grey' : 'blue'
+            ]}
+        {/foreach}
+    {/if}
+
 {/if}
 {$json|json_encode}
 {exit}
