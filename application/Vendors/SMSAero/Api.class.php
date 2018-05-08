@@ -1,7 +1,7 @@
 <?php
-namespace SmsaeroApiV2;
+namespace SMSAero;
 
-class SmsaeroApiV2
+class Api
 {
     const URL_SMSAERO_API = 'https://gate.smsaero.ru/v2';
     private $email = ''; //Ваш логин|email
@@ -366,5 +366,20 @@ class SmsaeroApiV2
      */
     public function viber_sign_list(){
         return json_decode(self::curl_post(self::URL_SMSAERO_API . '/viber/sign/list', []), true);
+    }
+
+    public function __call($name, $arguments)
+    {
+        $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
+        if (method_exists($this, $method)) {
+            return call_user_func_array(array($this, $method), $arguments);
+        }
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
+        
+        return call_user_func_array(array(__CLASS__, $method), $arguments);
     }
 }
