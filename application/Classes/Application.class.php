@@ -51,11 +51,26 @@ class Application
         $views->addAccessorSmart("parents", "parents", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("meta", "meta", Template\Engine::ACCESSOR_CHAIN);
+        $views->addAccessor('class', function ($tokens, $tpl) {
+            $code = 'class ';
+            do {
+                if ($tokens->is('(')) {
+                    $code .= $tpl->parseArgs($tokens);
+                }
+                if ($tokens->is(T_OBJECT_OPERATOR) && $tokens->isNext(T_STRING)) {
+                    $code .= '->' . $tokens->next()->getAndNext();
+                }
+                if ($tokens->current() === "." && $tokens->isNext(T_STRING)) {
+                    $code .= '\\' . $tokens->next()->getAndNext();
+                }
+            } while ($tokens->is('(', T_OBJECT_OPERATOR) || $tokens->isNext(T_STRING));
+            return $code;
+        });
 
         $views->mailer = new PHPMailer\PHPMailer();
 
         // Определение текущего пользователя
-        $views->user = $model->factory('User')->findOne((isset($_SESSION['cms']['user']) ? $_SESSION['cms']['user'] : 0));
+        $views->user = $model->factory('User')->findOne((isset($_SESSION['user']['id']) ? $_SESSION['user']['id'] : 0));
 
         // Определение текущего сайта
         $instance = $model->factory('Site')->whereHostIn(array($request->getHost()));
@@ -75,7 +90,11 @@ class Application
             if ($views->section = $instance->findOne()) {
                 $container = new Storage\Container();
                 // Определение родительских разделов
-                $views->parents = $views->section->parents()->orderByAsc('path')->findMany();
+                $views->parents = array();
+                $parents = $views->section->parents()->orderByAsc('path')->findMany();
+                foreach ($parents as $parent) {
+                    $views->parents[$parent->id] = $parent;
+                }
 
                 // Определение используемых инфобоксов
                 if (false === ($views->infobox = $views->section->infobox())) {
