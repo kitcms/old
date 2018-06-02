@@ -52,7 +52,7 @@ class Application
         $views->addAccessorSmart("user", "user", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessorSmart("meta", "meta", Template\Engine::ACCESSOR_CHAIN);
         $views->addAccessor('class', function ($tokens, $tpl) {
-            $code = 'class ';
+            $code = 'new ';
             do {
                 if ($tokens->is('(')) {
                     $code .= $tpl->parseArgs($tokens);

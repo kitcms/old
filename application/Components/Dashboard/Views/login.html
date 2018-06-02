@@ -15,7 +15,7 @@
         ['email' => $.request.login]
     ])->findOne()}
         {if password_verify($.request.password, $user->password)}
-            {var $.session.cms.user = $user->id}
+            {var $.session.user.id = $user->id}
             {do header('Location: ' ~ $.component ~ '/')}
             {exit}
         {/if}
