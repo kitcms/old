@@ -27,13 +27,6 @@ class User extends Model
             'group' => 'permission'
         ),
         array(
-            'title' => 'Логин',
-            'field' => 'login',
-            'type' => 'varchar(255)',
-            'key' => 'uni',
-            'group' => 'main'
-        ),
-        array(
             'title' => 'Имя пользователя',
             'field' => 'name',
             'type' => 'varchar(255)',
@@ -68,14 +61,12 @@ class User extends Model
 
     public function save()
     {
-        // Проверка логина на корректность
-        if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->login) || preg_match("/^[\d-_.]+$/", $this->login)) {
-            return false;
-        }
-        // Проверка уникальности логина и email
-        $clause = '(`login` LIKE ? OR `email` LIKE ?)';
-        $parameters = array($this->get('login'), $this->get('email'));
-        $instance = $this->factory(__CLASS__)->whereRaw($clause, $parameters);
+        // Проверка email на корректность
+        //if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->email) || preg_match("/^[\d-_.]+$/", $this->email)) {
+        //    return false;
+        //}
+        // Проверка уникальности email
+        $instance = $this->factory(__CLASS__)->where('email', $this->get('email'));
         if (false === $this->isNew()) {
             $instance->whereNotIn('id', (array) $this->get('id'));
         }

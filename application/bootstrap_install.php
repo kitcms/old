@@ -101,10 +101,9 @@ if (false === $schema->findOne()) {
     if ($schema->create($data)->save()) {
         $data = array(
             'group' => 1,
-            'login' => 'user',
             'name' => 'Администратор',
-            'email' => 'email@domain.tld',
-            'password' => 'user',
+            'email' => 'mail@example.com',
+            'password' => 'password',
             'description' => 'Тестовый пользователь'
         );
         $model->create($data)->save();

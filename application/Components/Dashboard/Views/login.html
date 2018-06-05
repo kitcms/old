@@ -9,13 +9,10 @@
 
 {block 'component_set'}
 {set $server = $.server|array_change_key_case}
-{if $.request.login ? && $.request.password}
-    {if $user = $.model->factory('User')->whereAnyIs([
-        ['login' => $.request.login],
-        ['email' => $.request.login]
-    ])->findOne()}
+{if $.request.email ? && $.request.password}
+    {if $user = $.model->factory('User')->where('email', $.request.email)->findOne()}
         {if password_verify($.request.password, $user->password)}
-            {var $.session.user.id = $user->id}
+            {var $.session.user.id = $user.id}
             {do header('Location: ' ~ $.component ~ '/')}
             {exit}
         {/if}
@@ -27,10 +24,10 @@
 <div class="container login">
     <div class="form">
         <form action="" method="post">
-            <div class="control-group {if $.request.apply ! && ! $.request.login}has-error{/if}">
+            <div class="control-group {if $.request.apply ! && ! $.request.email}has-error{/if}">
                 <div class="form-group">
-                    <label class="required" for="login">Логин или email</label>
-                    <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
+                    <label class="required" for="email">Email</label>
+                    <input class="form-control" type="text" value="{$.request.email|e}" name="email" id="email">
                     <span class="help-block"></span>
                 </div>
             </div>
