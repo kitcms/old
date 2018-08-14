@@ -107,7 +107,7 @@ class Application
                 if ($views->infobox && !$views->section->extension) {
                     if (!$pattern = $views->section->infobox['pattern']) {
                         // /(?J)(?P<name>\w+)[_-](?P<digit>\w+)/
-                        $pattern = '(?J)(?P<id>\d+)|\w+[_-](?P<offset>\d+)';
+                        $pattern = '(?J)(?P<id>\d+$)|(?P<action>\w+)[_-](?P<offset>\d+)|(?P<action>\w+)';
                     }
                     preg_match('/'. $pattern .'/', $request->getFileName(), $matches);
                     $matches = array_diff($matches, array(''));

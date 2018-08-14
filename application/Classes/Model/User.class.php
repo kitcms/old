@@ -15,7 +15,6 @@ use Classes\Database\Model;
 class User extends Model
 {
     protected $_table = 'User';
-    protected $password;
 
     protected $fields = array(
         array(
@@ -75,9 +74,11 @@ class User extends Model
         }
         // Шифрование пароля
         if ($this->isDirty('password') && ($password = $this->get('password'))) {
-            $this->set('password', password_hash($password, PASSWORD_DEFAULT));
-        } else {
-            $this->set('password', $this->password);
+            $info = password_get_info($password);
+            if (false == $info['algo']) {
+                $password = password_hash($password, PASSWORD_DEFAULT);
+            }
+            $this->set('password', $password);
         }
         return parent::save();
     }
