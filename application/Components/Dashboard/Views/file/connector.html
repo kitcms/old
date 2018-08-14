@@ -7,7 +7,7 @@
  * @link      Kit.cms <http://www.kitcms.ru>
  *}
 
-{block 'component_set'}
+{block 'component_set'}{parent}
 {set $sections = $.model->factory('Section')->select('id')->findArray()}
 {set $templates = $.model->factory('Template')->select('id')->findArray()}}
 {php}

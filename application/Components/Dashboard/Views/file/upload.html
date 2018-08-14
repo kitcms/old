@@ -7,7 +7,7 @@
  * @link      Kit.cms <http://www.kitcms.ru>
  *}
 
-{block 'component_set'}
+{block 'component_set'}{parent}
 {set $server = $.server|array_change_key_case}
 {if $.request.model ? && ($model = $.schema->findOne($.request.model)) &&
     $.request.field ? && ($field = $model->field()->findOne($.request.field))}
