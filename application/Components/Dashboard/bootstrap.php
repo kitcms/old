@@ -52,7 +52,8 @@ if (isset($views) && $views instanceof Fenom) {
         if (preg_match('/^assets\\//', $template)) {
             echo $provider->getSource($template, $time);
         } else {
-            $views->display(array('component:'. $template, 'component:index.html'));
+            $template = trim($template, '/') ?: 'index.html';
+            $views->display(array('component:'. $template, 'component:base.html'));
         }
     }
 }
