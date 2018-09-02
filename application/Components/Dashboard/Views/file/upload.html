@@ -11,39 +11,7 @@
 {set $server = $.server|array_change_key_case}
 {if $.request.model ? && ($model = $.schema->findOne($.request.model)) &&
     $.request.field ? && ($field = $model->field()->findOne($.request.field))}
-    {set $dir = '/tmp/' ~ $.request.model ~ '/' ~ $.user->id ~ '/' ~ $.request.field ~ '/'}
-    {set $dir = mb_strtolower($dir)}
-    {set $options = [
-        'image_library' => 1,
-        'image_versions' => [
-            '' => [
-                'min_width' => $field.increase ? ($field.min_width ?: ($field.max_width ?: null)) : null,
-                'min_height' => $field.increase ? ($field.min_height ?: ($field.max_height ?: null)) : null,
-                'max_width' => $field.reduction ? ($field.max_width ?: ($field.min_width ?: null)) : null,
-                'max_height' => $field.reduction ? ($field.max_height ?: ($field.min_height ?: null)) : null,
-                'compression' => true,
-                'auto_orient' => true,
-                'color_thief' => true,
-                'crop' => false,
-                'no_cache' => false,
-
-                'jpeg_quality' => 75,
-                'filter' => 3,
-                'strip' => true
-            ]
-        ],
-        'upload_dir' => $.globals.dir.public ~ $dir,
-        'web_import_temp_dir' => $.globals.dir.public ~ $dir,
-        'upload_url' => $.root ~ $dir,
-
-        'accept_file_types' => $field.types ? '/\.' ~ $field.types ~ '$/i' : '/.+$/i',
-        'max_number_of_files' => $field.number ? intval($field.number) : null,
-
-        'min_width' => $field.increase ? null : $field.min_width,
-        'min_height' => $field.increase ? null : $field.min_height,
-        'max_width' => $field.reduction ? null : $field.max_width,
-        'max_height' => $field.reduction ? null : $field.max_height
-    ]}
+    {set $options = $field->uploadConfig()}
     {if $server.request_method !== 'DELETE'}
         {if $.files ?}
             {set $handler = $options|upload_handler}

@@ -49,7 +49,7 @@
 {set $groups = $schema.groups}
 {*set $fields = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']*}
 {*set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}{set $fields = $schema->field()->findArray()*}
-{set $fields = $schema->field()->findArray()}
+{set $fields = $schema->field()->findMany()}
 {foreach $fields as $key => $field}
     {if $field.group ?}{else}{unset $fields[$key]}{/if}
 {/foreach}
