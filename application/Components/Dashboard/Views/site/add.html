@@ -189,7 +189,7 @@
         <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
         {/if}
     {case 'file'}
-        {if $.request[$field.field] is not array}
+        {if ($.request[$field.field] is not empty) && ($.request[$field.field] is not array)}
             {set $options = $field->uploadConfig()}
             {set $options.print_response = false}
             {set $handler = $options|upload_handler}
