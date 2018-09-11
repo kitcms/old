@@ -190,6 +190,7 @@
         {/if}
     {case 'file'}
         {if ($.request[$field.field] is not empty) && ($.request[$field.field] is not array)}
+            {print_r($.request[$field.field])}
             {set $options = $field->uploadConfig()}
             {set $options.print_response = false}
             {set $handler = $options|upload_handler}
@@ -201,6 +202,9 @@
         <span class="count pull-right"></span>
         <select class="form-control file {$field.field}" name="{$field.field}[]" role="file" multiple="multiple">
         {foreach $.request[$field.field] as $file}
+            {if $file is not array}
+                {set $file = json_decode($file,true)}
+            {/if}
             <option value='{$file|json_encode}'
                 {if $file.type ?}data-type='{$file.type}'{/if}
                 {if $file.size ?}data-size='{$file.size}'{/if}
