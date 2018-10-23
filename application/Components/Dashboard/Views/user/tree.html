@@ -16,7 +16,7 @@
             'id' => 'user_' ~ $user.id,
             'label' => $user.name,
             'link' => $.component ~ '/user/set.html?user=' ~ $user.id,
-            'keyword' => $user.login,
+            'keyword' => $user.email,
             'load_on_demand' => false,
             'icon' => 'glyphicon-user',
             'color' => $user->active ? 'blue' : 'grey'

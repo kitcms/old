@@ -66,13 +66,6 @@
         </div>
     </div>
     <hr>
-    <div class="control-group has-warning {if $.request.apply ! && ! $.request.login}has-error{/if}">
-        <div class="form-group">
-            <label class="required" for="login">Логин</label>
-            <input class="form-control" type="text" value="{$.request.login|e}" name="login" id="login">
-            <span class="help-block">Имя пользователя для авторизации на сайте и входа в систему администрирования.</span>
-        </div>
-    </div>
     <div class="control-group has-warning {if $.request.apply ! && ! $.request.email}has-error{/if}">
         <div class="form-group">
             <label class="required" for="email">Email</label>

@@ -47,8 +47,13 @@
 {* Выборка необходимых данных *}
 {set $schema = $.schema->findOne($model)}
 {set $groups = $schema.groups}
-{set $fields = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']}
-{set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
+{*set $fields = array_column($.model->factory($model)->fields(), 'field')|array_merge:['section']*}
+{*set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}{set $fields = $schema->field()->findArray()*}
+{set $fields = $schema->field()->findMany()}
+{foreach $fields as $key => $field}
+    {if $field.group ?}{else}{unset $fields[$key]}{/if}
+{/foreach}
+{set $fields = array_values($fields)}
 
 {* Формирование меню *}
 {set $menu.main.left.site.class="active"}

@@ -1,0 +1,126 @@
+{*
+ * Каркасный шаблон
+ *
+ * @package   This file is part of the Kit.cms
+ * @author    Anton Popov <a.popov@kit.team>
+ * @copyright Kit.team <http://www.kit.team>
+ * @link      Kit.cms <http://www.kitcms.ru>
+ *}
+
+{block 'component_set'}
+{if (! $.user) || (1 !== $.user->group)}
+    {do header('Location: ' ~ $.component ~ '/login.html')}
+    {exit}
+{/if}
+{set $menu = [
+    'main' => [
+        'left' => [
+            'index' => [ 'title' => 'Главная', 'link' => $.component ~ '/' ],
+            'site' => [ 'title' => 'Сайты', 'link' => $.component ~ '/site/list.html' ],
+            'template' => [ 'title' => 'Макеты дизайна',  'link' => $.component ~ '/template/list.html'],
+            'model' => [ 'title' => 'Модели данных', 'link' => $.component ~ '/model/list.html', 'class' => '' ],
+            'user' => [ 'title' => 'Пользователи', 'link' => $.component ~ '/user/list.html' ],
+            'filemanager' => [ 'title' => 'Файловый менеджер', 'link' => $.component ~ '/file/manager.html', 'class' => '' ]
+        ],
+        'right' => [
+            'logout' => [ 'title' => 'Выход', 'link' => $.component ~ '/logout.html' ]
+        ]
+    ],
+    'second' => [
+        'left' => [
+            [ 'title' => '&nbsp;' ]
+        ],
+        'right' => []
+    ]
+]}
+{/block}
+
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Панель управления</title>
+        <link href="{$.component}/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{$.component}/assets/select2/css/select2.min.css" rel="stylesheet">
+        <link href="{$.component}/assets/component/css/jqtree.css" rel="stylesheet">
+        <link href="{$.component}/assets/component/css/bootstrap-select2.css" rel="stylesheet">
+        <link href="{$.component}/assets/component/css/bootstrap-theme.css" rel="stylesheet">
+        {block 'component_css'}{/block}
+        <!--[if lt IE 9]>
+        <script src="{$.component}/assets/html5shiv/html5shiv.min.js"></script>
+        <script src="{$.component}/assets/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+    {block 'component_body'}
+        <header role="header">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid">
+                    {foreach $menu.main as $position => $items}
+                    <ul class="nav navbar-nav pull-{$position}">
+                        {foreach $items as $item}
+                        <li class="{if $item.class ?}{$item.class}{/if}">
+                            <a href="{if $item.link ?}{$item.link}{/if}">{if $item.title ?}{$item.title}{/if}</a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {/foreach}
+                </div>
+            </nav>
+            {block 'header'}
+            <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                    {foreach $menu.second as $position => $items}
+                    <ul class="nav navbar-nav pull-{$position}">
+                        {foreach $items as $item}
+                        <li class="{if $item.class ?}{$item.class}{/if}">
+                            <a href="{if $item.link ?}{$item.link}{/if}">{if $item.title ?}{$item.title}{/if}</a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {/foreach}
+                </div>
+            </nav>
+            {/block}
+        </header>
+        <div class="main">
+        {block 'component_main'}
+            {set $resizable = $.cookie.resizable|split}
+            <aside class="aside" role="aside" style="{if $resizable.0 ?}width:{$resizable.0}%{/if}">
+                <div>
+                {block 'component_aside'}
+                    <div id="tree" data-url="{$.component}/site/tree.html"></div>
+                {/block}
+                </div>
+            </aside>
+            <section class="content" role="content" style="{if $resizable.1 ?}width:{$resizable.1}%{/if}">
+                <div>
+                {block 'component_content'}
+                    {$message ?: null}
+                {/block}
+                </div>
+            </section>
+        </div>
+        <footer class="footer">
+            {block 'component_footer'}{/block}
+        </footer>
+        {/block}
+        <script src="{$.component}/assets/jquery/jquery.min.js"></script>
+        <script src="{$.component}/assets/jquery-ui/jquery-ui.min.js"></script>
+        <script src="{$.component}/assets/js-cookie/jquery.cookie.js"></script>
+        <script src="{$.component}/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="{$.component}/assets/jqtree/tree.jquery.js"></script>
+        <script src="{$.component}/assets/select2/js/select2.full.min.js"></script>
+        <script>
+            location.root = '{$.root}';
+            location.component = '{$.component}';
+            {if $tree ?}localStorage.tree = '{$tree|json_encode}';{/if}
+        </script>
+        {block 'component_script'}
+        <script src="{$.component}/assets/component/js/common.js"></script>
+        {/block}
+     {/block}
+    </body>
+</html>

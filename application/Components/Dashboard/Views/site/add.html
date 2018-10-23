@@ -49,7 +49,7 @@
 {set $schema = $.schema->findOne('Site')}
 {set $groups = $schema.groups}
 {set $fields = array_column($.model->factory('Site')->fields(), 'field')}
-{set $fields = $schema->field()->whereNotIn('field', $fields)->findArray()}
+{set $fields = $schema->field()->whereNotIn('field', $fields)->findMany()}
 {set $templates = $.model->factory('Template')->orderByAsc('path')->findMany()}
 {/block}
 
@@ -179,7 +179,7 @@
 <div class="control-group has-warning {if $.request.apply ! && ! $.request[$field.field]}has-error{else}has-warning{/if}">
 {/if}
     <div class="form-group">
-        <label class="required" for="{$field.field}">{$field.title}</label> <span class="badge pull-right">{$field.field}</span>
+        <label class="required" for="{$field.field}">{$field.title ?: ''}</label> <span class="badge pull-right">{$field.field}</span>
 {switch $field.aspect ?: $field.type}
     {case 'text'}
         {if $field.editor ?}
@@ -189,16 +189,28 @@
         <textarea class="form-control" rows="4" data-resizable="true" name="{$field.field}" id="{$field.field}">{$.request[$field.field]|e}</textarea>
         {/if}
     {case 'file'}
+        {if ($.request[$field.field] is not empty) && ($.request[$field.field] is not array)}
+            {print_r($.request[$field.field])}
+            {set $options = $field->uploadConfig()}
+            {set $options.print_response = false}
+            {set $handler = $options|upload_handler}
+            {set $import = $handler->importFromUrl($.request[$field.field], false)}
+            {set $import = json_decode(json_encode($import), true)}
+            {var $.request[$field.field] = $import.web}
+        {/if}
         <input type="hidden" name="{$field.field}">
         <span class="count pull-right"></span>
         <select class="form-control file {$field.field}" name="{$field.field}[]" role="file" multiple="multiple">
         {foreach $.request[$field.field] as $file}
+            {if $file is not array}
+                {set $file = json_decode($file,true)}
+            {/if}
             <option value='{$file|json_encode}'
                 {if $file.type ?}data-type='{$file.type}'{/if}
                 {if $file.size ?}data-size='{$file.size}'{/if}
                 {if $file.width ?}data-width='{$file.width}'{/if}
                 {if $file.height ?}data-height='{$file.height}'{/if}
-                {if $file.url ?}data-url='{$.root}/{$file.url}'{/if}
+                {if $file.url ?}data-url='{$.root}/{$file.url|trim:'/'}'{/if}
                 data-status='temporary' selected>{$file.name}</option>
         {/foreach}
         </select>
@@ -222,6 +234,10 @@
         </select>
     {case 'group'}
         {set $options = $.model->factory($field.table)->select($field.field)->whereNotNull($field.field)->groupBy($field.field)->findArray()}
+        {if $.request[$field.field] ? && $.request[$field.field] not in $options}
+            {set $option[$field.field] = $.request[$field.field]}
+            {do $options|array_unshift:$option}
+        {/if}
         <select class="form-control" name="{$field.field}" role="tags">
         {if 'YES' === $field.null}
             <option value="">не задано</option>

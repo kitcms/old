@@ -53,6 +53,12 @@
     ]
 ]}
 
+{foreach $.schema->findMany() as $schema}
+    {set $categories[] = $schema->category}
+{/foreach}
+{set $categories = array_diff($categories, [''])}
+{set $categories = array_unique($categories)}
+
 {* Построение древовидного меню *}
 {set $tree.open_nodes = ['model_' ~ $model.name]}
 {set $tree.selected_node = ['model_' ~ $model.name]}
@@ -69,7 +75,7 @@
         <li class="active"><a href="#main" data-toggle="tab">Основная информация</a></li>
     </ul>
     <div class="tab-content">
-        {macro.main model=$model}
+        {macro.main model=$model categories=$categories}
     </div>
 </form>
 {/block}

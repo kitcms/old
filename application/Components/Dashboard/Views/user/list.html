@@ -7,7 +7,7 @@
  * @link      Kit.cms <http://www.kitcms.ru>
  *}
 
-{extends 'component:index.html'}
+{extends 'component:base.html'}
 
 {block 'component_set'}{parent}
 {* Выборка объектов *}
@@ -57,7 +57,7 @@
     {foreach $users as $user}
         <tr id="{$user.id}">
             <td>
-                <small class="grey">{$user->id}.</small> {$user->name} <span class="badge">{$user->login}</span>
+                <small class="grey">{$user.id}.</small> {$user.name} <span class="badge">{$user.email}</span>
             </td>
             <td>
                 <div class="btn-group">

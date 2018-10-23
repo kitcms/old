@@ -8,6 +8,7 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 
+    config.filebrowserBrowseUrl = location.component + '/file/choice.html';
     config.toolbarCanCollapse = true;
     config.toolbarStartupExpanded = false;
     config.autoParagraph = false;

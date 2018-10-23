@@ -15,7 +15,6 @@ use Classes\Database\Model;
 class User extends Model
 {
     protected $_table = 'User';
-    protected $password;
 
     protected $fields = array(
         array(
@@ -25,13 +24,6 @@ class User extends Model
             'null' => 'yes',
             'key' => 'mul',
             'group' => 'permission'
-        ),
-        array(
-            'title' => 'Логин',
-            'field' => 'login',
-            'type' => 'varchar(255)',
-            'key' => 'uni',
-            'group' => 'main'
         ),
         array(
             'title' => 'Имя пользователя',
@@ -68,14 +60,12 @@ class User extends Model
 
     public function save()
     {
-        // Проверка логина на корректность
-        if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->login) || preg_match("/^[\d-_.]+$/", $this->login)) {
-            return false;
-        }
-        // Проверка уникальности логина и email
-        $clause = '(`login` LIKE ? OR `email` LIKE ?)';
-        $parameters = array($this->get('login'), $this->get('email'));
-        $instance = $this->factory(__CLASS__)->whereRaw($clause, $parameters);
+        // Проверка email на корректность
+        //if (!preg_match("/^[[:alnum:]-_.]+$/iu", $this->email) || preg_match("/^[\d-_.]+$/", $this->email)) {
+        //    return false;
+        //}
+        // Проверка уникальности email
+        $instance = $this->factory(__CLASS__)->where('email', $this->get('email'));
         if (false === $this->isNew()) {
             $instance->whereNotIn('id', (array) $this->get('id'));
         }
@@ -84,9 +74,11 @@ class User extends Model
         }
         // Шифрование пароля
         if ($this->isDirty('password') && ($password = $this->get('password'))) {
-            $this->set('password', password_hash($password, PASSWORD_DEFAULT));
-        } else {
-            $this->set('password', $this->password);
+            $info = password_get_info($password);
+            if (false == $info['algo']) {
+                $password = password_hash($password, PASSWORD_DEFAULT);
+            }
+            $this->set('password', $password);
         }
         return parent::save();
     }

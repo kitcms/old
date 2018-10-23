@@ -11,6 +11,7 @@
 
 namespace Classes\Database;
 
+use Classes\TransferProtocol\HyperText\Request;
 use PDO;
 
 class Schema extends ORM
@@ -511,10 +512,58 @@ class Schema extends ORM
         return $rows;
     }
 
-    protected function _create_instance_from_row($row) {
+    protected function _create_instance_from_row($row)
+    {
         $instance = self::for_table(isset($row['name']) ? $row['name'] : $this->_table_name, $this->_connection_name);
         $instance->use_id_column($this->_instance_id_column);
         $instance->hydrate($row);
         return $instance;
+    }
+
+    public function uploadConfig()
+    {
+        $request = Request::fromGlobals();
+
+        $dir = "/tmp/{$this->table}/{$this->field}/";
+        if (isset($_SESSION['user']['id']) && $userId = $_SESSION['user']['id']) {
+            $dir = "/tmp/{$this->table}/{$userId}/{$this->field}/";
+        }
+        $dir = mb_strtolower($dir);
+
+        $versions = array(
+            '' => array(
+                'min_width' => $this->increase ? ($this->min_width ?: ($this->max_width ?: null)) : null,
+                'min_height' => $this->increase ? ($this->min_height ?: ($this->max_height ?: null)) : null,
+                'max_width' => $this->reduction ? ($this->max_width ?: ($this->min_width ?: null)) : null,
+                'max_height' => $this->reduction ? ($this->max_height ?: ($this->min_height ?: null)) : null,
+                'compression' => true,
+                'auto_orient' => true,
+                'color_thief' => true,
+                'crop' => false,
+                'no_cache' => false,
+                'jpeg_quality' => 75,
+                'filter' => 3,
+                'strip' => true
+            )
+        );
+
+        $options = array(
+            'image_library' => 1,
+            'image_versions' => $versions,
+
+            'upload_dir' => $GLOBALS['dir']['public'] . $dir,
+            'web_import_temp_dir' => $GLOBALS['dir']['public'] . $dir,
+            'upload_url' => $request->getBasePath() . $dir,
+
+            'accept_file_types' => $this->types ? '/\.'. $this->types .'$/i' : '/.+$/i',
+            'max_number_of_files' => $this->number ? intval($this->number) : null,
+            'min_file_size' => 0,
+            'min_width' => $this->increase ? null : $this->min_width,
+            'min_height' => $this->increase ? null : $this->min_height,
+            'max_width' => $this->reduction ? null : $this->max_width,
+            'max_height' => $this->reduction ? null : $this->max_height
+        );
+
+        return $options;
     }
 }

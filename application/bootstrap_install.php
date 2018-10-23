@@ -23,7 +23,8 @@ if (false === $schema->findOne()) {
             'meta' => 'Метаинформация',
             'service' => 'Служебные настройки',
             'template' => 'Макет дизайна'
-        )
+        ),
+        'category' => 'Системные'
     );
     $schema->create($data)->save();
 }
@@ -41,7 +42,8 @@ if (false === $schema->findOne()) {
             'meta' => 'Метаинформация',
             'template' => 'Макет дизайна',
             'infobox' => 'Инфобокс'
-        )
+        ),
+        'category' => 'Системные'
     );
     $schema->create($data)->save();
 }
@@ -56,7 +58,8 @@ if (false === $schema->findOne()) {
         'comment' => 'Макеты дизайна',
         'groups' => array(
             'main' => 'Основная информация'
-        )
+        ),
+        'category' => 'Системные'
     );
     $schema->create($data)->save();
 }
@@ -71,7 +74,8 @@ if (false === $schema->findOne()) {
         'comment' => 'Группы пользователей',
         'groups' => array(
             'main' => 'Основная информация'
-        )
+        ),
+        'category' => 'Системные'
     );
     if ($schema->create($data)->save()) {
         $model->create(array('title' => 'Администраторы'))->save();
@@ -91,15 +95,15 @@ if (false === $schema->findOne()) {
         'groups' => array(
             'main' => 'Основная информация',
             'permission' => 'Права доступа'
-        )
+        ),
+        'category' => 'Системные'
     );
     if ($schema->create($data)->save()) {
         $data = array(
             'group' => 1,
-            'login' => 'user',
             'name' => 'Администратор',
-            'email' => 'email@domain.tld',
-            'password' => 'user',
+            'email' => 'mail@example.com',
+            'password' => 'password',
             'description' => 'Тестовый пользователь'
         );
         $model->create($data)->save();
