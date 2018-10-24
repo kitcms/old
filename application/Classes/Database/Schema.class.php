@@ -6,7 +6,6 @@
  * @author    Anton Popov <a.popov@kit.team>
  * @copyright Kit.team <http://www.kit.team>
  * @link      Kit.cms <http://www.kitcms.ru>
- * @version   0.1.0
  */
 
 namespace Classes\Database;

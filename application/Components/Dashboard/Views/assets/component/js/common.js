@@ -311,7 +311,7 @@
         $(this).parent().prev().fileupload({
             dataType: 'json',
             formData: { 'field': field },
-            maxChunkSize: 2000000,
+            maxChunkSize: 10000000,
             add: function (e, data) { data.submit() },
             done: function (e, data) {
                 var node = $(this).prevAll('.file:first');

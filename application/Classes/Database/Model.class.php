@@ -162,7 +162,7 @@ class Model extends ActiveRecord implements ArrayAccess, IteratorAggregate, Coun
                     $this->set($field['field'], $field['default']);
                 }
             }
-            if ('file' === $field['aspect']) {
+            if (('file' === $field['aspect']) && $this->isDirty($field['field'])) {
                 $path = mb_strtolower("files/{$table}/{$id}/{$field['field']}");
                 $directory = $dir['public'] . DS . $path;
                 $currentFiles = array();

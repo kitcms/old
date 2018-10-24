@@ -107,7 +107,7 @@ class Application
                 if ($views->infobox && !$views->section->extension) {
                     if (!$pattern = $views->section->infobox['pattern']) {
                         // /(?J)(?P<name>\w+)[_-](?P<digit>\w+)/
-                        $pattern = '(?J)(?P<id>\d+$)|(?P<action>\w+)[_-](?P<offset>\d+)|(?P<action>\w+)';
+                        $pattern = '(?J)(?P<id>\d+$)|(?P<action>\w+)[_-](?P<page>\d+)|(?P<action>\w+)';
                     }
                     preg_match('/'. $pattern .'/', $request->getFileName(), $matches);
                     $matches = array_diff($matches, array(''));
@@ -115,8 +115,24 @@ class Application
                     if (isset($matches['id'])) {
                         $views->infobox->where('id', $matches['id']);
                     }
-                    if (isset($matches['offset'])) {
-                        $views->infobox->offset((int) $matches['offset']);
+
+                    $limit = $views->section->infobox['limit'] ?: 100;
+                    $offset = 0;
+
+                    if (isset($matches['page'])) {
+                        $offset = (--$matches['page']) * $limit;
+                        $filter = array('options' => array('min_range' => 0));
+                        if (!filter_var($offset, FILTER_VALIDATE_INT, $filter)) {
+                           $offset = 0;
+                        }
+                    }
+
+                    $views->infobox->offset($offset)->limit($limit);
+                    
+                    if (isset($views->section->infobox['field']) &&
+                        ($field = $views->section->infobox['field']) &&
+                        ($order = $views->section->infobox['order'])) {
+                        $views->infobox->{'orderBy'. ucfirst($order)}($field);
                     }
                     $_ENV = array_replace($_ENV, array_unique($matches));
                 }
